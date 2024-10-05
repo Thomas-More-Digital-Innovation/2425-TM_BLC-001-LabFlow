@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="LabFlow@ep-calm-wave-a2o0hqho.eu-central-1.aws.neon.tech" uuid="5e4b5c3c-240c-44e9-9735-e51efa8875b3">
-      <driver-ref>postgresql</driver-ref>
+    <data-source source="LOCAL" name="labflow" uuid="f514a93a-2488-401e-a307-240b420b91f0">
+      <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://ep-calm-wave-a2o0hqho.eu-central-1.aws.neon.tech/LabFlow?sslmode=require</jdbc-url>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\2425-TM_BLC-001-LabFlow\code\labflow\databases\labflow.db</jdbc-url>
       <jdbc-additional-properties>
-        <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
-        <property name="com.intellij.clouds.kubernetes.db.container.port" />
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
