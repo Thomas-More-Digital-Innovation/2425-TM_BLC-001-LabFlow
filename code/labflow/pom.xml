@@ -8,14 +8,11 @@
 		<version>2.4.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.pxp</groupId>
-	<artifactId>SQLite.demo</artifactId>
+	<groupId>com.thomasmore.blc</groupId>
+	<artifactId>SQLite</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Spring Boot and SQLite</name>
-	<description>CRUD example with Spring Boot and SQLite</description>
-
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 	</properties>
 
 	<dependencies>
