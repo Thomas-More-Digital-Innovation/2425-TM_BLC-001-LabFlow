@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.thomasmore.blc</groupId>
-	<artifactId>SQLite</artifactId>
+	<artifactId>LabFlow</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<java.version>17</java.version>
