@@ -2,11 +2,11 @@ package com.thomasmore.blc.labflow.service;
 
 import com.thomasmore.blc.labflow.entity.User;
 import com.thomasmore.blc.labflow.repository.UserRepository;
+// transactional zorgt ervoor dat een methode met meerdere database interacties volgens het ACID principe werkt
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-// transactional zorgt ervoor dat een methode met meerdere database interacties volgens het ACID principe werkt
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service

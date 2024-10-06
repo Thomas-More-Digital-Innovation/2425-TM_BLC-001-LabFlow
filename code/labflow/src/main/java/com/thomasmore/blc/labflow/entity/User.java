@@ -1,14 +1,17 @@
 package com.thomasmore.blc.labflow.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import org.springframework.lang.Nullable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 
 @Entity
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // For auto-increment in SQLite
     private Long id;
 
     @Nullable
@@ -20,6 +23,7 @@ public class User {
     private String voorNaam;
 
     private String achterNaam;
+
 
     public User() {
     }
