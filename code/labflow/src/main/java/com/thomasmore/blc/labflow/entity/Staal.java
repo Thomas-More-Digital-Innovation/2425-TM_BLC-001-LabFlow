@@ -2,7 +2,9 @@ package com.thomasmore.blc.labflow.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Staal {
@@ -29,8 +31,23 @@ public class Staal {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToMany(mappedBy = "stalen")
+    private List<Test> tests = new ArrayList<>();
+
     // lege constructor
     public Staal() {
+    }
+
+    // constructor met argumenten
+    public Staal(int staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum, char patientGeslacht, String laborantNaam, String laborantRnummer, User user) {
+        this.staalCode = staalCode;
+        this.patientVoornaam = patientVoornaam;
+        this.patientAchternaam = patientAchternaam;
+        this.patientGeboorteDatum = patientGeboorteDatum;
+        this.patientGeslacht = patientGeslacht;
+        this.laborantNaam = laborantNaam;
+        this.laborantRnummer = laborantRnummer;
+        this.user = user;
     }
 
     // getters en setters
@@ -82,14 +99,6 @@ public class Staal {
         this.patientGeslacht = patientGeslacht;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public String getLaborantNaam() {
         return laborantNaam;
     }
@@ -104,5 +113,21 @@ public class Staal {
 
     public void setLaborantRnummer(String laborantRnummer) {
         this.laborantRnummer = laborantRnummer;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Test> getTests() {
+        return tests;
+    }
+
+    public void setTests(ArrayList<Test> tests) {
+        this.tests = tests;
     }
 }

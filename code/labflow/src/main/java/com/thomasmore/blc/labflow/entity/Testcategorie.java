@@ -10,13 +10,19 @@ public class Testcategorie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // voor auto-increment in SQLite
     private Long id;
-    
+
     private String naam;
 
     private String kleur;
 
     // lege constructor
     public Testcategorie() {
+    }
+
+    // constructor met arguments
+    public Testcategorie(String naam, String kleur) {
+        this.naam = naam;
+        this.kleur = kleur;
     }
 
     // getters en setters

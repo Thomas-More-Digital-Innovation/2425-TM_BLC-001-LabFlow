@@ -2,6 +2,10 @@ package com.thomasmore.blc.labflow.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 public class Test {
     @Id
@@ -12,14 +16,10 @@ public class Test {
 
     private String naam;
 
-    private int normaleWaardeMin;
-
-    private int normaleWaardeMax;
-
     // foreign key naar de staal tabel
-    @ManyToOne
-    @JoinColumn(name = "staal_id", nullable = true)
-    private Staal staal;
+    @ManyToMany
+    @JoinTable(name="teststaal")
+    private List<Staal> stalen = new ArrayList<>();
 
     // foreign key naar de eenheid tabel
     @ManyToOne
@@ -33,6 +33,14 @@ public class Test {
 
     // lege constructor
     public Test() {
+    }
+
+    // constructor met argumenten
+    public Test(int testCode, String naam, Eenheid eenheid, Testcategorie testcategorie) {
+        this.testCode = testCode;
+        this.naam = naam;
+        this.eenheid = eenheid;
+        this.testcategorie = testcategorie;
     }
 
     // getters en setters
@@ -60,27 +68,27 @@ public class Test {
         this.naam = naam;
     }
 
-    public int getNormaleWaardeMin() {
-        return normaleWaardeMin;
+    public List<Staal> getStalen() {
+        return stalen;
     }
 
-    public void setNormaleWaardeMin(int normaleWaardeMin) {
-        this.normaleWaardeMin = normaleWaardeMin;
+    public void setStalen(List<Staal> stalen) {
+        this.stalen = stalen;
     }
 
-    public int getNormaleWaardeMax() {
-        return normaleWaardeMax;
+    public Eenheid getEenheid() {
+        return eenheid;
     }
 
-    public void setNormaleWaardeMax(int normaleWaardeMax) {
-        this.normaleWaardeMax = normaleWaardeMax;
+    public void setEenheid(Eenheid eenheid) {
+        this.eenheid = eenheid;
     }
 
-    public Staal getStaal() {
-        return staal;
+    public Testcategorie getTestcategorie() {
+        return testcategorie;
     }
 
-    public void setStaal(Staal staal) {
-        this.staal = staal;
+    public void setTestcategorie(Testcategorie testcategorie) {
+        this.testcategorie = testcategorie;
     }
 }

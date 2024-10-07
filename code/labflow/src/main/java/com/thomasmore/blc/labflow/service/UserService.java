@@ -23,7 +23,6 @@ public class UserService {
     public String createUser(User user){
         try {
             if (!userRepository.existsByVoorNaamAndAchterNaam(user.getVoorNaam(), user.getAchterNaam())){
-                user.setId((long) (null == userRepository.findMaxId()? 0 : userRepository.findMaxId() + 1));
                 userRepository.save(user);
                 return "User created successfully.";
             }else {
