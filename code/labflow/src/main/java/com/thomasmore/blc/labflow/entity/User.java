@@ -23,7 +23,7 @@ public class User {
 
     // foreign key naar de rol tabel
     @ManyToOne
-    @JoinColumn(name = "rol_id", nullable = true)
+    @JoinColumn(name = "rol_id", nullable = false)
     private Rol rol;
 
     // lege constructor
