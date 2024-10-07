@@ -16,17 +16,17 @@ public class Test {
 
     private int normaleWaardeMax;
 
-    // foreign key naar de usertabel
+    // foreign key naar de staal tabel
     @ManyToOne
     @JoinColumn(name = "staal_id", nullable = true)
     private Staal staal;
 
-    // foreign key naar de eenheidtabel
+    // foreign key naar de eenheid tabel
     @ManyToOne
     @JoinColumn(name = "eenheid_id", nullable = false)
     private Eenheid eenheid;
 
-    // foreign key naar de eenheidtabel
+    // foreign key naar de testcategorie tabel
     @ManyToOne
     @JoinColumn(name = "testcategorie_id", nullable = false)
     private Testcategorie testcategorie;
