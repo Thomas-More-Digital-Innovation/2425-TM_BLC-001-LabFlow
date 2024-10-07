@@ -1,9 +1,6 @@
 package com.thomasmore.blc.labflow.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.lang.Nullable;
 
 
@@ -11,30 +8,45 @@ import org.springframework.lang.Nullable;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // For auto-increment in SQLite
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // voor auto-increment in SQLite
     private Long id;
 
-    @Nullable
     private String wachtwoord;
 
-    @Nullable
     private String email;
 
+    @Nullable
     private String voorNaam;
 
+    @Nullable
     private String achterNaam;
 
+    // foreign key naar de rol tabel
+    @Nullable
+    @ManyToOne
+    @JoinColumn(name = "rol_id", nullable = false)
+    private Rol rol;
 
+    // lege constructor
     public User() {
     }
 
-    // constructor voor popup "gegevens laborant"
-    public User(Long id, String voorNaam, String achterNaam) {
+    // constructor aanmaken user met naam
+    public User(String voorNaam, String achterNaam) {
         this.voorNaam = voorNaam;
         this.achterNaam = achterNaam;
-        this.id = id;
     }
 
+    // constructor met alle argumenten
+    public User(String wachtwoord, String email, @Nullable String voorNaam,@Nullable String achterNaam, Rol rol) {
+        this.wachtwoord = wachtwoord;
+        this.email = email;
+        this.voorNaam = voorNaam;
+        this.achterNaam = achterNaam;
+        this.rol = rol;
+    }
+
+    // getters en setters
     public Long getId() {
         return id;
     }
