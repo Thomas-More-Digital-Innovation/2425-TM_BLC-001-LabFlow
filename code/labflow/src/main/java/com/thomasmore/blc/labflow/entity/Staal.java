@@ -20,6 +20,10 @@ public class Staal {
 
     private char patientGeslacht;
 
+    private String laborantNaam;
+
+    private String laborantRnummer;
+
     // foreign key naar de usertabel
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -84,5 +88,21 @@ public class Staal {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getLaborantNaam() {
+        return laborantNaam;
+    }
+
+    public void setLaborantNaam(String laborantNaam) {
+        this.laborantNaam = laborantNaam;
+    }
+
+    public String getLaborantRnummer() {
+        return laborantRnummer;
+    }
+
+    public void setLaborantRnummer(String laborantRnummer) {
+        this.laborantRnummer = laborantRnummer;
     }
 }
