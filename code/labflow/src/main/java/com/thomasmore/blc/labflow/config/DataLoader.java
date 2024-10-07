@@ -16,7 +16,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        userRepository.save(new User(1L,"Nathan", "Neve"));
-        userRepository.save(new User(2L, "César", "van Leuffelen"));
+        userRepository.save(new User("Nathan", "Neve"));
+        userRepository.save(new User("César", "van Leuffelen"));
     }
 }
