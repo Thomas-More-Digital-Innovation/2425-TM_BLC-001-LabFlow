@@ -1,6 +1,7 @@
 package com.thomasmore.blc.labflow.entity;
 
 import jakarta.persistence.*;
+import org.springframework.lang.Nullable;
 
 @Entity
 public class Referentiewaarde {
@@ -8,9 +9,7 @@ public class Referentiewaarde {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // voor auto-increment in SQLite
     private Long id;
 
-    private int referentieWaardeMin;
-
-    private int referentieWaardeMax;
+    private String waarde;
 
     // foreign key naar de test tabel
     @ManyToOne
@@ -22,9 +21,8 @@ public class Referentiewaarde {
     }
 
     // constructor met argumenten
-    public Referentiewaarde(int referentieWaardeMin, int referentieWaardeMax, Test test) {
-        this.referentieWaardeMin = referentieWaardeMin;
-        this.referentieWaardeMax = referentieWaardeMax;
+    public Referentiewaarde(String waarde, Test test) {
+        this.waarde = waarde;
         this.test = test;
     }
 
@@ -37,20 +35,12 @@ public class Referentiewaarde {
         this.id = id;
     }
 
-    public int getReferentieWaardeMin() {
-        return referentieWaardeMin;
+    public String getWaarde() {
+        return waarde;
     }
 
-    public void setReferentieWaardeMin(int referentieWaardeMin) {
-        this.referentieWaardeMin = referentieWaardeMin;
-    }
-
-    public int getReferentieWaardeMax() {
-        return referentieWaardeMax;
-    }
-
-    public void setReferentieWaardeMax(int referentieWaardeMax) {
-        this.referentieWaardeMax = referentieWaardeMax;
+    public void setWaarde(String referentieWaarde) {
+        this.waarde = referentieWaarde;
     }
 
     public Test getTest() {

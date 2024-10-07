@@ -12,7 +12,7 @@ public class Test {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // voor auto-increment in SQLite
     private Long id;
 
-    private int testCode;
+    private String testCode;
 
     private String naam;
 
@@ -36,7 +36,7 @@ public class Test {
     }
 
     // constructor met argumenten
-    public Test(int testCode, String naam, Eenheid eenheid, Testcategorie testcategorie) {
+    public Test(String testCode, String naam, Eenheid eenheid, Testcategorie testcategorie) {
         this.testCode = testCode;
         this.naam = naam;
         this.eenheid = eenheid;
@@ -52,11 +52,11 @@ public class Test {
         this.id = id;
     }
 
-    public int getTestCode() {
+    public String getTestCode() {
         return testCode;
     }
 
-    public void setTestCode(int testCode) {
+    public void setTestCode(String testCode) {
         this.testCode = testCode;
     }
 
