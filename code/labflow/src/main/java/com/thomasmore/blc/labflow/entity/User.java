@@ -11,17 +11,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // voor auto-increment in SQLite
     private Long id;
 
-    @Nullable
     private String wachtwoord;
 
-    @Nullable
     private String email;
 
+    @Nullable
     private String voorNaam;
 
+    @Nullable
     private String achterNaam;
 
     // foreign key naar de rol tabel
+    @Nullable
     @ManyToOne
     @JoinColumn(name = "rol_id", nullable = false)
     private Rol rol;
@@ -30,10 +31,19 @@ public class User {
     public User() {
     }
 
-    // constructor voor popup "gegevens laborant"
+    // constructor aanmaken user met naam
     public User(String voorNaam, String achterNaam) {
         this.voorNaam = voorNaam;
         this.achterNaam = achterNaam;
+    }
+
+    // constructor met alle argumenten
+    public User(String wachtwoord, String email, @Nullable String voorNaam,@Nullable String achterNaam, Rol rol) {
+        this.wachtwoord = wachtwoord;
+        this.email = email;
+        this.voorNaam = voorNaam;
+        this.achterNaam = achterNaam;
+        this.rol = rol;
     }
 
     // getters en setters
