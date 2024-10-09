@@ -2,24 +2,24 @@ package com.thomasmore.blc.labflow.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 public class Test {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // voor auto-increment in SQLite
     private Long id;
 
-    private int testCode;
+    private String testCode;
 
     private String naam;
 
-    private int normaleWaardeMin;
-
-    private int normaleWaardeMax;
-
     // foreign key naar de staal tabel
-    @ManyToOne
-    @JoinColumn(name = "staal_id", nullable = true)
-    private Staal staal;
+    @ManyToMany
+    @JoinTable(name="teststaal")
+    private List<Staal> stalen = new ArrayList<>();
 
     // foreign key naar de eenheid tabel
     @ManyToOne
@@ -35,6 +35,14 @@ public class Test {
     public Test() {
     }
 
+    // constructor met argumenten
+    public Test(String testCode, String naam, Eenheid eenheid, Testcategorie testcategorie) {
+        this.testCode = testCode;
+        this.naam = naam;
+        this.eenheid = eenheid;
+        this.testcategorie = testcategorie;
+    }
+
     // getters en setters
     public Long getId() {
         return id;
@@ -44,11 +52,11 @@ public class Test {
         this.id = id;
     }
 
-    public int getTestCode() {
+    public String getTestCode() {
         return testCode;
     }
 
-    public void setTestCode(int testCode) {
+    public void setTestCode(String testCode) {
         this.testCode = testCode;
     }
 
@@ -60,27 +68,27 @@ public class Test {
         this.naam = naam;
     }
 
-    public int getNormaleWaardeMin() {
-        return normaleWaardeMin;
+    public List<Staal> getStalen() {
+        return stalen;
     }
 
-    public void setNormaleWaardeMin(int normaleWaardeMin) {
-        this.normaleWaardeMin = normaleWaardeMin;
+    public void setStalen(List<Staal> stalen) {
+        this.stalen = stalen;
     }
 
-    public int getNormaleWaardeMax() {
-        return normaleWaardeMax;
+    public Eenheid getEenheid() {
+        return eenheid;
     }
 
-    public void setNormaleWaardeMax(int normaleWaardeMax) {
-        this.normaleWaardeMax = normaleWaardeMax;
+    public void setEenheid(Eenheid eenheid) {
+        this.eenheid = eenheid;
     }
 
-    public Staal getStaal() {
-        return staal;
+    public Testcategorie getTestcategorie() {
+        return testcategorie;
     }
 
-    public void setStaal(Staal staal) {
-        this.staal = staal;
+    public void setTestcategorie(Testcategorie testcategorie) {
+        this.testcategorie = testcategorie;
     }
 }

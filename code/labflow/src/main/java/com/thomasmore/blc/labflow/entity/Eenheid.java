@@ -19,6 +19,14 @@ public class Eenheid {
     public Eenheid() {
     }
 
+    // constructor met arguments
+
+
+    public Eenheid(String naam, String afkorting) {
+        this.naam = naam;
+        this.afkorting = afkorting;
+    }
+
     // getters & setters
     public Long getId() {
         return id;

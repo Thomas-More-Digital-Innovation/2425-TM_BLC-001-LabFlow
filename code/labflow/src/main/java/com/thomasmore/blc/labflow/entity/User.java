@@ -83,6 +83,15 @@ public class User {
         return achterNaam;
     }
 
+    @Nullable
+    public Rol getRol() {
+        return rol;
+    }
+
+    public void setRol(@Nullable Rol rol) {
+        this.rol = rol;
+    }
+
     public void setAchterNaam(String achterNaam) {
         this.achterNaam = achterNaam;
     }

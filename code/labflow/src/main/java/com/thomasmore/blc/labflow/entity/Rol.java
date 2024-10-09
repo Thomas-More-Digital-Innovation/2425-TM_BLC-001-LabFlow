@@ -17,6 +17,11 @@ public class Rol {
     public Rol() {
     }
 
+    // constructor met arguments
+    public Rol(String naam) {
+        this.naam = naam;
+    }
+
     // getters en setters
     public Long getId() {
         return id;
