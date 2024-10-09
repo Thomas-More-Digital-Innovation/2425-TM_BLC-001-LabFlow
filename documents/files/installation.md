@@ -45,9 +45,9 @@ Eerst en vooral gaan we bespreken hoe je de LABflow applicatie zelf van scratch 
 
 ## 2 - klaar voor development
 
-### 2.1 - Backend
+### 2.1 - Back-end
 
->bij het openen van het project krijg je normaal 2 grote errors
+> bij het openen van het project krijg je normaal 2 grote errors
 
 - .env ontbreekt
 - Alle files met .db extensie ontbreken
@@ -94,4 +94,27 @@ spring.jpa.show-sql=true
 4. sleep de labflow.db file in het venster van de database tool
 
 **Laat het project runnen en kijk of het werkt!**
+
 > werkt het toch niet contacteer [Nathan Neve](mailto:r0742822@student.thomasmore.be) of [César Van Leuffelen](mailto:r0929448@student.thomasmore.be)
+
+### 2.2 - Front-end
+
+Voor de front-end gebruiken we **Svelte**: documentatie -> [docs](https://svelte.dev/docs/introduction).
+
+Installatie:
+
+```
+npm create svelte@latest labflow-frontend
+cd labflow-frontend
+npm install
+npm run dev
+```
+
+Door het uitvoeren van deze commando's maken we een startproject aan. Hierna installeren we onze nodige packages met `npm install`.
+
+Met `npm run dev` starten we een development server op, op poort 5173, dit is de standaardpoort voor Svelte applicaties.
+
+voor windows: http://localhost:5173/  
+voor Linux/Unix-based systemen: http://0.0.0.0:5173/
+
+Meer informatie te vinden in code\labflow-frontend\README.md

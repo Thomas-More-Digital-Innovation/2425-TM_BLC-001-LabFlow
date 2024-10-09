@@ -1,2 +1,6 @@
+# Ignore DB files
 *.db
 .DS_Store
+
+# Ignore IDE workspace files
+workspace.xml
