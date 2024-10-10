@@ -19,17 +19,5 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    @Transactional
-    public String createUser(User user){
-        try {
-            if (!userRepository.existsByVoorNaamAndAchterNaam(user.getVoorNaam(), user.getAchterNaam())){
-                userRepository.save(user);
-                return "User created successfully.";
-            }else {
-                return "User already exists in the database.";
-            }
-        }catch (Exception e){
-            throw e;
-        }
-    }
+
 }

@@ -21,8 +21,4 @@ public class UserController {
         return userService.readUsers();
     }
 
-    @RequestMapping(value = "createuser", method = RequestMethod.POST)
-    public String createUser(@RequestBody User user){
-        return userService.createUser(user);
-    }
 }
