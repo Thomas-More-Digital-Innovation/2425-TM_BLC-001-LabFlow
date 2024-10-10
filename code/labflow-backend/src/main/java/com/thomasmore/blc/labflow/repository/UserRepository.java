@@ -10,6 +10,9 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
+    //
+    User findByEmail(String email);
+
     public User findById(Long id);
 
     boolean existsByVoorNaamAndAchterNaam(String voorNaam, String achterNaam);

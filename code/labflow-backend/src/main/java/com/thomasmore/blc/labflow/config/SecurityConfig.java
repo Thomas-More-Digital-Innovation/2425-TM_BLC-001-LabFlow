@@ -19,8 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-// dit zorgt ervoor dat we niet de default security configuration gaan gebruiken
-// we gaan niet de default flow gebruiken maar wat wij hier gaan definieren
+// dit zorgt ervoor dat we niet de default security provider gaan gebruiken
+// we gaan niet de default flow volgen maar deze provider "DaoAuthenticationProvider"
 public class SecurityConfig {
 
     @Autowired
@@ -52,7 +52,10 @@ public class SecurityConfig {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         // this one is deprecated, so needs to change :)
+        // Om DaoAuthenticationProvider te doen werken moeten 2 zaken gespecifieerd worden:
+        // De passwordencoder voor encryptie
         provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+        // Onze eigen userDetailsService
         provider.setUserDetailsService(userDetailsService);
         return provider;
     }

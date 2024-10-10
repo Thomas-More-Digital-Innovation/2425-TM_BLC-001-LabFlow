@@ -2,7 +2,7 @@ package com.thomasmore.blc.labflow.service;
 
 import com.thomasmore.blc.labflow.entity.User;
 import com.thomasmore.blc.labflow.entity.UserPrincipal;
-import com.thomasmore.blc.labflow.repo.UserRepo;
+import com.thomasmore.blc.labflow.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,14 +10,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
-// dit zorgt ervoor dat
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
     // repo dat met onze users kan interageren
     @Autowired
-    private UserRepo repo;
+    private UserRepository repo;
 
+    // om UserDetailsService te implementeren moeten we 1 methode implementeren
+    // om dit te doen moeten we met de database verbonden zijn en dit gebeurt via een repo
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
@@ -28,6 +29,7 @@ public class MyUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("user not found");
         }
 
+        // om dit te kunnen returnen moeten we de methodes van UserDetails implementeren in UserPrincipal
         return new UserPrincipal(user);
     }
 }

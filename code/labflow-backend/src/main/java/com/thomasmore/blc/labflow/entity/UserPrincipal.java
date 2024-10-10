@@ -6,16 +6,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
+// de methoden van UserDetails worden geimplementeerd
+// niet alle methodes worden gebruikt (returnen gewoon true), omdat we een simpele login hebben
 public class UserPrincipal implements UserDetails {
 
-    private User user;
+    private final User user;
 
     public UserPrincipal(User user) {
         this.user = user;
     }
 
+    // singleton zorgt ervoor dat we 1 object als "collection" kunnen returnen
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority("USER"));
@@ -31,6 +33,7 @@ public class UserPrincipal implements UserDetails {
         return user.getEmail();
     }
 
+    // methodes die niet echt gebruikt worden maar wel geïmplementeerd worden
     @Override
     public boolean isAccountNonExpired() {
         return true;
