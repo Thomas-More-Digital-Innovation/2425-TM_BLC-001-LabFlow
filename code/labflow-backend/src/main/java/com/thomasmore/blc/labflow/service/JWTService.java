@@ -39,11 +39,12 @@ public class JWTService {
         Map<String, Object> claims = new HashMap<>();
 
         // https://javadoc.io/doc/io.jsonwebtoken/jjwt-api/0.11.2/io/jsonwebtoken/JwtBuilder.html
+        // voor debug van token: https://jwt.io/
         return Jwts.builder()
                 .claims(claims)
                 .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 30 * 1000)) // na 3O minuten vervalt de sessie
+                .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // 30 minutes
                 .signWith(getKey())
                 .compact();
     }
