@@ -67,7 +67,7 @@ public class SecurityConfig {
         // 1 De passwordencoder voor encryptie
         // hierdoor weet de provider dat hij het passwoord verkregen van login moet hashen met Bcrypt in 12 rondes
         // dit vergelijkt hij met de hash in de database
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+        provider.setPasswordEncoder(new BCryptPasswordEncoder(4));
 
         // 2 Onze eigen userDetailsService
         provider.setUserDetailsService(userDetailsService);
