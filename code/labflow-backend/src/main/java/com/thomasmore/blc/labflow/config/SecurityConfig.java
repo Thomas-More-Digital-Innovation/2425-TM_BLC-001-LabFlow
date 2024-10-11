@@ -13,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -51,11 +52,14 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        // this one is deprecated, so needs to change :)
+
         // Om DaoAuthenticationProvider te doen werken moeten 2 zaken gespecifieerd worden:
-        // De passwordencoder voor encryptie
-        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
-        // Onze eigen userDetailsService
+        // 1 De passwordencoder voor encryptie
+        // hierdoor weet de provider dat hij het passwoord verkregen van login moet hashen met Bcrypt in 12 rondes
+        // dit vergelijkt hij met de hash in de database
+        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+
+        // 2 Onze eigen userDetailsService
         provider.setUserDetailsService(userDetailsService);
         return provider;
     }
