@@ -1,8 +1,10 @@
 package com.thomasmore.blc.labflow.service;
 // service voor het genereren van JWT
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
@@ -13,6 +15,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 public class JWTService {
@@ -44,15 +47,62 @@ public class JWTService {
                 .claims(claims)
                 .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // 30 minutes
+                .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // na 30 minuten vervalt de token
                 .signWith(getKey())
                 .compact();
     }
 
-    private Key getKey() {
+    private SecretKey getKey() {
         // HMACSHA algoritme heeft input van bytes nodig
         // conversie van key naar bytes
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+
+    // methodes voor JwtFilter
+    // claims:: is een manier om een methode aan te roepen zonder een instantie ervan aan te maken
+    // claims.get... werkt alleen op een object
+
+    // Haalt het emailadres op uit het JWT-token
+    public String extractEmail(String token) {
+        // Roept extractClaim aan om het onderwerp (email) uit de claims te halen
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    // methode om claims uit een JWT-token te extraheren
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        // Past de claimsResolver functie toe om de gewenste claim te extraheren
+        return claimsResolver.apply(claims);
+    }
+
+    // Methode om alle claims uit het JWT-token te extraheren
+    private Claims extractAllClaims(String token) {
+        // parsen van token en verifieren met de getKey() methode
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    // Methode om JWT-token te valideren
+    public boolean validateToken(String token, UserDetails userDetails) {
+        final String email = extractEmail(token);
+        // Controleert of het emailadres overeenkomt en of de token niet is verlopen
+        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    // Controleert of het JWT-token is verlopen
+    private boolean isTokenExpired(String token) {
+        // Vergelijkt de vervaldatum van het token met de huidige datum
+        return extractExpiration(token).before(new Date());
+    }
+
+    // Haalt de vervaldatum uit het JWT-token
+    private Date extractExpiration(String token) {
+        // extractClaim haalt de vervaldatum uit de claim
+        return extractClaim(token, Claims::getExpiration);
     }
 }
