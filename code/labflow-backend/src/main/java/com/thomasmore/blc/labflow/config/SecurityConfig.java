@@ -1,12 +1,14 @@
 package com.thomasmore.blc.labflow.config;
-
+// file voor het registreren van beans met betrekking tot authenticatie
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -33,8 +35,10 @@ public class SecurityConfig {
         // disable csrf (stateless applicatie heeft dit niet nodig)
         http.csrf(customizer -> customizer.disable());
 
-        // alle requests moeten geauthenticeerd zijn
-        http.authorizeHttpRequests(request -> request.anyRequest().authenticated());
+        // alle requests moeten geauthenticeerd zijn behalve login
+        http.authorizeHttpRequests(request -> request
+                .requestMatchers("login").permitAll()
+                .anyRequest().authenticated());
 
         // enabled form based login
         http.httpBasic(Customizer.withDefaults());
@@ -62,5 +66,12 @@ public class SecurityConfig {
         // 2 Onze eigen userDetailsService
         provider.setUserDetailsService(userDetailsService);
         return provider;
+    }
+
+
+    // bean AuthenticationManager
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }

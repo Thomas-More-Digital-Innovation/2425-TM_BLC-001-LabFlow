@@ -1,5 +1,5 @@
 package com.thomasmore.blc.labflow.config;
-
+// file voor het seeden van de database met standaardwaarden
 import com.thomasmore.blc.labflow.entity.*;
 import com.thomasmore.blc.labflow.repository.*;
 import org.springframework.boot.CommandLineRunner;
