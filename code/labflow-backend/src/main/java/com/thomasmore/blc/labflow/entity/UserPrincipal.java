@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 // de methoden van UserDetails worden geimplementeerd
+// object dient voor authenticatie users
 // niet alle methodes worden gebruikt (returnen gewoon true), omdat we een simpele login hebben
 public class UserPrincipal implements UserDetails {
 

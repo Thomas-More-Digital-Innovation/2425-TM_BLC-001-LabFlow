@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     public User findById(Long id);
 
     boolean existsByVoorNaamAndAchterNaam(String voorNaam, String achterNaam);
+
+    User getUserById(long l);
 }
