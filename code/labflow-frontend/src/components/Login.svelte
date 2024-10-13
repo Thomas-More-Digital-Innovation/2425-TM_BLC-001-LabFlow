@@ -1,6 +1,7 @@
 <script lang="ts">
     import Button from './Button.svelte';
     import Input from './Input.svelte';
+    import { goto } from '$app/navigation' // https://www.okupter.com/blog/sveltekit-goto
 
     let email = "";
     let wachtwoord = "";
@@ -18,6 +19,10 @@
         const result = await response.json();
         console.log(result);
     };
+
+    function goTo() {
+        goto('stalen')
+    }
 </script>
 
 <form class="w-4/6 bg-gray-100 rounded-lg p-8 flex flex-col" on:submit={handleSubmit}>
@@ -26,5 +31,5 @@
     </div>
     <Input label="Email" type="text" required bind:value={email} />
     <Input label="Paswoord" type="password" required bind:value={wachtwoord} />
-    <Button type="submit">Aanmelden</Button>
+    <Button type="submit" on:click={goTo}>Aanmelden</Button>
 </form>
