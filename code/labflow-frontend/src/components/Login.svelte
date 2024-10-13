@@ -17,7 +17,11 @@
         });
 
         const result = await response.json();
+        const authToken = result["token"];
+        // zonder httpOnly & sameSite is het onveilig
+        document.cookie = `authToken=${authToken};path=/;SameSite=Strict`;
         console.log(result);
+        goTo();
     };
 
     function goTo() {
@@ -31,5 +35,6 @@
     </div>
     <Input label="Email" type="text" required bind:value={email} />
     <Input label="Paswoord" type="password" required bind:value={wachtwoord} />
-    <Button type="submit" on:click={goTo}>Aanmelden</Button>
+    <Button type="submit">Aanmelden</Button>
 </form>
+<!-- on:click={goTo} -->
