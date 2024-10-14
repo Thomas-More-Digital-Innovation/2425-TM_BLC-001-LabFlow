@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/pdf")
 public class PdfGeneratorController {
@@ -37,6 +39,25 @@ public class PdfGeneratorController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("attachment", "label.pdf");
+
+        return ResponseEntity.ok().headers(headers).body(pdfBytes);
+    }
+
+    @GetMapping("/generateresults/{id}")
+    public ResponseEntity<byte[]> generateResultsPdf(@PathVariable Long id) {
+
+        Staal staal = staalService.readById(id);
+        byte[] pdfBytes;
+
+        try {
+            pdfBytes = pdfGeneratorService.generateResultsPdf(staal);
+        } catch (DocumentException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "results_"+ staal.getPatientAchternaam() + "_" + staal.getPatientVoornaam() +".pdf");
 
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
