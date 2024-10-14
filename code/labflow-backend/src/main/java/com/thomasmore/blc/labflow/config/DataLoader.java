@@ -5,6 +5,9 @@ import com.thomasmore.blc.labflow.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class DataLoader implements CommandLineRunner {
 
@@ -68,7 +71,7 @@ public class DataLoader implements CommandLineRunner {
 
 
         // Stalen, dit is voor development, geen echte waarden
-        Staal staal1 = new Staal(2024000001, "Emma", "Janssen", java.sql.Date.valueOf("1990-05-14"), 'V', "Pieter", "RN12345", user1);
+        Staal staal1 = new Staal(2024000001, "César", "Van Leuffelen", java.sql.Date.valueOf("2004-07-29"), 'M', "Nathan Neve", "RN12345", user1);
         Staal staal2 = new Staal(2024000002, "Lucas", "Peeters", java.sql.Date.valueOf("1985-07-21"), 'M', "Sofie", "RN67890", user2);
         Staal staal3 = new Staal(2024000003, "Mila", "Vermeulen", java.sql.Date.valueOf("1993-02-11"), 'V', "Bart", "RN13579", user1);
         Staal staal4 = new Staal(2024000004, "Liam", "Claes", java.sql.Date.valueOf("1992-11-30"), 'M', "Lies", "RN24680", user2);
@@ -443,5 +446,12 @@ public class DataLoader implements CommandLineRunner {
         referentiewaardeRepository.save(new Referentiewaarde("<0.15", test551)); // Glucose
         referentiewaardeRepository.save(new Referentiewaarde("50-1200", test552)); // Osmolaliteit
         referentiewaardeRepository.save(new Referentiewaarde("71-151", test553)); // Creatinine clearance
+
+        // Tests toevoegen aan stalen
+        staal1.getTests().add(test601);
+        staal1.getTests().add(test602);
+        staal1.getTests().add(test630);
+        staalRepository.save(staal1);
+
     }
 }

@@ -51,4 +51,10 @@ public class StaalService {
         }
         return new ResponseEntity<>(staalRepository.findAll().size(), HttpStatus.NOT_FOUND);
     }
+
+    // get by id
+    public Staal readById(Long id) {
+        return staalRepository.findById(id);
+    }
+
 }

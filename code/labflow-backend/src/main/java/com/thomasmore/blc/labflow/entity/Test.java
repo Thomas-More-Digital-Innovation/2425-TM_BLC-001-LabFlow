@@ -1,5 +1,6 @@
 package com.thomasmore.blc.labflow.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -17,8 +18,8 @@ public class Test {
     private String naam;
 
     // foreign key naar de staal tabel
-    @ManyToMany
-    @JoinTable(name="teststaal")
+    @ManyToMany(mappedBy = "registeredTests")
+    @JsonBackReference
     private List<Staal> stalen = new ArrayList<>();
 
     // foreign key naar de eenheid tabel

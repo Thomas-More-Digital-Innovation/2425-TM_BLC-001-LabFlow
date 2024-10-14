@@ -11,5 +11,4 @@ public interface StaalRepository extends JpaRepository<Staal, Integer> {
     public void delete(Staal staal);
 
     // query for making labels
-    // public List<Staal> findAllBy
 }
