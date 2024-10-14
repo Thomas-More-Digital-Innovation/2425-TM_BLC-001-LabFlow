@@ -1,5 +1,5 @@
 package com.thomasmore.blc.labflow.config;
-
+// file voor het seeden van de database met standaardwaarden
 import com.thomasmore.blc.labflow.entity.*;
 import com.thomasmore.blc.labflow.repository.*;
 import org.springframework.boot.CommandLineRunner;
@@ -44,8 +44,10 @@ public class DataLoader implements CommandLineRunner {
 
 
         // aanmaken users
-        User user1 = new User("123", "nathanneve@test.be", "Nathan", "Neve", rol_student);
-        User user2 = new User("456", "césarvanleuffelen@test.be", "César", "van Leuffelen", rol_admin);
+        User user1 = new User("$2a$12$gI0GGxst4XuLYuMTwPLi5OFkuRORiU1j2Njr8xDf1SdRJPC1qMXwy",
+                "nathanneve@test.be", "Nathan", "Neve", rol_student);
+        User user2 = new User("$2a$12$gI0GGxst4XuLYuMTwPLi5OFkuRORiU1j2Njr8xDf1SdRJPC1qMXwy",
+                "césarvanleuffelen@test.be", "César", "van Leuffelen", rol_admin);
         userRepository.save(user1);
         userRepository.save(user2);
 
