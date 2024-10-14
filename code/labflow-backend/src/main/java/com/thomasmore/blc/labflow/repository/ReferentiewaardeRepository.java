@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReferentiewaardeRepository extends JpaRepository<Referentiewaarde, Integer>  {
     public Referentiewaarde findById(Long id);
+    public void delete(Referentiewaarde referentiewaarde);
 
 }
