@@ -9,4 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface StaalRepository extends JpaRepository<Staal, Integer> {
     public Staal findById(Long id);
     public void delete(Staal staal);
+
+    // query for making labels
+    // public List<Staal> findAllBy
 }
