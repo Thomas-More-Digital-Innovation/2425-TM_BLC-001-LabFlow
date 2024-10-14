@@ -45,9 +45,9 @@ public class DataLoader implements CommandLineRunner {
 
         // aanmaken users
         User user1 = new User("$2a$12$gI0GGxst4XuLYuMTwPLi5OFkuRORiU1j2Njr8xDf1SdRJPC1qMXwy",
-                "nathanneve@test.be", "Nathan", "Neve", rol_student);
+                "nathanneve@test.be", "Nathan", "Neve", rol_admin);
         User user2 = new User("$2a$12$gI0GGxst4XuLYuMTwPLi5OFkuRORiU1j2Njr8xDf1SdRJPC1qMXwy",
-                "césarvanleuffelen@test.be", "César", "van Leuffelen", rol_admin);
+                "césarvanleuffelen@test.be", "César", "van Leuffelen", rol_student);
         userRepository.save(user1);
         userRepository.save(user2);
 

@@ -26,7 +26,6 @@
             const authToken = result.token;
             // zonder httpOnly & sameSite is het onveilig
             document.cookie = `authToken=${authToken};path=/;SameSite=Strict`;
-            console.log(result);
             goTo();
         } catch (error) {
             console.error(error);

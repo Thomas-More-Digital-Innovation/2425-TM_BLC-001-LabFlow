@@ -3,6 +3,11 @@
     import logoLabflow from '$lib/assets/labflowLogo.svg';
     // @ts-ignore
     import GoPerson from 'svelte-icons/go/GoPerson.svelte';
+    // @ts-ignore
+    import GoOrganization from 'svelte-icons/go/GoOrganization.svelte';
+    import { getRol } from '$lib/globalFunctions';
+
+    const rol = getRol();
 
     function eraseCookie() {
         // https://stackoverflow.com/questions/2144386/how-to-delete-a-cookie
@@ -14,17 +19,27 @@
     }
 </script>
 
-<div class="py-2 px-8 flex justify-between items-center">
+<div class="py-5 px-10 flex justify-between items-center">
     <img src={logoLabflow} alt='logo Labflow & Thomas More' class="h-10">
     <div class="w-28 h-10 flex justify-between items-center">
         <div class="flex flex-col justify-between h-full">
+            {#if rol === 'student'}
             <p class="text-sm">student</p>
+            {/if}
+            {#if rol === 'admin'}
+            <p class="text-sm">admin</p>
+            {/if}
             <button class="text-xs underline" on:click={() => { logout(); eraseCookie(); }} type="button">
                 Uitloggen
             </button>
         </div>
         <div class="w-8 h-8 p-1 bg-slate-400 rounded-full flex items-center justify-center mr-1">
-            <GoPerson/>
+            {#if rol === 'student'}
+                <GoPerson/>
+            {/if}
+            {#if rol === 'admin'}
+                <GoOrganization/>
+            {/if}
         </div>
     </div>
 </div>
