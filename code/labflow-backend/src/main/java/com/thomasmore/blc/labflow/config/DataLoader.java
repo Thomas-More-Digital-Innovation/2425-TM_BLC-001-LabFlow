@@ -5,9 +5,6 @@ import com.thomasmore.blc.labflow.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 public class DataLoader implements CommandLineRunner {
 
@@ -18,6 +15,7 @@ public class DataLoader implements CommandLineRunner {
     private final TestRepository testRepository;
     private final StaalRepository staalRepository;
     private final ReferentiewaardeRepository referentiewaardeRepository;
+    private final StaalTestRepository staalTestRepository;
 
 
     public DataLoader(UserRepository userRepository,
@@ -26,7 +24,7 @@ public class DataLoader implements CommandLineRunner {
                       TestCategorieRepository testCategorieRepository,
                       TestRepository testRepository,
                       StaalRepository staalRepository,
-                      ReferentiewaardeRepository referentiewaardeRepository) {
+                      ReferentiewaardeRepository referentiewaardeRepository, StaalTestRepository staalTestRepository) {
         this.userRepository = userRepository;
         this.rolRepository = rolRepository;
         this.eenheidRepository = eenheidRepository;
@@ -34,6 +32,7 @@ public class DataLoader implements CommandLineRunner {
         this.testRepository = testRepository;
         this.staalRepository = staalRepository;
         this.referentiewaardeRepository = referentiewaardeRepository;
+        this.staalTestRepository = staalTestRepository;
     }
 
     @Override
@@ -447,11 +446,16 @@ public class DataLoader implements CommandLineRunner {
         referentiewaardeRepository.save(new Referentiewaarde("50-1200", test552)); // Osmolaliteit
         referentiewaardeRepository.save(new Referentiewaarde("71-151", test553)); // Creatinine clearance
 
-        // Tests toevoegen aan stalen
-        staal1.getTests().add(test601);
-        staal1.getTests().add(test602);
-        staal1.getTests().add(test630);
-        staalRepository.save(staal1);
+        // 3 tests toevoegen aan staal 1
+        StaalTest staalTest1 = new StaalTest(staal1, test601);
+        StaalTest staalTest2 = new StaalTest(staal1, test602);
+        StaalTest staalTest3 = new StaalTest(staal1, test630);
+        staalTest1.setResult("15.0");
+        staalTest2.setResult("45.0");
+        staalTestRepository.save(staalTest1);
+        staalTestRepository.save(staalTest2);
+        staalTestRepository.save(staalTest3);
+
 
     }
 }

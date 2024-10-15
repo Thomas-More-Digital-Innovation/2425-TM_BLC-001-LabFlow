@@ -5,21 +5,21 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
-import com.thomasmore.blc.labflow.entity.Staal;
-import com.thomasmore.blc.labflow.entity.Test;
-import com.thomasmore.blc.labflow.entity.Testcategorie;
+import com.thomasmore.blc.labflow.entity.*;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class PdfGeneratorService {
+
+    public int placeholder() {
+        return 0;
+    }
 
     public byte[] generateLabelPdf(Staal staal) throws DocumentException {
 
@@ -30,7 +30,6 @@ public class PdfGeneratorService {
         document.open();
 
         // staal info
-        List<Test> tests = staal.getTests();
         int staalCode = staal.getStaalCode();
         String voornaam = staal.getPatientVoornaam();
         String achternaam = staal.getPatientAchternaam();
@@ -42,7 +41,9 @@ public class PdfGeneratorService {
         String formattedDate = formatter.format(geboortedatum);
 
         // filter categories
-        Set<Testcategorie> testcategorieSet = staal.getTests().stream().map(Test::getTestcategorie).collect(Collectors.toSet());
+        Set<Testcategorie> testcategorieSet = staal.getRegisteredTests().stream().map(StaalTest::getTest)
+                .map(Test::getTestcategorie)
+                .collect(Collectors.toSet());
 
         // start label
         document.add(new Paragraph("Testcode: " + staalCode));
@@ -80,6 +81,7 @@ public class PdfGeneratorService {
         Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
         Font bodyFont = new Font(Font.FontFamily.HELVETICA, 10);
         Font smallFont = new Font(Font.FontFamily.HELVETICA, 8);
+        Font headerDataFont = new Font(Font.FontFamily.HELVETICA, 8, Font.BOLD);
 
         // Logo
         // Image logo = Image.getInstance("/assets/labflowLogo.png");
@@ -87,7 +89,7 @@ public class PdfGeneratorService {
         // document.add(logo); // Uncomment this if you have a logo image
 
         // Patient info
-        List<Test> tests = staal.getTests();
+        List<StaalTest> registeredTests = staal.getRegisteredTests();
         int staalCode = staal.getStaalCode();
         String voornaam = staal.getPatientVoornaam();
         String achternaam = staal.getPatientAchternaam();
@@ -125,28 +127,86 @@ public class PdfGeneratorService {
         // Add a separator line
         document.add(new LineSeparator());
 
-        // Filter categories
-        Set<Testcategorie> testcategorieSet = tests.stream()
-                .map(Test::getTestcategorie)
-                .collect(Collectors.toSet());
+        // setup data layout
+        PdfPTable headerDataTable = new PdfPTable(6);
+        headerDataTable.setWidthPercentage(100);
+        headerDataTable.setWidths(new int[]{1, 3, 1, 1, 3, 2}); // Adjust column widths
+
+        // header columns
+        headerDataTable.addCell(new PdfPCell(new Phrase("Code", headerDataFont)));
+        headerDataTable.addCell(new PdfPCell(new Phrase("Naam", headerDataFont)));
+        headerDataTable.addCell(new PdfPCell(new Phrase("Resultaat", headerDataFont)));
+        headerDataTable.addCell(new PdfPCell(new Phrase("Eenheid", headerDataFont)));
+        headerDataTable.addCell(new PdfPCell(new Phrase("referentie", headerDataFont)));
+        headerDataTable.addCell(new PdfPCell(new Phrase("Categorie", headerDataFont)));
+
+        document.add(headerDataTable);
+        document.add(new Paragraph("\n"));// Adding space after the header
+
+        // Get all tests and order by test categories
+        List<Test> testList = registeredTests.stream()
+                .map(StaalTest::getTest)
+                .sorted(Comparator.comparing(test -> test.getTestcategorie().getNaam()))
+                .toList();
 
         // Loop through test categories and add information
-        for (Testcategorie testcategorie : testcategorieSet) {
-            document.add(new Paragraph(testcategorie.getNaam()));  // Category name as a header
+        PdfPTable dataTable = new PdfPTable(6);
+        dataTable.setWidthPercentage(100);
+        dataTable.setWidths(new int[]{1, 3, 1, 1, 3, 2}); // Adjust column widths
 
-            // Add a table with some test data (you can adjust it based on your needs)
-            PdfPTable testTable = new PdfPTable(2);
-            testTable.setWidthPercentage(100);
-            testTable.setWidths(new int[]{1, 1});  // Adjust column widths
-            testTable.addCell(new PdfPCell(new Phrase("Testcode:", smallFont)));
-            testTable.addCell(new PdfPCell(new Phrase(String.valueOf(staalCode), bodyFont)));
-            testTable.addCell(new PdfPCell(new Phrase("Naam:", smallFont)));
-            testTable.addCell(new PdfPCell(new Phrase(voornaam + " " + achternaam, bodyFont)));
+        for (Test test : testList) {
+            // header columns - removing borders
+            PdfPCell testCodeHeader = new PdfPCell(new Phrase(test.getTestCode(), bodyFont));
+            testCodeHeader.setBorder(Rectangle.NO_BORDER);
+            dataTable.addCell(testCodeHeader);
 
-            document.add(testTable);
-            document.add(new Paragraph("\n"));  // Space between tests
-            document.add(new LineSeparator());  // Separator after each test category
+            PdfPCell nameHeader = new PdfPCell(new Phrase(test.getNaam(), bodyFont));
+            nameHeader.setBorder(Rectangle.NO_BORDER);
+            dataTable.addCell(nameHeader);
+
+            String result = test.getStalen().stream()
+                    .filter(staalTest -> staalTest.getStaal().getStaalCode() == staalCode)
+                    .map(StaalTest::getResult)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse("No result");
+
+            if (result.equals("No result")) {
+                PdfPCell resultHeader = new PdfPCell(new Phrase("no result", bodyFont));
+                resultHeader.setBorder(Rectangle.NO_BORDER);
+                dataTable.addCell(resultHeader);
+            } else {
+                PdfPCell resultHeader = new PdfPCell(new Phrase(result, bodyFont));
+                resultHeader.setBorder(Rectangle.NO_BORDER);
+                dataTable.addCell(resultHeader);
+            }
+
+            PdfPCell unitHeader = new PdfPCell(new Phrase(test.getEenheid().getAfkorting(), bodyFont));
+            unitHeader.setBorder(Rectangle.NO_BORDER);
+            dataTable.addCell(unitHeader);
+
+            Set<Referentiewaarde> referentiewaardes = test.getReferentiewaardes();
+            if (referentiewaardes.size() > 0) {
+                String referentieWaarden = referentiewaardes.stream()
+                        .map(Referentiewaarde::getWaarde)
+                        .collect(Collectors.joining(" / "));
+                PdfPCell referenceHeader = new PdfPCell(new Phrase(referentieWaarden, bodyFont));
+                referenceHeader.setBorder(Rectangle.NO_BORDER);
+                dataTable.addCell(referenceHeader);
+            } else {
+                PdfPCell referenceHeader = new PdfPCell(new Phrase("No reference value", bodyFont));
+                referenceHeader.setBorder(Rectangle.NO_BORDER);
+                dataTable.addCell(referenceHeader);
+            }
+
+            PdfPCell categoryHeader = new PdfPCell(new Phrase(test.getTestcategorie().getNaam(), bodyFont));
+            categoryHeader.setBorder(Rectangle.NO_BORDER);
+            dataTable.addCell(categoryHeader);
         }
+
+        document.add(dataTable);
+
+
 
         document.close();
         return out.toByteArray();

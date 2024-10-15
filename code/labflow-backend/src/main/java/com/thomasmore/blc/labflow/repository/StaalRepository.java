@@ -5,10 +5,11 @@ import com.thomasmore.blc.labflow.entity.Testcategorie;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface StaalRepository extends JpaRepository<Staal, Integer> {
     public Staal findById(Long id);
     public void delete(Staal staal);
 
-    // query for making labels
 }

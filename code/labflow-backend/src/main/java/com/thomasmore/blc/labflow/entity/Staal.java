@@ -30,10 +30,9 @@ public class Staal {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToMany
-    @JoinTable(name = "staal_test", joinColumns = @JoinColumn(name = "staal_id"), inverseJoinColumns = @JoinColumn(name = "test_id"))
+    @OneToMany(mappedBy = "staal", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Test> registeredTests = new ArrayList<>();
+    private List<StaalTest> registeredTests = new ArrayList<>();
 
     // lege constructor
     public Staal() {
@@ -124,11 +123,11 @@ public class Staal {
         this.user = user;
     }
 
-    public List<Test> getTests() {
+    public List<StaalTest> getRegisteredTests() {
         return registeredTests;
     }
 
-    public void setTests(List<Test> tests) {
+    public void setRegisteredTests(List<StaalTest> tests) {
         this.registeredTests = tests;
     }
 }
