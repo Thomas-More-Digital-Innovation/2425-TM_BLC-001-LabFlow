@@ -26,7 +26,7 @@
     async function loadData() {
         const token = getCookie('authToken') || '';
 
-        if (token) {
+        if (token != null) {
             try {
                 stalen = await fetchAll(token, 'stalen');
                 filteredStalen = stalen; // Initialize filteredStalen with all stalen

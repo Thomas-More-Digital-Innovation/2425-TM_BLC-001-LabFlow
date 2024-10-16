@@ -29,10 +29,14 @@ export async function fetchAll(token: string, subject: string): Promise<any[]> {
 
 // https://stackoverflow.com/questions/10730362/get-cookie-by-name 
 export function getCookie(name: string) {
+    if (typeof document === 'undefined') {
+        return null;
+    }
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) {
         const part = parts.pop();
         if (part) return part.split(';').shift();
     }
+    return null;
 }
