@@ -1,10 +1,9 @@
 package com.thomasmore.blc.labflow.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Staal {
@@ -33,8 +32,9 @@ public class Staal {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToMany(mappedBy = "stalen")
-    private List<Test> tests = new ArrayList<>();
+    @OneToMany(mappedBy = "staal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<StaalTest> registeredTests = new ArrayList<>();
 
     // lege constructor
     public Staal() {
@@ -135,11 +135,11 @@ public class Staal {
         this.user = user;
     }
 
-    public List<Test> getTests() {
-        return tests;
+    public List<StaalTest> getRegisteredTests() {
+        return registeredTests;
     }
 
-    public void setTests(List<Test> tests) {
-        this.tests = tests;
+    public void setRegisteredTests(List<StaalTest> tests) {
+        this.registeredTests = tests;
     }
 }
