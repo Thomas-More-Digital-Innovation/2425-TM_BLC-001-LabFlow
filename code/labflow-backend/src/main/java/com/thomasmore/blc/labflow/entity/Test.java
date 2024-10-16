@@ -34,6 +34,7 @@ public class Test {
     private Testcategorie testcategorie;
 
     @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private Set<Referentiewaarde> referentiewaardes;
 
     // lege constructor
