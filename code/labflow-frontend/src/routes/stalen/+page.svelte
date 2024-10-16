@@ -41,6 +41,8 @@
             <input type="text" id="search" name="search" placeholder="zoeken" class="w-full h-12 rounded-lg text-black pl-3">
             <input type="date" id="date" name="date" class="w-full h-12 rounded-lg text-black px-3">
         </form>
+
         <Staal />
+
     </div>
 </div>
