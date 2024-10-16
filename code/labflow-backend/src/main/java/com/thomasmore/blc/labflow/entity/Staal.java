@@ -38,7 +38,7 @@ public class Staal {
 
     // lege constructor
     public Staal() {
-        this.aanmaakDatum = new Date(); // Automatically set current date
+        this.aanmaakDatum = new Date();
     }
 
     // constructor met argumenten
@@ -51,7 +51,7 @@ public class Staal {
         this.laborantNaam = laborantNaam;
         this.laborantRnummer = laborantRnummer;
         this.user = user;
-        this.aanmaakDatum = new Date(); // Automatically set current date
+        this.aanmaakDatum = new Date();
     }
 
     // getters en setters
