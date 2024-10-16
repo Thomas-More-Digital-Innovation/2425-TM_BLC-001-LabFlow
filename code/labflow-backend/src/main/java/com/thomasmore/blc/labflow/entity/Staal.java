@@ -26,7 +26,7 @@ public class Staal {
 
     private String laborantRnummer;
 
-    private Date aanmaakDatum; // Change: not final, now set in constructor
+    private Date aanmaakDatum;
 
     // foreign key naar de usertabel
     @ManyToOne
