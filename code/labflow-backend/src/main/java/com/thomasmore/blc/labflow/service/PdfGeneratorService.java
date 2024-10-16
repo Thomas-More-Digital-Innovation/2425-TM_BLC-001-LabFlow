@@ -77,10 +77,8 @@ public class PdfGeneratorService {
         document.open();
 
         // Font settings
-        Font titleFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
         Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
         Font bodyFont = new Font(Font.FontFamily.HELVETICA, 10);
-        Font smallFont = new Font(Font.FontFamily.HELVETICA, 8);
         Font headerDataFont = new Font(Font.FontFamily.HELVETICA, 8, Font.BOLD);
 
         // Logo
