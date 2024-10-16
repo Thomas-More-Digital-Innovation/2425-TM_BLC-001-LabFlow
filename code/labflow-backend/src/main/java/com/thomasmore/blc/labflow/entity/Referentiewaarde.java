@@ -1,5 +1,6 @@
 package com.thomasmore.blc.labflow.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.springframework.lang.Nullable;
 
@@ -14,6 +15,7 @@ public class Referentiewaarde {
     // foreign key naar de test tabel
     @ManyToOne
     @JoinColumn(name = "test_id", nullable = false)
+    @JsonBackReference
     private Test test;
 
     // Lege constructor
