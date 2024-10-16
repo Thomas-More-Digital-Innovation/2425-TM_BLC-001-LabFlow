@@ -51,8 +51,10 @@
             const searchDateObject = new Date(searchDate);
             const aanmaakDatumObject = new Date(staal.aanmaakDatum);
 
-            // Date match: compare the two dates only if the search date is valid
-            const dateMatch = searchDateObject ? 
+            const isValidDate = !isNaN(searchDateObject.getTime());
+
+            // Date match: vergelijken van de datums, alleen als de searchDate een geldige datum is
+            const dateMatch = isValidDate ? 
                 (searchDateObject.toDateString() === aanmaakDatumObject.toDateString()) : true;
 
             return codeMatch && dateMatch;
