@@ -14,41 +14,53 @@ public class StaalService {
     @Autowired
     private StaalRepository staalRepository;
 
-    // create
+    // Create
     public void create(Staal staal) {
         staalRepository.save(staal);
     }
 
-    // read
+    // Read all
     public List<Staal> read() {
         return staalRepository.findAll();
     }
 
-    // update
+    // Update
     public ResponseEntity<Staal> update(Long id, Staal staal) {
-        Staal updatedStaal = staalRepository.findById(id);
-        if (updatedStaal != null) {
-            updatedStaal.setStaalCode(staal.getStaalCode());
-            updatedStaal.setLaborantNaam(staal.getLaborantNaam());
-            updatedStaal.setUser(staal.getUser());
-            updatedStaal.setTests(staal.getTests());
-            updatedStaal.setLaborantRnummer(staal.getLaborantRnummer());
-            updatedStaal.setPatientAchternaam(staal.getPatientAchternaam());
-            updatedStaal.setPatientVoornaam(staal.getPatientVoornaam());
-            updatedStaal.setPatientGeboorteDatum(staal.getPatientGeboorteDatum());
-            updatedStaal.setPatientGeslacht(staal.getPatientGeslacht());
+        Staal existingStaal = staalRepository.findById(id);
+        if (existingStaal != null) {
+
+            // Update the fields
+            existingStaal.setStaalCode(staal.getStaalCode());
+            existingStaal.setLaborantNaam(staal.getLaborantNaam());
+            existingStaal.setUser(staal.getUser());
+            existingStaal.setRegisteredTests(staal.getRegisteredTests()); // Fix to match correct field
+            existingStaal.setLaborantRnummer(staal.getLaborantRnummer());
+            existingStaal.setPatientAchternaam(staal.getPatientAchternaam());
+            existingStaal.setPatientVoornaam(staal.getPatientVoornaam());
+            existingStaal.setPatientGeboorteDatum(staal.getPatientGeboorteDatum());
+            existingStaal.setPatientGeslacht(staal.getPatientGeslacht());
+
+            // Save the updated entity
+            Staal updatedStaal = staalRepository.save(existingStaal);
             return new ResponseEntity<>(updatedStaal, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    // delete
+    // Delete
     public ResponseEntity<Integer> delete(Long id) {
-        Staal deleteStaal = staalRepository.findById(id);
-        if (deleteStaal != null) {
-            staalRepository.delete(deleteStaal);
+        Staal existingStaal = staalRepository.findById(id);
+        if (existingStaal != null) {
+            staalRepository.delete(existingStaal);
             return new ResponseEntity<>(staalRepository.findAll().size(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(staalRepository.findAll().size(), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(staalRepository.findAll().size(), HttpStatus.NOT_FOUND);
+    }
+
+    // Get by id
+    public Staal readById(Long id) {
+        return staalRepository.findById(id);
     }
 }

@@ -1,5 +1,7 @@
 package com.thomasmore.blc.labflow.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -17,9 +19,9 @@ public class Test {
     private String naam;
 
     // foreign key naar de staal tabel
-    @ManyToMany
-    @JoinTable(name="teststaal")
-    private List<Staal> stalen = new ArrayList<>();
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<StaalTest> stalen = new ArrayList<>();
 
     // foreign key naar de eenheid tabel
     @ManyToOne
@@ -30,6 +32,9 @@ public class Test {
     @ManyToOne
     @JoinColumn(name = "testcategorie_id", nullable = false)
     private Testcategorie testcategorie;
+
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Referentiewaarde> referentiewaardes;
 
     // lege constructor
     public Test() {
@@ -68,11 +73,11 @@ public class Test {
         this.naam = naam;
     }
 
-    public List<Staal> getStalen() {
+    public List<StaalTest> getStalen() {
         return stalen;
     }
 
-    public void setStalen(List<Staal> stalen) {
+    public void setStalen(List<StaalTest> stalen) {
         this.stalen = stalen;
     }
 
@@ -90,5 +95,13 @@ public class Test {
 
     public void setTestcategorie(Testcategorie testcategorie) {
         this.testcategorie = testcategorie;
+    }
+
+    public Set<Referentiewaarde> getReferentiewaardes() {
+        return referentiewaardes;
+    }
+
+    public void setReferentiewaardes(Set<Referentiewaarde> referentiewaardes) {
+        this.referentiewaardes = referentiewaardes;
     }
 }
