@@ -9,10 +9,9 @@
     <div class="w-1/2">
         <img src={loginphoto} alt="laboranten aan het werk" class="w-full h-full object-cover rounded-r-3xl" />
     </div>
-    <div class="w-1/2 flex justify-center items-center flex-col">
 
+    <div class="w-1/2 flex justify-center items-center flex-col">
         <img src="{logoLabflow}" alt="logo labflow" class="w-1/2 pb-7">
         <Login />
-
     </div>
 </div>

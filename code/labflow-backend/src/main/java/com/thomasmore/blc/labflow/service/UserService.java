@@ -48,7 +48,7 @@ public class UserService {
                     authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getWachtwoord()));
 
             if (authentication.isAuthenticated()) {
-                String token = jwtService.generateToken(user.getEmail());
+                String token = jwtService.generateToken(user);
                 // Stop token in een JSON format
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)

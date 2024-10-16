@@ -25,6 +25,8 @@ public class Staal {
 
     private String laborantRnummer;
 
+    private Date aanmaakDatum;
+
     // foreign key naar de usertabel
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -36,6 +38,7 @@ public class Staal {
 
     // lege constructor
     public Staal() {
+        this.aanmaakDatum = new Date();
     }
 
     // constructor met argumenten
@@ -48,6 +51,7 @@ public class Staal {
         this.laborantNaam = laborantNaam;
         this.laborantRnummer = laborantRnummer;
         this.user = user;
+        this.aanmaakDatum = new Date();
     }
 
     // getters en setters
@@ -113,6 +117,14 @@ public class Staal {
 
     public void setLaborantRnummer(String laborantRnummer) {
         this.laborantRnummer = laborantRnummer;
+    }
+
+    public Date getAanmaakDatum() {
+        return aanmaakDatum;
+    }
+
+    public void setAanmaakDatum(Date aanmaakDatum) {
+        this.aanmaakDatum = aanmaakDatum;
     }
 
     public User getUser() {

@@ -1,5 +1,7 @@
 package com.thomasmore.blc.labflow.service;
 // service voor het genereren van JWT
+import com.thomasmore.blc.labflow.entity.User;
+import com.thomasmore.blc.labflow.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -11,19 +13,17 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
 public class JWTService {
 
+    private final UserRepository userRepository;
     private String secretKey = "";
 
     // constructor voor het genereren van een JWT key
-    public JWTService() {
+    public JWTService(UserRepository userRepository) {
         try {
             // aanmaken instance KeyGenerator met algoritme HMACSHA256
             KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
@@ -33,19 +33,23 @@ public class JWTService {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+        this.userRepository = userRepository;
     }
 
-    public String generateToken(String email) {
+    public String generateToken(User user) {
 
         // claims zijn extra gegevens die meegegeven kunnen worden met een JWT
         // momenteel is deze leeg, maar kan gebruikt worden om extra info in token te stoppen
         Map<String, Object> claims = new HashMap<>();
 
+        String rol = Objects.requireNonNull(userRepository.findByEmail(user.getEmail()).getRol()).getNaam();
+        claims.put("rol", rol);
+
         // https://javadoc.io/doc/io.jsonwebtoken/jjwt-api/0.11.2/io/jsonwebtoken/JwtBuilder.html
         // voor debug van token: https://jwt.io/
         return Jwts.builder()
                 .claims(claims)
-                .subject(email)
+                .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // na 30 minuten vervalt de token
                 .signWith(getKey())
