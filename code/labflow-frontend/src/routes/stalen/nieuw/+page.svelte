@@ -93,6 +93,9 @@
 
     // POST: Aanmaken van een nieuwe staal
     async function nieuweStaal() {
+        const geselecteerdeTestsArray = Array.from(geselecteerdeTests).map(testCode => ({
+            test: { testCode: testCode } // van set naar array voor in onze json body, mappen obv testCode
+        }));
         try {
             await fetch("http://localhost:8080/api/createstaal", {
                 method: "POST",
@@ -109,7 +112,7 @@
                     user: {
                         id: userId
                     },
-                    registeredTests: geselecteerdeTests
+                    registeredTests: geselecteerdeTestsArray
                 }),
             });
         } catch (error) {
