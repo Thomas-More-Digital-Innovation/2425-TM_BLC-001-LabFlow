@@ -2,7 +2,6 @@ package com.thomasmore.blc.labflow.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import org.springframework.lang.Nullable;
 
 import java.util.*;
 

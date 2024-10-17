@@ -2,7 +2,6 @@ package com.thomasmore.blc.labflow.controller;
 
 import com.thomasmore.blc.labflow.entity.Staal;
 import com.thomasmore.blc.labflow.service.StaalService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

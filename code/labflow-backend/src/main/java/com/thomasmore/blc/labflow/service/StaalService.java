@@ -5,8 +5,6 @@ import com.thomasmore.blc.labflow.entity.StaalTest;
 import com.thomasmore.blc.labflow.entity.Test;
 import com.thomasmore.blc.labflow.repository.StaalRepository;
 import com.thomasmore.blc.labflow.repository.TestRepository;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
