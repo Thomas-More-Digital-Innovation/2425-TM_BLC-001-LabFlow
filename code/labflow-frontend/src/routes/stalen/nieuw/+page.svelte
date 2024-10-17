@@ -14,16 +14,21 @@
     // @ts-ignore
     import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte'
 
+    // voor het inladen van crud voor admins
+    const rol = getRol();
 
     let tests: any[] = [];
+    let filteredTests: any[] = [];
+    let searchCode = '';
 
+    // fetchen van tests
     async function loadData() {
         const token = getCookie('authToken') || '';
 
         if (token != null) {
             try {
                 tests = await fetchAll(token, 'tests');
-                console.log(tests);
+                filteredTests = tests; // zonder filter worden alle tests ingeladen
             } catch (error) {
                 console.error("data kon niet gefetched worden:", error);
             }
@@ -35,22 +40,80 @@
 
     loadData();
 
-    const rol = getRol();
+    // zoeken op basis van code
+    function filterTests() {
+        filteredTests = tests.filter(test => {
+            const codeMatch = test.testCode.toString().toLowerCase().includes(searchCode.toLowerCase());
+            return codeMatch;
+        });
+    }
+
+    function verwijderSelectie() {
+        searchCode = '';
+        filterTests();
+    }
 </script>
 
 <Nav/>
-
 <div class="px-8">
     <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
-        <div class="w-full pb-5 flex flex-row space-x-2 justify-end">
-            <button class="bg-gray-400 rounded-lg p-3 text-white h-12 w-1/6 flex flex-row items-center justify-center">
-                <div class="w-3 h-3 mr-2"><FaArrowLeft/></div>
-                Terug</button>
-            <button class="bg-blue-600 rounded-lg p-3 text-white h-12 w-1/6 flex flex-row items-center justify-center">
-                Volgende
-                <div class="w-3 h-3 ml-2"><FaArrowRight/></div>
-            </button>
+
+        <h1 class="font-bold text-xl mb-2">Patiëntgegevens</h1>
+        <div class="flex flex-row space-x-4">
+            <!-- Invullen patientgegevens -->
+            <div class="grid grid-cols-5 bg-white rounded-lg h-20 w-5/6 space-x-2  px-2">
+                <div class="flex flex-col justify-center">
+                    <p class="text-gray-400">Code</p>
+                    <p class="font-bold">2024000012</p>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <p class="text-gray-400">Naam</p>
+                    <input 
+                    type="text"
+                    id="searchCode"
+                    name="searchCode"
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <p class="text-gray-400">Voornaam</p>
+                    <input 
+                    type="text"
+                    id="searchCode"
+                    name="searchCode"
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <p class="text-gray-400">Geslacht</p>
+                    <input 
+                    type="text"
+                    id="searchCode"
+                    name="searchCode"
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <p class="text-gray-400">Geboortedatum</p>
+                    <input 
+                    type="text"
+                    id="searchCode"
+                    name="searchCode"
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3">
+                </div>
+            </div>
+
+
+            <!-- navigatie volgende en terug -->
+            <div class="pb-5 flex flex-row space-x-2 justify-end w-1/6">
+                <button on:click={() => { goto("/stalen") }} class="bg-gray-400 rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
+                    <div class="w-3 h-3 mr-2"><FaArrowLeft/></div>
+                    Terug
+                </button>
+                <button class="bg-blue-600 rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
+                    Volgende
+                    <div class="w-3 h-3 ml-2"><FaArrowRight/></div>
+                </button>
+            </div>
         </div>
+        
 
         <div class="rounded-xl bg-white">
             <div class="bg-white rounded-xl p-3 flex flex-row items-center">
@@ -60,10 +123,14 @@
                     id="searchCode" 
                     name="searchCode" 
                     placeholder="zoeken op code"
+                    bind:value={searchCode} on:input={filterTests}
                     class="w-1/5 h-12 rounded-lg text-black pl-3 bg-gray-200">
 
+                <!-- verwijder selectie -->
+                <button on:click={verwijderSelectie} class="bg-red-200 rounded-lg p-3 text-black h-12 w-48 ml-4">Verwijder selectie</button>
+
                 <!-- dynamisch tonen hoeveel geselecteerde tests -->
-                <p class="ml-6 pl-5 border-l-2 text-blue-600"><span>1</span> geselecteerd</p>
+                <p class="ml-6 pl-5 border-l-2 text-blue-600"><span>0</span> geselecteerd</p>
                 
                 <!-- knoppen voor aanmaken cat & test -->
                 <div class="ml-auto flex flex-row justify-end space-x-2 w-2/5">
@@ -80,12 +147,15 @@
                 </div>
             </div>
             
-            
-            
-            {#each tests as test}
+            <!-- tabel met tests -->
+            {#each filteredTests as test}
             <div class="grid grid-cols-12 gap-4 h-16 items-center px-3 border-b border-gray-300">
                 <div class="col-span-1">
-                    <input type="checkbox" name="select" id="select">
+                    <input 
+                        type="checkbox" 
+                        name="select" 
+                        id="select" 
+                        class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">
                 </div>
                 <div class="col-span-2">
                     <p class="text-gray-400">Code</p>

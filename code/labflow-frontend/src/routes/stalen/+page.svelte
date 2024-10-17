@@ -19,7 +19,7 @@
 
     // fetchen van stalen
     let stalen: any[] = [];
-    let filteredStalen: any[] = []; // to hold the filtered results
+    let filteredStalen: any[] = [];
     let searchCode = '';
     let searchDate = '';
 
@@ -29,8 +29,7 @@
         if (token != null) {
             try {
                 stalen = await fetchAll(token, 'stalen');
-                filteredStalen = stalen; // Initialize filteredStalen with all stalen
-                console.log(stalen);
+                filteredStalen = stalen; // zonder filter worden alle stalen ingeladen
             } catch (error) {
                 console.error("data kon niet gefetched worden:", error);
             }
