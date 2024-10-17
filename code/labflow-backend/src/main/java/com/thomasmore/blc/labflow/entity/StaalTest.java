@@ -1,6 +1,7 @@
 package com.thomasmore.blc.labflow.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
@@ -21,7 +22,8 @@ public class StaalTest implements Serializable {
     @ManyToOne
     @MapsId("testId")
     @JoinColumn(name = "test_id")
-    private Test test; // Remove @JsonManagedReference here
+    // @JsonManagedReference
+    private Test test;
 
     @Nullable
     private String result;

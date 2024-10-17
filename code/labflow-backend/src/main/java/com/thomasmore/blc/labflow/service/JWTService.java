@@ -43,7 +43,9 @@ public class JWTService {
         Map<String, Object> claims = new HashMap<>();
 
         String rol = Objects.requireNonNull(userRepository.findByEmail(user.getEmail()).getRol()).getNaam();
+        String userId = Objects.requireNonNull(userRepository.findByEmail(user.getEmail()).getId()).toString();
         claims.put("rol", rol);
+        claims.put("userId", userId);
 
         // https://javadoc.io/doc/io.jsonwebtoken/jjwt-api/0.11.2/io/jsonwebtoken/JwtBuilder.html
         // voor debug van token: https://jwt.io/

@@ -18,7 +18,6 @@ public class Staal {
 
     private String patientAchternaam;
 
-    @Nullable
     private Date patientGeboorteDatum;
 
     private char patientGeslacht;
@@ -45,7 +44,7 @@ public class Staal {
     }
 
     // constructor met argumenten
-    public Staal(int staalCode, String patientVoornaam, String patientAchternaam, @Nullable Date patientGeboorteDatum, char patientGeslacht, String laborantNaam, String laborantRnummer, User user) {
+    public Staal(int staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum, char patientGeslacht, String laborantNaam, String laborantRnummer, User user) {
         this.staalCode = staalCode;
         this.patientVoornaam = patientVoornaam;
         this.patientAchternaam = patientAchternaam;
