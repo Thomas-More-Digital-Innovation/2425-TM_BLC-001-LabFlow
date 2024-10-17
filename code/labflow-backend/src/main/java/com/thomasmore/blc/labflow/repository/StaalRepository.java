@@ -14,6 +14,8 @@ public interface StaalRepository extends JpaRepository<Staal, Integer> {
 
     public void delete(Staal staal);
 
+    public List<Staal> findAllByOrderByStaalCodeDesc();
+
     // verkrijgen grootste staalcode voor het aanmaken van een nieuwe staal
     @Query("SELECT MAX(t.staalCode) FROM Staal t")
     String findLargestStaalCode();

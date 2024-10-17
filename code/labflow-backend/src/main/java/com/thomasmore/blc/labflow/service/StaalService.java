@@ -24,7 +24,7 @@ public class StaalService {
 
     // Read all
     public List<Staal> read() {
-        return staalRepository.findAll();
+        return staalRepository.findAllByOrderByStaalCodeDesc();
     }
 
     // Update
