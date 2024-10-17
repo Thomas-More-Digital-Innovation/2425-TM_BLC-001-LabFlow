@@ -21,7 +21,13 @@
     let filteredTests: any[] = [];
     let searchCode = '';
     const token = getCookie('authToken') || '';
+
+    // nieuwe staalcode
     let nieuweStaalCode = '';
+    let naam = '';
+    let voornaam = '';
+    let geslacht = '';
+    let geboortedatum = '';
 
     // fetchen van tests op "tests"
     // verkrijgen nieuwe staalcode op "/api/newStaalCode"
@@ -72,39 +78,44 @@
                     <p class="text-gray-400">Naam</p>
                     <input 
                     type="text"
-                    id="searchCode"
-                    name="searchCode"
+                    id="naam"
+                    name="naam"
                     class="rounded-lg text-black bg-gray-200 h-10 pl-3">
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Voornaam</p>
                     <input 
                     type="text"
-                    id="searchCode"
-                    name="searchCode"
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3">
-                </div>
-                <div class="flex flex-col justify-center">
-                    <p class="text-gray-400">Geslacht</p>
-                    <input 
-                    type="text"
-                    id="searchCode"
-                    name="searchCode"
+                    id="voornaam"
+                    name="voornaam"
                     class="rounded-lg text-black bg-gray-200 h-10 pl-3">
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Geboortedatum</p>
                     <input 
-                    type="text"
-                    id="searchCode"
-                    name="searchCode"
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3">
+                    type="date"
+                    id="geboortedatum"
+                    name="geboortedatum"
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 px-3">
+                </div>
+                <div class="flex flex-col justify-center pl-5">
+                    <p class="text-gray-400">Geslacht</p>
+                    <div>
+                        <label class="container mr-5">
+                            <input type="radio" name="radio">
+                            Man
+                        </label>
+                        <label class="container">
+                            <input type="radio" name="radio">
+                            Vrouw
+                        </label>
+                    </div>
                 </div>
             </div>
 
 
             <!-- navigatie volgende en terug -->
-            <div class="pb-5 flex flex-row space-x-2 justify-end w-1/6">
+            <div class="pb-5 flex flex-row space-x-2 justify-end w-3/12">
                 <button on:click={() => { goto("/stalen") }} class="bg-gray-400 rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
                     <div class="w-3 h-3 mr-2"><FaArrowLeft/></div>
                     Terug
