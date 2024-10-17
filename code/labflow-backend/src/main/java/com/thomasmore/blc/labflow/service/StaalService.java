@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Year;
 import java.util.List;
 
 @Service
@@ -66,7 +67,21 @@ public class StaalService {
 
     // increment van de grootste testcode voor aanmaken nieuwe test
     public String newStaalCode() {
-        int testCode = Integer.parseInt(staalRepository.findLargestStaalCode()) + 1;
-        return String.valueOf(testCode);
+
+        String grootsteStaalCode = staalRepository.findLargestStaalCode();
+        String huidigJaar = String.valueOf(Year.now().getValue());
+        String nieuweStaalCode;
+
+        if (grootsteStaalCode != null && grootsteStaalCode.startsWith(huidigJaar)) {
+            // verwijderen van eerste 4 karakters (het jaartal) en increment met 1 "YYYY" / "XXXXXX"+1
+            int increment = Integer.parseInt(grootsteStaalCode.substring(4)) + 1;
+            // https://www.w3schools.com/java/ref_string_format.asp
+            // zorgt ervoor dat het incremented deel altijd 6 getallen groot is
+            nieuweStaalCode = huidigJaar + String.format("%06d", increment);
+        } else {
+            // In het geval van een nieuw jaar, starten we vanaf 1
+            nieuweStaalCode = huidigJaar + "000001";
+        }
+        return nieuweStaalCode;
     }
 }
