@@ -15,6 +15,7 @@
     import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte'
     // @ts-ignore
     import GoX from 'svelte-icons/go/GoX.svelte'
+    import { getUserId } from "$lib/globalFunctions";
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -30,6 +31,7 @@
     let voornaam = '';
     let geslacht = '';
     let geboortedatum = '';
+    let userId = getUserId();
 
     // fetchen van tests op "tests"
     // verkrijgen nieuwe staalcode op "/api/newStaalCode"
@@ -65,8 +67,27 @@
     }
 
     async function nieuweStaal() {
-        const res = await fetch("")
-
+        try {
+            await fetch("http://localhost:8080/api/createstaal", {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    staalCode: nieuweStaalCode,
+                    patientAchternaam: naam,
+                    patientVoornaam: voornaam,
+                    patientGeslacht: geslacht,
+                    patientGeboorteDatum: geboortedatum,
+                    user: {
+                        id: userId
+                    }
+                }),
+            });
+        } catch (error) {
+            console.error("staal kon niet worden aangemaakt: ", error);
+        }
         return goto("/stalen");
     }
 </script>
