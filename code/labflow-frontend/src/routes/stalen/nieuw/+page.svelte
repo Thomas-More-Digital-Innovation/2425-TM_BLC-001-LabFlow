@@ -35,7 +35,8 @@
 
     // geselecteerde tests
     let geselecteerdeTests: Set<number> = new Set();
-    
+    let geselecteerdeTestsCount = geselecteerdeTests.size;
+
     // fetchen van tests op "tests"
     // verkrijgen nieuwe staalcode op "/api/newStaalCode"
     async function loadData() {
@@ -77,7 +78,8 @@
         } else {
             geselecteerdeTests.add(testCode);
         }
-        console.log(geselecteerdeTests);
+        geselecteerdeTestsCount = geselecteerdeTests.size;
+        console.log(geselecteerdeTestsCount);
     }
 
     // Checken of een test geselecteerd is zodat de checkbox gechecked kan worden
@@ -88,6 +90,7 @@
     // Verwijder alle geselecteerde tests
     function verwijderSelectie() {
         geselecteerdeTests.clear();
+        geselecteerdeTestsCount = geselecteerdeTests.size;
         console.log(geselecteerdeTests);
     }
 
@@ -218,7 +221,7 @@
             
                     <!-- dynamisch tonen hoeveel geselecteerde tests -->
                     <p class="ml-6 pl-5 border-l-2 text-blue-600">
-                        <span>{geselecteerdeTests.size}</span> geselecteerd
+                        <span>{geselecteerdeTestsCount}</span> geselecteerd
                     </p>
                 </div>
             
