@@ -13,6 +13,8 @@
     import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte'
     // @ts-ignore
     import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte'
+    // @ts-ignore
+    import GoX from 'svelte-icons/go/GoX.svelte'
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -56,9 +58,15 @@
         });
     }
 
-    function verwijderSelectie() {
+    // verwijderen van zoekparameter, terug alle tests tonen
+    function verwijderZoek() {
         searchCode = '';
         filterTests();
+    }
+
+    function nieuweStaal() {
+
+        return goto("/stalen");
     }
 </script>
 
@@ -75,11 +83,12 @@
                     <p class="font-bold">{nieuweStaalCode || "loading..."}</p>
                 </div>
                 <div class="flex flex-col justify-center">
-                    <p class="text-gray-400">Naam</p>
+                    <p class="text-gray-400">Achternaam</p>
                     <input 
                     type="text"
                     id="naam"
                     name="naam"
+                    bind:value={naam}
                     class="rounded-lg text-black bg-gray-200 h-10 pl-3">
                 </div>
                 <div class="flex flex-col justify-center">
@@ -88,6 +97,7 @@
                     type="text"
                     id="voornaam"
                     name="voornaam"
+                    bind:value={voornaam}
                     class="rounded-lg text-black bg-gray-200 h-10 pl-3">
                 </div>
                 <div class="flex flex-col justify-center">
@@ -96,17 +106,19 @@
                     type="date"
                     id="geboortedatum"
                     name="geboortedatum"
+                    bind:value={geboortedatum}
                     class="rounded-lg text-black bg-gray-200 h-10 pl-3 px-3">
                 </div>
                 <div class="flex flex-col justify-center pl-5">
+                    <!-- https://svelte.dev/repl/2b143322f242467fbf2b230baccc0484?version=3.23.2 -->
                     <p class="text-gray-400">Geslacht</p>
                     <div>
                         <label class="container mr-5">
-                            <input type="radio" name="radio">
+                            <input type="radio" name="radio" bind:group={geslacht} value="M">
                             Man
                         </label>
                         <label class="container">
-                            <input type="radio" name="radio">
+                            <input type="radio" name="radio" bind:group={geslacht} value="V">
                             Vrouw
                         </label>
                     </div>
@@ -116,37 +128,47 @@
 
             <!-- navigatie volgende en terug -->
             <div class="pb-5 flex flex-row space-x-2 justify-end w-3/12">
-                <button on:click={() => { goto("/stalen") }} class="bg-gray-400 rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
-                    <div class="w-3 h-3 mr-2"><FaArrowLeft/></div>
+                <button on:click={() => { goto("/stalen") }} class="bg-gray-400 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
+                    <div class="w-5 h-5 mr-2"><FaArrowLeft/></div>
                     Terug
                 </button>
-                <button class="bg-blue-600 rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
+                <!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
+                <button on:click={nieuweStaal} class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
                     Volgende
-                    <div class="w-3 h-3 ml-2"><FaArrowRight/></div>
+                    <div class="w-5 h-5 ml-2"><FaArrowRight/></div>
                 </button>
             </div>
         </div>
         
 
         <div class="rounded-xl bg-white">
-            <div class="bg-white rounded-xl p-3 flex flex-row items-center">
-                <!-- zoeken op code -->
-                <input
-                    type="text" 
-                    id="searchCode" 
-                    name="searchCode" 
-                    placeholder="zoeken op code"
-                    bind:value={searchCode} on:input={filterTests}
-                    class="w-1/5 h-12 rounded-lg text-black pl-3 bg-gray-200">
-
-                <!-- verwijder selectie -->
-                <button on:click={verwijderSelectie} class="bg-red-200 rounded-lg p-3 text-black h-12 w-48 ml-4">Verwijder selectie</button>
-
-                <!-- dynamisch tonen hoeveel geselecteerde tests -->
-                <p class="ml-6 pl-5 border-l-2 text-blue-600"><span>0</span> geselecteerd</p>
-                
+            <div class="bg-white rounded-xl p-3 flex flex-row items-center place-content-between">
+    
+                <div class="w-1/4 flex items-center">
+                    <!-- zoeken op code -->
+                    <input
+                        type="text" 
+                        id="searchCode" 
+                        name="searchCode" 
+                        placeholder="zoeken op code" 
+                        bind:value={searchCode} 
+                        on:input={filterTests}
+                        class="h-12 rounded-l-lg text-black pl-3 bg-gray-200 w-full">
+                    <button on:click={verwijderZoek} class="w-12 h-12 p-3 flex items-center justify-center bg-red-200 rounded-r-lg">
+                        <GoX />
+                    </button>
+                </div>
+            
+                <div class="flex items-center w-1/4">
+                    <!-- verwijder selectie -->
+                    <button class="bg-red-200 rounded-lg p-3 text-black h-12 w-2/5">Verwijder selectie</button>
+            
+                    <!-- dynamisch tonen hoeveel geselecteerde tests -->
+                    <p class="ml-6 pl-5 border-l-2 text-blue-600"><span>0</span> geselecteerd</p>
+                </div>
+            
                 <!-- knoppen voor aanmaken cat & test -->
-                <div class="ml-auto flex flex-row justify-end space-x-2 w-2/5">
+                <div class="flex flex-row justify-end space-x-2 w-1/3">
                     {#if rol === 'admin'}
                     <button class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
                         <div class="w-3 h-3 mr-2"><FaPlus/></div>
@@ -160,6 +182,7 @@
                 </div>
             </div>
             
+        
             <!-- tabel met tests -->
             {#each filteredTests as test}
             <div class="grid grid-cols-12 gap-4 h-16 items-center px-3 border-b border-gray-300">
