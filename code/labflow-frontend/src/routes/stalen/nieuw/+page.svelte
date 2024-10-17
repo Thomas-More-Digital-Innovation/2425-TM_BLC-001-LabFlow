@@ -33,8 +33,8 @@
     let geboortedatum = '';
     let userId = getUserId();
 
-    // Track selected tests by testCode
-    let selectedTests: Set<number> = new Set();
+    // geselecteerde tests
+    let geselecteerdeTests: Set<number> = new Set();
     
     // fetchen van tests op "tests"
     // verkrijgen nieuwe staalcode op "/api/newStaalCode"
@@ -72,23 +72,23 @@
     // test functies
     // Toggle van een test in en uit de set van geselecteerde tests
     function toggleTestSelection(testCode: number) {
-        if (selectedTests.has(testCode)) {
-            selectedTests.delete(testCode);
+        if (geselecteerdeTests.has(testCode)) {
+            geselecteerdeTests.delete(testCode);
         } else {
-            selectedTests.add(testCode);
+            geselecteerdeTests.add(testCode);
         }
-        console.log(selectedTests);
+        console.log(geselecteerdeTests);
     }
 
     // Checken of een test geselecteerd is zodat de checkbox gechecked kan worden
     function isSelected(testCode: number): boolean {
-        return selectedTests.has(testCode);
+        return geselecteerdeTests.has(testCode);
     }
 
     // Verwijder alle geselecteerde tests
     function verwijderSelectie() {
-        selectedTests.clear();
-        console.log(selectedTests);
+        geselecteerdeTests.clear();
+        console.log(geselecteerdeTests);
     }
 
     // POST: Aanmaken van een nieuwe staal
@@ -214,7 +214,7 @@
             
                     <!-- dynamisch tonen hoeveel geselecteerde tests -->
                     <p class="ml-6 pl-5 border-l-2 text-blue-600">
-                        <span>{selectedTests.size}</span> geselecteerd
+                        <span>{geselecteerdeTests.size}</span> geselecteerd
                     </p>
                 </div>
             
