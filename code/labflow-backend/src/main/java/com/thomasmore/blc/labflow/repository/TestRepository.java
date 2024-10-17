@@ -10,4 +10,6 @@ public interface TestRepository extends JpaRepository<Test, Integer> {
     public Test findById(Long id);
 
     public void delete(Test test);
+
+    public Test findByTestCode(String testCode);
 }

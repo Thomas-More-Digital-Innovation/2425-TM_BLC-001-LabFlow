@@ -108,7 +108,8 @@
                     patientGeboorteDatum: geboortedatum,
                     user: {
                         id: userId
-                    }
+                    },
+                    registeredTests: geselecteerdeTests
                 }),
             });
         } catch (error) {

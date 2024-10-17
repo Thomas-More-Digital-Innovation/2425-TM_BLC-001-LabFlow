@@ -26,7 +26,7 @@ public class StaalService {
         // loopen door elke test
         for (StaalTest registeredTest : staal.getRegisteredTests()) {
             // testobject ophalen en koppelen met staal
-            Test test = testRepository.findById(registeredTest.getTest().getId());
+            Test test = testRepository.findByTestCode(registeredTest.getTest().getTestCode());
             registeredTest.setTest(test);
         }
         staalRepository.save(staal);
