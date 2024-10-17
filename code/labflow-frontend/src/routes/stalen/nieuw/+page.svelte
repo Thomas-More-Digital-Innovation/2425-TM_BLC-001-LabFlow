@@ -20,15 +20,17 @@
     let tests: any[] = [];
     let filteredTests: any[] = [];
     let searchCode = '';
+    const token = getCookie('authToken') || '';
+    let nieuweStaalCode = '';
 
-    // fetchen van tests
+    // fetchen van tests op "tests"
+    // verkrijgen nieuwe staalcode op "/api/newStaalCode"
     async function loadData() {
-        const token = getCookie('authToken') || '';
-
         if (token != null) {
             try {
                 tests = await fetchAll(token, 'tests');
                 filteredTests = tests; // zonder filter worden alle tests ingeladen
+                nieuweStaalCode = await fetchAll(token, 'newStaalCode'); // fetchen van nieuwe staalcode
             } catch (error) {
                 console.error("data kon niet gefetched worden:", error);
             }
@@ -64,7 +66,7 @@
             <div class="grid grid-cols-5 bg-white rounded-lg h-20 w-5/6 space-x-2  px-2">
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Code</p>
-                    <p class="font-bold">2024000012</p>
+                    <p class="font-bold">{nieuweStaalCode || "loading..."}</p>
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Naam</p>
