@@ -18,6 +18,22 @@ public class StaalTestId implements Serializable {
         this.testId = testId;
     }
 
+    public Long getStaalId() {
+        return staalId;
+    }
+
+    public void setStaalId(Long staalId) {
+        this.staalId = staalId;
+    }
+
+    public Long getTestId() {
+        return testId;
+    }
+
+    public void setTestId(Long testId) {
+        this.testId = testId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
