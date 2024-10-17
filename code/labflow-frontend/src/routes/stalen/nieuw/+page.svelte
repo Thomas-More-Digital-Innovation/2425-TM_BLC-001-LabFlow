@@ -34,8 +34,7 @@
     let userId = getUserId();
 
     // geselecteerde tests
-    let geselecteerdeTests: Set<number> = new Set();
-    let geselecteerdeTestsCount = geselecteerdeTests.size;
+    let geselecteerdeTests: any[] = [];
 
     // fetchen van tests op "tests"
     // verkrijgen nieuwe staalcode op "/api/newStaalCode"
@@ -70,27 +69,14 @@
         filterTests();
     }
 
-    // test functies
-    // Toggle van een test in en uit de set van geselecteerde tests
-    function toggleTestSelection(testCode: number) {
-        if (geselecteerdeTests.has(testCode)) {
-            geselecteerdeTests.delete(testCode);
-        } else {
-            geselecteerdeTests.add(testCode);
-        }
-        geselecteerdeTestsCount = geselecteerdeTests.size;
-        console.log(geselecteerdeTestsCount);
-    }
-
     // Checken of een test geselecteerd is zodat de checkbox gechecked kan worden
     function isSelected(testCode: number): boolean {
-        return geselecteerdeTests.has(testCode);
+        return geselecteerdeTests.includes(testCode);
     }
 
     // Verwijder alle geselecteerde tests
     function verwijderSelectie() {
-        geselecteerdeTests.clear();
-        geselecteerdeTestsCount = geselecteerdeTests.size;
+        geselecteerdeTests = [];
         console.log(geselecteerdeTests);
     }
 
@@ -221,7 +207,7 @@
             
                     <!-- dynamisch tonen hoeveel geselecteerde tests -->
                     <p class="ml-6 pl-5 border-l-2 text-blue-600">
-                        <span>{geselecteerdeTestsCount}</span> geselecteerd
+                        <span>{geselecteerdeTests.length}</span> geselecteerd
                     </p>
                 </div>
             
@@ -244,11 +230,14 @@
             {#each filteredTests as test}
             <div class="grid grid-cols-12 gap-4 h-16 items-center px-3 border-b border-gray-300">
                 <div class="col-span-1">
+                    <!-- https://svelte.dev/repl/986adbafc5b042cbbf979c1381c7cacc?version=3.50.1 -->
                     <!-- checkbox voor het selecteren van tests -->
                     <input 
                         type="checkbox" 
                         checked={isSelected(test.testCode)} 
-                        on:change={() => toggleTestSelection(test.testCode)}
+                        bind:group={geselecteerdeTests}
+                        name={test}
+                        value={test}
                         class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">
                 </div>
                 <div class="col-span-2">
