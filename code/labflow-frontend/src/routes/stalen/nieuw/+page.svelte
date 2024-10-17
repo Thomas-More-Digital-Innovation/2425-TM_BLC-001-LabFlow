@@ -33,6 +33,9 @@
     let geboortedatum = '';
     let userId = getUserId();
 
+    // Track selected tests by testCode
+    let selectedTests: Set<number> = new Set();
+    
     // fetchen van tests op "tests"
     // verkrijgen nieuwe staalcode op "/api/newStaalCode"
     async function loadData() {
@@ -66,6 +69,29 @@
         filterTests();
     }
 
+    // test functies
+    // Toggle van een test in en uit de set van geselecteerde tests
+    function toggleTestSelection(testCode: number) {
+        if (selectedTests.has(testCode)) {
+            selectedTests.delete(testCode);
+        } else {
+            selectedTests.add(testCode);
+        }
+        console.log(selectedTests);
+    }
+
+    // Checken of een test geselecteerd is zodat de checkbox gechecked kan worden
+    function isSelected(testCode: number): boolean {
+        return selectedTests.has(testCode);
+    }
+
+    // Verwijder alle geselecteerde tests
+    function verwijderSelectie() {
+        selectedTests.clear();
+        console.log(selectedTests);
+    }
+
+    // POST: Aanmaken van een nieuwe staal
     async function nieuweStaal() {
         try {
             await fetch("http://localhost:8080/api/createstaal", {
@@ -184,10 +210,12 @@
             
                 <div class="flex items-center w-1/4">
                     <!-- verwijder selectie -->
-                    <button class="bg-red-200 rounded-lg p-3 text-black h-12 w-2/5">Verwijder selectie</button>
+                    <button on:click={verwijderSelectie} class="bg-red-200 rounded-lg p-3 text-black h-12 w-2/5">Verwijder selectie</button>
             
                     <!-- dynamisch tonen hoeveel geselecteerde tests -->
-                    <p class="ml-6 pl-5 border-l-2 text-blue-600"><span>0</span> geselecteerd</p>
+                    <p class="ml-6 pl-5 border-l-2 text-blue-600">
+                        <span>{selectedTests.size}</span> geselecteerd
+                    </p>
                 </div>
             
                 <!-- knoppen voor aanmaken cat & test -->
@@ -205,15 +233,15 @@
                 </div>
             </div>
             
-        
-            <!-- tabel met tests -->
+            <!-- tabel met alle tests -->
             {#each filteredTests as test}
             <div class="grid grid-cols-12 gap-4 h-16 items-center px-3 border-b border-gray-300">
                 <div class="col-span-1">
+                    <!-- checkbox voor het selecteren van tests -->
                     <input 
                         type="checkbox" 
-                        name="select" 
-                        id="select" 
+                        checked={isSelected(test.testCode)} 
+                        on:change={() => toggleTestSelection(test.testCode)}
                         class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">
                 </div>
                 <div class="col-span-2">
@@ -222,13 +250,13 @@
                 </div>
                 <div class="col-span-5">
                     <p class="text-gray-400">Naam</p>
-                    <!-- truncate zorgt ervoor dat te lange namen eindigen met '...' -->
                     <p class="truncate">{test?.naam || 'Loading...'}</p>
                 </div>
                 <div class="col-span-3">
                     <p class="text-gray-400">Categorie</p>
                     <p>{test?.testcategorie.naam || 'Loading...'}</p>
                 </div>
+                <!-- admin-only crud knoppen -->
                 {#if rol === 'admin'}
                 <div class="col-span-1 flex justify-end space-x-2">
                     <div class="h-10 w-10 bg-blue-400 p-2 rounded-lg text-white">

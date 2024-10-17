@@ -32,9 +32,8 @@ public class Staal {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    // , cascade = CascadeType.ALL, orphanRemoval = true
-    // https://stackoverflow.com/questions/23645091/spring-data-jpa-and-hibernate-detached-entity-passed-to-persist-on-manytomany-re
-    @OneToMany(mappedBy = "staal")
+
+    @OneToMany(mappedBy = "staal", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @JsonManagedReference
     private List<StaalTest> registeredTests = new ArrayList<>();
 
@@ -43,8 +42,9 @@ public class Staal {
         this.aanmaakDatum = new Date();
     }
 
-    // constructor met argumenten
-    public Staal(int staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum, char patientGeslacht, String laborantNaam, String laborantRnummer, User user) {
+    // constructor voor het registreren van een staal zonder tests
+    public Staal(int staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum,
+                 char patientGeslacht, String laborantNaam, String laborantRnummer, User user) {
         this.staalCode = staalCode;
         this.patientVoornaam = patientVoornaam;
         this.patientAchternaam = patientAchternaam;
@@ -53,6 +53,22 @@ public class Staal {
         this.laborantNaam = laborantNaam;
         this.laborantRnummer = laborantRnummer;
         this.user = user;
+        this.aanmaakDatum = new Date();
+    }
+
+    // constructor voor het registreren van een staal met tests
+    public Staal(int staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum,
+                 char patientGeslacht, String laborantNaam, String laborantRnummer, User user,
+                 List<StaalTest> registeredTests) {
+        this.staalCode = staalCode;
+        this.patientVoornaam = patientVoornaam;
+        this.patientAchternaam = patientAchternaam;
+        this.patientGeboorteDatum = patientGeboorteDatum;
+        this.patientGeslacht = patientGeslacht;
+        this.laborantNaam = laborantNaam;
+        this.laborantRnummer = laborantRnummer;
+        this.user = user;
+        this.setRegisteredTests(registeredTests); // Use setter to ensure proper association
         this.aanmaakDatum = new Date();
     }
 
@@ -143,5 +159,19 @@ public class Staal {
 
     public void setRegisteredTests(List<StaalTest> tests) {
         this.registeredTests = tests;
+        for (StaalTest test : tests) {
+            test.setStaal(this); // Ensure the test knows which Staal it belongs to
+        }
+    }
+
+    // methodes voor het toevoegen en verwijderen van tests gekoppeld aan één staal
+    public void addRegisteredTest(StaalTest test) {
+        registeredTests.add(test);
+        test.setStaal(this);
+    }
+
+    public void removeRegisteredTest(StaalTest test) {
+        registeredTests.remove(test);
+        test.setStaal(null);
     }
 }

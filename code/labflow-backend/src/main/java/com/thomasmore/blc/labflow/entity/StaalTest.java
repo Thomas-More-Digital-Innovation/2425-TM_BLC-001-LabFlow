@@ -1,7 +1,6 @@
 package com.thomasmore.blc.labflow.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
@@ -15,14 +14,13 @@ public class StaalTest implements Serializable {
 
     @ManyToOne
     @MapsId("staalId")
-    @JoinColumn(name = "staal_id")
+    @JoinColumn(name = "staal_id", nullable = false)
     @JsonBackReference
     private Staal staal;
 
     @ManyToOne
     @MapsId("testId")
-    @JoinColumn(name = "test_id")
-    // @JsonManagedReference
+    @JoinColumn(name = "test_id", nullable = false)
     private Test test;
 
     @Nullable
@@ -37,6 +35,7 @@ public class StaalTest implements Serializable {
         this.id = new StaalTestId(staal.getId(), test.getId());
     }
 
+    // Getters & setters
     public StaalTestId getId() {
         return id;
     }
@@ -51,6 +50,9 @@ public class StaalTest implements Serializable {
 
     public void setStaal(Staal staal) {
         this.staal = staal;
+        if (staal != null) {
+            this.id.setStaalId(staal.getId());
+        }
     }
 
     public Test getTest() {
@@ -59,6 +61,9 @@ public class StaalTest implements Serializable {
 
     public void setTest(Test test) {
         this.test = test;
+        if (test != null) {
+            this.id.setTestId(test.getId());
+        }
     }
 
     @Nullable

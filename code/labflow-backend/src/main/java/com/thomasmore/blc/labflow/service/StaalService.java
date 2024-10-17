@@ -1,7 +1,11 @@
 package com.thomasmore.blc.labflow.service;
 
 import com.thomasmore.blc.labflow.entity.Staal;
+import com.thomasmore.blc.labflow.entity.StaalTest;
+import com.thomasmore.blc.labflow.entity.Test;
 import com.thomasmore.blc.labflow.repository.StaalRepository;
+import com.thomasmore.blc.labflow.repository.TestRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,9 +20,17 @@ public class StaalService {
     @Autowired
     private StaalRepository staalRepository;
 
+    @Autowired
+    private TestRepository testRepository;
+
     // Create
-    @Transactional
-    public void create(Staal staal) {
+    public void createStaal(Staal staal) {
+        // loopen door elke test
+        for (StaalTest registeredTest : staal.getRegisteredTests()) {
+            // testobject ophalen en koppelen met staal
+            Test test = testRepository.findById(registeredTest.getTest().getId());
+            registeredTest.setTest(test);
+        }
         staalRepository.save(staal);
     }
 
