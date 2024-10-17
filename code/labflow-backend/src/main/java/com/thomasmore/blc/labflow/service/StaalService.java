@@ -2,6 +2,7 @@ package com.thomasmore.blc.labflow.service;
 
 import com.thomasmore.blc.labflow.entity.Staal;
 import com.thomasmore.blc.labflow.repository.StaalRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ public class StaalService {
     private StaalRepository staalRepository;
 
     // Create
+    @Transactional
     public void create(Staal staal) {
         staalRepository.save(staal);
     }

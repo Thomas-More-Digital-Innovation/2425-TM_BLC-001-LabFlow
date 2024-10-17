@@ -2,6 +2,7 @@ package com.thomasmore.blc.labflow.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import org.springframework.lang.Nullable;
 
 import java.util.*;
 
@@ -17,6 +18,7 @@ public class Staal {
 
     private String patientAchternaam;
 
+    @Nullable
     private Date patientGeboorteDatum;
 
     private char patientGeslacht;
@@ -31,8 +33,9 @@ public class Staal {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @OneToMany(mappedBy = "staal", cascade = CascadeType.ALL, orphanRemoval = true)
+    // , cascade = CascadeType.ALL, orphanRemoval = true
+    // https://stackoverflow.com/questions/23645091/spring-data-jpa-and-hibernate-detached-entity-passed-to-persist-on-manytomany-re
+    @OneToMany(mappedBy = "staal")
     @JsonManagedReference
     private List<StaalTest> registeredTests = new ArrayList<>();
 
@@ -42,7 +45,7 @@ public class Staal {
     }
 
     // constructor met argumenten
-    public Staal(int staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum, char patientGeslacht, String laborantNaam, String laborantRnummer, User user) {
+    public Staal(int staalCode, String patientVoornaam, String patientAchternaam, @Nullable Date patientGeboorteDatum, char patientGeslacht, String laborantNaam, String laborantRnummer, User user) {
         this.staalCode = staalCode;
         this.patientVoornaam = patientVoornaam;
         this.patientAchternaam = patientAchternaam;

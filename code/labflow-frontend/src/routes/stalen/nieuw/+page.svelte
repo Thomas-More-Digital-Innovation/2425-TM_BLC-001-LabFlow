@@ -64,11 +64,13 @@
         filterTests();
     }
 
-    function nieuweStaal() {
+    async function nieuweStaal() {
+        const res = await fetch("")
 
         return goto("/stalen");
     }
 </script>
+
 
 <Nav/>
 <div class="px-8">
