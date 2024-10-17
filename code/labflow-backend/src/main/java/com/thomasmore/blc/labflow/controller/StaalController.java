@@ -37,4 +37,8 @@ public class StaalController {
     public ResponseEntity<Integer> delete(@PathVariable Long id) {
         return staalService.delete(id);
     }
+
+    // Krijg de grootste StaalCode + 1 voor een nieuwe test aan te maken
+    @GetMapping("/newStaalCode")
+    public String newStaalCode() { return staalService.newStaalCode(); }
 }

@@ -63,4 +63,10 @@ public class StaalService {
     public Staal readById(Long id) {
         return staalRepository.findById(id);
     }
+
+    // increment van de grootste testcode voor aanmaken nieuwe test
+    public String newStaalCode() {
+        int testCode = Integer.parseInt(staalRepository.findLargestStaalCode()) + 1;
+        return String.valueOf(testCode);
+    }
 }
