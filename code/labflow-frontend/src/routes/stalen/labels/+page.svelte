@@ -1,5 +1,6 @@
 <script lang="ts">
     import Nav from "../../../components/nav.svelte";
+    import LabelCart from "../../../components/LabelCart.svelte";
     import { goto } from '$app/navigation';
     import { getCookie, fetchAll } from '$lib/globalFunctions';
     import { getRol } from '$lib/globalFunctions';
@@ -9,6 +10,7 @@
     import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte'
 
     import { getUserId } from "$lib/globalFunctions";
+	import Layout from "../../+layout.svelte";
 
 </script>
 
@@ -66,10 +68,7 @@
                     <p class="py-3 px-8 rounded-full text-white bg-blue-500">standaard</p>
                 </div>
                 <!-- loop labels -->
-                 <div class=" border border-gray-200 rounded-xl flex justify-between items-center p-4 my-3">
-                    <p class="font-bold text-lg">Heparine</p>
-                    <p class="p-6 rounded-full text-white bg-green-500"></p>
-                </div>
+                <LabelCart labelName="Heparine" color="bg-green-500" />
             </div>
              <!-- right section -->
             <div class="w-2/3 flex flex-col justify-between space-y-4">
@@ -94,8 +93,9 @@
                         <div class="w-1/2">
                             <p>printer</p>
                             <select class="rounded-lg text-xl p-3 h-20 bg-white w-full border border-gray-400">
-                                <option value="standaard">standaard</option>
-                                <option value="heparine">heparine</option>
+                                <option value="standaard">- selecteer -</option>
+                                <option value="heparine">printer lokaal A</option>
+                                <option value="heparine">printer lokaal B</option>
                             </select>
                         </div>
                     </div>
