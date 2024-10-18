@@ -138,7 +138,7 @@
                     </div>
                     <div>
                         <p class="text-gray-400 font-bold">Laborant</p>
-                        <p>{staal?.user.fullName || 'Loading...'}</p>
+                        <p>{staal?.laborantNaam || 'Loading...'}</p>
                     </div>
                 </div>
             {/each}

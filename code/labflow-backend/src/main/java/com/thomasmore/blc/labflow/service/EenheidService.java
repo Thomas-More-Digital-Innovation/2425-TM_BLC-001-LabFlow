@@ -23,7 +23,7 @@ public class EenheidService {
 
     // read
     public List<Eenheid> read() {
-        return eenheidRepository.findAll();
+        return eenheidRepository.findAllByOrderByNaam();
     }
 
     // update

@@ -16,13 +16,13 @@ public class TestCategorieController {
     private TestCategorieService testCategorieService;
 
     // Test categorie aanmaken (C)
-    @PostMapping("/createtestcategorie/")
+    @PostMapping("/createtestcategorie")
     public void createTestCategorie(@RequestBody Testcategorie testcategorie) {
         testCategorieService.createTestcategorie(testcategorie);
     }
 
     // Test Categorie bekijken (R)
-    @GetMapping("/testCategorieen/")
+    @GetMapping("/testcategorieen")
     public List<Testcategorie> readTestCategorieen() {
         return testCategorieService.allTestcategorie();
     }
