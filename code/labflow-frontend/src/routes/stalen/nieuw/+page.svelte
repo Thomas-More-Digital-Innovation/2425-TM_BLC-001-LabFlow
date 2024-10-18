@@ -19,8 +19,8 @@
     // popup laborantgegevens
     import Modal from "../../../components/Modal/Modal.svelte";
     import Content from "../../../components/Modal/Content.svelte";
-    import Trigger from "../../../components/Modal/Trigger.svelte";
 	import AutoTrigger from "../../../components/Modal/AutoTrigger.svelte";
+	import ContentWithoutClose from "../../../components/Modal/ContentWithoutClose.svelte";
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -37,6 +37,10 @@
     let geslacht = '';
     let geboortedatum = '';
 
+    // laborantgegevens
+    let laborantNaam = '';
+    let laborantRNummer = '';
+
     let errrorVelden = {
         naam: false,
         voornaam: false,
@@ -49,6 +53,7 @@
     // geselecteerde tests
     let geselecteerdeTests: any[] = [];
 
+    let loading = true;
     // fetchen van tests op "tests"
     // verkrijgen nieuwe staalcode op "/api/newStaalCode"
     async function loadData() {
@@ -57,6 +62,7 @@
                 tests = await fetchAll(token, 'tests');
                 filteredTests = tests; // zonder filter worden alle tests ingeladen
                 nieuweStaalCode = await fetchAll(token, 'newStaalCode'); // fetchen van nieuwe staalcode
+                loading = false; // zorgt ervoor dat de modal pas opent wanneer de data is ingeladen
             } catch (error) {
                 console.error("data kon niet gefetched worden:", error);
             }
@@ -155,16 +161,27 @@
 
 
 <!-- popup modal voor het ingeven van de laborantgegevens die automatisch opent onmount van de pagina -->
+<!-- loading variabele zorgt ervoor dat de modal pas opent wanneer de data is ingeladen -->
+{#if !loading}
 <Modal>
-	<Content>
-        <h1 class="font-bold text-xl mb-2">laborantgegevens</h1>
-		<div>
-
-        </div>
-	</Content>
+	<ContentWithoutClose>
+		<h1 class="font-bold text-xl mb-2">laborantgegevens</h1>
+		<div class="flex space-x-4">
+			<div class="flex flex-col w-1/2">
+				<label for="naam">Volledige Naam</label>
+				<input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+			</div>
+			<div class="flex flex-col w-1/2">
+				<label for="r-nummer">R-Nummer</label>
+				<input type="text" id="r-nummer" name="r-nummer" bind:value={laborantRNummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+			</div>
+		</div>
+        <button class="bg-blue-500 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex mt-4">Start</button>
+	</ContentWithoutClose>
 	<AutoTrigger>
 	</AutoTrigger>
 </Modal>
+{/if}
 
 <!-- navbar -->
 <Nav/>

@@ -1,3 +1,4 @@
+<!-- Modal without close button -->
 <script>
 	import { isOpen, id } from "./store.js";
 	import { getContext } from "svelte";
@@ -8,12 +9,6 @@
 <div>
 	<div class="modal" class:hidden={modalId !== $id}>
 		<div class="content">
-			<button 
-				type="button" 
-				class="close-button" 
-				on:click={() => $id = false} 
-				aria-label="Close">&times;
-			</button>
 			<slot />
 		</div>
 	</div>
