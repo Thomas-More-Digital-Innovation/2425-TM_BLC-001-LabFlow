@@ -16,6 +16,7 @@
     // @ts-ignore
     import GoX from 'svelte-icons/go/GoX.svelte'
     import { getUserId } from "$lib/globalFunctions";
+    import Modal from "../../../components/Modal/Modal.svelte";
 
     // voor het inladen van crud voor admins
     const rol = getRol();
