@@ -107,7 +107,7 @@
         } catch (error) {
             console.error("staal kon niet worden aangemaakt: ", error);
         }
-        return goto("/stalen");
+        return goto("/stalen/labels");
     }
 </script>
 
