@@ -3,6 +3,7 @@
     import { goto } from '$app/navigation';
     import { getCookie, fetchAll } from '$lib/globalFunctions';
     import { getRol } from '$lib/globalFunctions';
+    import { getUserId } from "$lib/globalFunctions";
     // @ts-ignore
     import FaTrashAlt from 'svelte-icons/fa/FaTrashAlt.svelte'
     // @ts-ignore
@@ -15,12 +16,17 @@
     import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte'
     // @ts-ignore
     import GoX from 'svelte-icons/go/GoX.svelte'
-    import { getUserId } from "$lib/globalFunctions";
-    // popup laborantgegevens
+    // @ts-ignore
+    import IoMdCheckmarkCircle from 'svelte-icons/io/IoMdCheckmarkCircle.svelte'
+
+    // popup laborantgegevens, test & categorie aanmaken
     import Modal from "../../../components/Modal/Modal.svelte";
 	import AutoTrigger from "../../../components/Modal/AutoTrigger.svelte";
 	import ContentWithoutClose from "../../../components/Modal/ContentWithoutClose.svelte";
     import { id } from "../../../components/Modal/store.js";
+	import Trigger from "../../../components/Modal/Trigger.svelte";
+    import Content from "../../../components/Modal/Content.svelte";
+	import CloseModal from "../../../components/Modal/closeModal.svelte";
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -42,13 +48,21 @@
     let laborantRNummer = '';
     // modal id
 
-    let errrorVelden = {
+    let errrorVeldenStaal = {
         naam: false,
         voornaam: false,
         geslacht: false,
         geboortedatum: false,
         laborantNaam: false,
         laborantRNummer: false
+    }
+
+    let errorVeldenTest = {
+        testCode: false,
+        naam: false,
+        eenheid: false,
+        testcategorie: false,
+        referentiewaardes: false
     }
 
     let userId = getUserId();
@@ -85,10 +99,10 @@
         const regex = /^R\d{7}$/;
 
         if (!laborantNaam) {
-            errrorVelden.laborantNaam = true;
+            errrorVeldenStaal.laborantNaam = true;
         }
         if (!laborantRNummer) {
-            errrorVelden.laborantRNummer = true;
+            errrorVeldenStaal.laborantRNummer = true;
         }
 
         if (laborantNaam && laborantRNummer && regex.test(laborantRNummer)) {
@@ -119,6 +133,7 @@
     function toggleTestSelectie(testCode: number) {
         if (geselecteerdeTests.includes(testCode)) {
             geselecteerdeTests = geselecteerdeTests.filter(code => code !== testCode);
+            console.log(tests);
         } else {
             geselecteerdeTests = [...geselecteerdeTests, testCode];
         }
@@ -128,25 +143,25 @@
     // POST: Aanmaken van een nieuwe staal
     async function nieuweStaal() {
         // Resetten van de errorvelden
-        errrorVelden = { naam: false, voornaam: false, geslacht: false, geboortedatum: false, laborantNaam: true, laborantRNummer: true };
+        errrorVeldenStaal = { naam: false, voornaam: false, geslacht: false, geboortedatum: false, laborantNaam: true, laborantRNummer: true };
 
         // Validatie van de input
         let isValid = true;
 
         if (!naam) {
-            errrorVelden.naam = true;
+            errrorVeldenStaal.naam = true;
             isValid = false;
         }
         if (!voornaam) {
-            errrorVelden.voornaam = true;
+            errrorVeldenStaal.voornaam = true;
             isValid = false;
         }
         if (!geboortedatum) {
-            errrorVelden.geboortedatum = true;
+            errrorVeldenStaal.geboortedatum = true;
             isValid = false;
         }
         if (!geslacht) {
-            errrorVelden.geslacht = true;
+            errrorVeldenStaal.geslacht = true;
             isValid = false;
         }
         // errormessage tonen indien niet alle velden zijn ingevuld
@@ -198,19 +213,19 @@
 		<div class="flex space-x-4 mb-4 ">
 			<div class="flex flex-col w-1/2">
 				<label for="naam">Volledige Naam</label>
-				<input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVelden.laborantNaam ? 'border-2 border-red-500' : ''}">
+				<input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVeldenStaal.laborantNaam ? 'border-2 border-red-500' : ''}">
 			</div>
 			<div class="flex flex-col w-1/2">
-                <label for="r-nummer">R-Nummer <span class="{errrorVelden.laborantRNummer ? 'text-red-500 inline-block' : 'hidden'}">moet in format rXXXXXXX met 7 cijfers</span></label>
-				<input type="text" id="r-nummer" name="r-nummer" bind:value={laborantRNummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVelden.laborantRNummer ? 'border-2 border-red-500' : ''}">
+                <label for="r-nummer">R-Nummer <span class="{errrorVeldenStaal.laborantRNummer ? 'text-red-500 inline-block' : 'hidden'}">moet in format rXXXXXXX met 7 cijfers</span></label>
+				<input type="text" id="r-nummer" name="r-nummer" bind:value={laborantRNummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVeldenStaal.laborantRNummer ? 'border-2 border-red-500' : ''}">
 			</div>
 		</div>
         <button type="button" on:click={setLaborant}>
             <button class="bg-blue-500 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex">Start</button>
         </button>
 	</ContentWithoutClose>
-	<AutoTrigger>
-	</AutoTrigger>
+	<!-- <AutoTrigger>
+	</AutoTrigger> -->
 </Modal>
 {/if}
 
@@ -239,7 +254,7 @@
                     id="naam"
                     name="naam"
                     bind:value={naam}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVelden.naam ? 'border-2 border-red-500' : ''}">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVeldenStaal.naam ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Voornaam</p>
@@ -248,7 +263,7 @@
                     id="voornaam"
                     name="voornaam"
                     bind:value={voornaam}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVelden.voornaam ? 'border-2 border-red-500' : ''}">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVeldenStaal.voornaam ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Geboortedatum</p>
@@ -257,17 +272,17 @@
                     id="geboortedatum"
                     name="geboortedatum"
                     bind:value={geboortedatum}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 px-3 {errrorVelden.geboortedatum ? 'border-2 border-red-500' : ''}">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 px-3 {errrorVeldenStaal.geboortedatum ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center pl-5">
                     <!-- https://svelte.dev/repl/2b143322f242467fbf2b230baccc0484?version=3.23.2 -->
                     <p class="text-gray-400">Geslacht</p>
                     <div>
-                        <label class="container mr-5 {errrorVelden.geslacht ? 'text-red-500 font-bold' : ''}">
+                        <label class="container mr-5 {errrorVeldenStaal.geslacht ? 'text-red-500 font-bold' : ''}">
                             <input type="radio" name="radio" bind:group={geslacht} value="M">
                             Man
                         </label>
-                        <label class="container {errrorVelden.geslacht ? 'text-red-500 font-bold' : ''}">
+                        <label class="container {errrorVeldenStaal.geslacht ? 'text-red-500 font-bold' : ''}">
                             <input type="radio" name="radio" bind:group={geslacht} value="V">
                             Vrouw
                         </label>
@@ -316,17 +331,59 @@
                     </p>
                 </div>
             
-                <!-- knoppen voor aanmaken cat & test -->
+                <!-- knoppen en modals voor aanmaken cat & test -->
                 <div class="flex flex-row justify-end space-x-2 w-1/3">
                     {#if rol === 'admin'}
                     <button class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
                         <div class="w-3 h-3 mr-2"><FaPlus/></div>
                         Categorie aanmaken
                     </button>
-                    <button class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
-                        <div class="w-3 h-3 mr-2"><FaPlus/></div>
-                        Test aanmaken
-                    </button>
+
+                    <Modal>
+                        <Content>
+                            <h1 class="font-bold text-xl mb-4">Test Aanmaken</h1>
+                            <div class="flex flex-row space-x-4">
+                                <div class="flex flex-col w-1/2">
+                                    <label for="naam">Code</label>
+                                    <input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                </div>
+                                <div class="flex flex-col w-1/2">
+                                    <label for="naam">Eenheid</label>
+                                    <input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                </div>
+                            </div>
+                            <div class="flex flex-row space-x-4 mt-4">
+                                <div class="flex flex-col w-1/2">
+                                    <label for="naam">Naam</label>
+                                    <input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                </div>
+                                <div class="flex flex-col w-1/2">
+                                    <label for="naam">Categorie</label>
+                                    <input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col mt-4">
+                                <label for="naam">Referentiewaarde</label>
+                                <div class="flex flex-row items-center justify-between">
+                                    <input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3 w-1/2">
+                                    <CloseModal>
+                                        <button type="button" class="bg-green-500 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow w-56 font-bold text-lg">Opslaan
+                                        <div class="w-5 h-5 ml-5"><IoMdCheckmarkCircle/></div>
+                                        </button>
+                                    </CloseModal>
+                                </div>
+                            </div>
+
+
+                        </Content>
+                        <Trigger>
+                            <button class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
+                                <div class="w-3 h-3 mr-2"><FaPlus/></div>
+                                Test aanmaken
+                            </button>
+                        </Trigger>
+                    </Modal>
                     {/if}
                 </div>
             </div>
@@ -346,13 +403,17 @@
                     <p class="text-gray-400">Code</p>
                     <p>{test?.testCode || 'Loading...'}</p>
                 </div>
-                <div class="col-span-5">
+                <div class="col-span-4">
                     <p class="text-gray-400">Naam</p>
                     <p class="truncate">{test?.naam || 'Loading...'}</p>
                 </div>
-                <div class="col-span-3">
+                <div class="col-span-2">
                     <p class="text-gray-400">Categorie</p>
                     <p>{test?.testcategorie.naam || 'Loading...'}</p>
+                </div>
+                <div class="col-span-2">
+                    <p class="text-gray-400">Eenheid</p>
+                    <p>{test?.eenheid.naam || 'Loading...'}</p>
                 </div>
                 <!-- admin-only crud knoppen -->
                 {#if rol === 'admin'}

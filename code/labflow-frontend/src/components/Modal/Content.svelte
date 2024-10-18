@@ -10,7 +10,7 @@
 		<div class="content">
 			<button 
 				type="button" 
-				class="close-button" 
+				class="close-button mr-3" 
 				on:click={() => $id = false} 
 				aria-label="Close">&times;
 			</button>
