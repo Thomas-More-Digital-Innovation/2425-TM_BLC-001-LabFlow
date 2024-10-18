@@ -2,6 +2,6 @@
     import { id } from "./store.js";
 </script>
 
-<span on:click={() => $id = null}>
+<button type="button" on:click={() => $id = null} aria-label="Close modal">
 	<slot />
-</span>
+</button>
