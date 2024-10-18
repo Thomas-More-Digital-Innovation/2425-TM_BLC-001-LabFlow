@@ -18,9 +18,9 @@
     import { getUserId } from "$lib/globalFunctions";
     // popup laborantgegevens
     import Modal from "../../../components/Modal/Modal.svelte";
-    import Content from "../../../components/Modal/Content.svelte";
 	import AutoTrigger from "../../../components/Modal/AutoTrigger.svelte";
 	import ContentWithoutClose from "../../../components/Modal/ContentWithoutClose.svelte";
+    import { id } from "../../../components/Modal/store.js";
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -40,12 +40,15 @@
     // laborantgegevens
     let laborantNaam = '';
     let laborantRNummer = '';
+    // modal id
 
     let errrorVelden = {
         naam: false,
         voornaam: false,
         geslacht: false,
-        geboortedatum: false
+        geboortedatum: false,
+        laborantNaam: false,
+        laborantRNummer: false
     }
 
     let userId = getUserId();
@@ -73,6 +76,25 @@
     }
 
     loadData();
+
+
+    function setLaborant() {
+        let isValid = false;
+
+        if (!laborantNaam) {
+            errrorVelden.laborantNaam = true;
+        }
+        if (!laborantRNummer) {
+            errrorVelden.laborantRNummer = true;
+        }
+        if (laborantNaam && laborantRNummer) {
+            isValid = true;
+        }
+        if (isValid) {
+            return $id = null;
+        }
+        return ;
+    }
 
     // zoeken op basis van code
     function filterTests() {
@@ -102,7 +124,7 @@
     // POST: Aanmaken van een nieuwe staal
     async function nieuweStaal() {
         // Resetten van de errorvelden
-        errrorVelden = { naam: false, voornaam: false, geslacht: false, geboortedatum: false };
+        errrorVelden = { naam: false, voornaam: false, geslacht: false, geboortedatum: false, laborantNaam: true, laborantRNummer: true };
 
         // Validatie van de input
         let isValid = true;
@@ -146,6 +168,8 @@
                     patientVoornaam: voornaam,
                     patientGeslacht: geslacht,
                     patientGeboorteDatum: geboortedatum,
+                    laborantNaam: laborantNaam,
+                    laborantRNummer: laborantRNummer,
                     user: {
                         id: userId
                     },
@@ -176,7 +200,9 @@
 				<input type="text" id="r-nummer" name="r-nummer" bind:value={laborantRNummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
 			</div>
 		</div>
-        <button class="bg-blue-500 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex mt-4">Start</button>
+        <div on:click={setLaborant}>
+            <button class="bg-blue-500 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex mt-4">Start</button>
+        </div>
 	</ContentWithoutClose>
 	<AutoTrigger>
 	</AutoTrigger>
