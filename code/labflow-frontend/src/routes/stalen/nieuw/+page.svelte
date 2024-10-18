@@ -80,6 +80,9 @@
 
     function setLaborant() {
         let isValid = false;
+        laborantRNummer = laborantRNummer.toUpperCase();
+        // regex voor R-nummer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes 
+        const regex = /^R\d{7}$/;
 
         if (!laborantNaam) {
             errrorVelden.laborantNaam = true;
@@ -87,13 +90,14 @@
         if (!laborantRNummer) {
             errrorVelden.laborantRNummer = true;
         }
-        if (laborantNaam && laborantRNummer) {
+
+        if (laborantNaam && laborantRNummer && regex.test(laborantRNummer)) {
             isValid = true;
         }
         if (isValid) {
             return $id = null;
         }
-        return ;
+        return;
     }
 
     // zoeken op basis van code
@@ -169,13 +173,14 @@
                     patientGeslacht: geslacht,
                     patientGeboorteDatum: geboortedatum,
                     laborantNaam: laborantNaam,
-                    laborantRNummer: laborantRNummer,
+                    laborantRnummer: laborantRNummer,
                     user: {
                         id: userId
                     },
                     registeredTests: geselecteerdeTestsArray
                 }),
             });
+            console.log(laborantNaam, laborantRNummer);
         } catch (error) {
             console.error("staal kon niet worden aangemaakt: ", error);
         }
@@ -190,19 +195,19 @@
 <Modal>
 	<ContentWithoutClose>
 		<h1 class="font-bold text-xl mb-2">laborantgegevens</h1>
-		<div class="flex space-x-4">
+		<div class="flex space-x-4 mb-4 ">
 			<div class="flex flex-col w-1/2">
 				<label for="naam">Volledige Naam</label>
-				<input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+				<input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVelden.laborantNaam ? 'border-2 border-red-500' : ''}">
 			</div>
 			<div class="flex flex-col w-1/2">
-				<label for="r-nummer">R-Nummer</label>
-				<input type="text" id="r-nummer" name="r-nummer" bind:value={laborantRNummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                <label for="r-nummer">R-Nummer <span class="{errrorVelden.laborantRNummer ? 'text-red-500 inline-block' : 'hidden'}">moet in format rXXXXXXX met 7 cijfers</span></label>
+				<input type="text" id="r-nummer" name="r-nummer" bind:value={laborantRNummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVelden.laborantRNummer ? 'border-2 border-red-500' : ''}">
 			</div>
 		</div>
-        <div on:click={setLaborant}>
-            <button class="bg-blue-500 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex mt-4">Start</button>
-        </div>
+        <button type="button" on:click={setLaborant}>
+            <button class="bg-blue-500 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex">Start</button>
+        </button>
 	</ContentWithoutClose>
 	<AutoTrigger>
 	</AutoTrigger>
