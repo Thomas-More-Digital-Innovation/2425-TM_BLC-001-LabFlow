@@ -45,7 +45,7 @@
 
     // laborantgegevens
     let laborantNaam = '';
-    let laborantRNummer = '';
+    let laborantRnummer = '';
 
     let errrorVeldenStaal = {
         naam: false,
@@ -53,7 +53,7 @@
         geslacht: false,
         geboortedatum: false,
         laborantNaam: false,
-        laborantRNummer: false
+        laborantRnummer: false
     }
 
     // variabelen voor popup test aanmaken
@@ -115,18 +115,18 @@
 
     function setLaborant() {
         let isValid = false;
-        laborantRNummer = laborantRNummer.toUpperCase();
+        laborantRnummer = laborantRnummer.toUpperCase();
         // regex voor R-nummer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes 
         const regex = /^R\d{7}$/;
 
         if (!laborantNaam) {
             errrorVeldenStaal.laborantNaam = true;
         }
-        if (!laborantRNummer) {
-            errrorVeldenStaal.laborantRNummer = true;
+        if (!laborantRnummer || !regex.test(laborantRnummer)) {
+            errrorVeldenStaal.laborantRnummer = true;
         }
 
-        if (laborantNaam && laborantRNummer && regex.test(laborantRNummer)) {
+        if (laborantNaam && laborantRnummer && regex.test(laborantRnummer)) {
             isValid = true;
         }
         if (isValid) {
@@ -209,14 +209,14 @@
         }
         tests = await fetchAll(token, 'tests'); // tests refreshen, triggert een refresh
         filteredTests = tests;
-        return;
+        return $id = null;
     }
 
     let errorMessageStaal = '';
     // POST: Aanmaken van een nieuwe staal
     async function nieuweStaal() {
         // Resetten van de errorvelden
-        errrorVeldenStaal = { naam: false, voornaam: false, geslacht: false, geboortedatum: false, laborantNaam: true, laborantRNummer: true };
+        errrorVeldenStaal = { naam: false, voornaam: false, geslacht: false, geboortedatum: false, laborantNaam: true, laborantRnummer: true };
 
         // Validatie van de input
         let isValid = true;
@@ -261,14 +261,13 @@
                     patientGeslacht: geslacht,
                     patientGeboorteDatum: geboortedatum,
                     laborantNaam: laborantNaam,
-                    laborantRnummer: laborantRNummer,
+                    laborantRnummer: laborantRnummer,
                     user: {
                         id: userId
                     },
                     registeredTests: geselecteerdeTestsArray
                 }),
             });
-            console.log(laborantNaam, laborantRNummer);
         } catch (error) {
             console.error("staal kon niet worden aangemaakt: ", error);
         }
@@ -289,16 +288,16 @@
 				<input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVeldenStaal.laborantNaam ? 'border-2 border-red-500' : ''}">
 			</div>
 			<div class="flex flex-col w-1/2">
-                <label for="r-nummer">R-Nummer <span class="{errrorVeldenStaal.laborantRNummer ? 'text-red-500 inline-block' : 'hidden'}">moet in format rXXXXXXX met 7 cijfers</span></label>
-				<input type="text" id="r-nummer" name="r-nummer" bind:value={laborantRNummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVeldenStaal.laborantRNummer ? 'border-2 border-red-500' : ''}">
+                <label for="r-nummer">R-Nummer <span class="{errrorVeldenStaal.laborantRnummer ? 'text-red-500 inline-block' : 'hidden'}">moet in format rXXXXXXX met 7 cijfers</span></label>
+				<input type="text" id="r-nummer" name="r-nummer" bind:value={laborantRnummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVeldenStaal.laborantRnummer ? 'border-2 border-red-500' : ''}">
 			</div>
 		</div>
         <button type="button" on:click={setLaborant}>
             <button class="bg-blue-500 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex">Start</button>
         </button>
 	</ContentWithoutClose>
-	<!-- <AutoTrigger>
-	</AutoTrigger> -->
+	<AutoTrigger>
+	</AutoTrigger>
 </Modal>
 {/if}
 
@@ -454,13 +453,11 @@
                                 </div>
                             </div>
 
-                            <CloseModal>
-                                <button on:click={nieuweTest} type="button" class="bg-green-500 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow w-56 font-bold text-lg">Opslaan
-                                <div class="w-5 h-5 ml-5"><IoMdCheckmarkCircle/></div>
-                                </button>
-                            </CloseModal>
-
+                            <button on:click={nieuweTest} type="button" class="bg-green-500 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow w-56 font-bold text-lg">Opslaan
+                            <div class="w-5 h-5 ml-5"><IoMdCheckmarkCircle/></div>
+                            </button>
                         </Content>
+
                         <Trigger>
                             <button on:click={loadTestCategorieënEnEenheden} class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
                                 <div class="w-3 h-3 mr-2"><FaPlus/></div>
