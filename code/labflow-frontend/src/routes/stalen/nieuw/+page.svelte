@@ -46,7 +46,6 @@
     // laborantgegevens
     let laborantNaam = '';
     let laborantRNummer = '';
-    // modal id
 
     let errrorVeldenStaal = {
         naam: false,
@@ -57,12 +56,18 @@
         laborantRNummer: false
     }
 
+    // variabelen voor popup test aanmaken
+    let testCode = '';
+    let testNaam = '';
+    let eenheid = '';
+    let testcategorie = '';
+
+    let testcategorieën: any[] = [];
     let errorVeldenTest = {
         testCode: false,
-        naam: false,
+        testNaam: false,
         eenheid: false,
         testcategorie: false,
-        referentiewaardes: false
     }
 
     let userId = getUserId();
@@ -73,7 +78,7 @@
     let loading = true;
     // fetchen van tests op "tests"
     // verkrijgen nieuwe staalcode op "/api/newStaalCode"
-    async function loadData() {
+    async function loadTests() {
         if (token != null) {
             try {
                 tests = await fetchAll(token, 'tests');
@@ -81,7 +86,7 @@
                 nieuweStaalCode = await fetchAll(token, 'newStaalCode'); // fetchen van nieuwe staalcode
                 loading = false; // zorgt ervoor dat de modal pas opent wanneer de data is ingeladen
             } catch (error) {
-                console.error("data kon niet gefetched worden:", error);
+                console.error("testen kon niet gefetched worden:", error);
             }
         } else {
             console.error("jwt error");
@@ -89,8 +94,24 @@
         }
     }
 
-    loadData();
+    loadTests();
 
+    // laden categorieën voor popup test aanmaken
+    async function loadTestCategorieën() {
+        if (token != null) {
+            try {
+                testcategorieën = await fetchAll(token, 'testcategorieen');
+                console.log(testcategorieën)
+            } catch (error) {
+                console.error("testcategorieën kon niet gefetched worden:", error);
+            }
+        } else {
+            console.error("jwt error");
+            goto('/login');
+        }
+    }
+
+    loadTestCategorieën();
 
     function setLaborant() {
         let isValid = false;
@@ -344,37 +365,36 @@
                             <h1 class="font-bold text-xl mb-4">Test Aanmaken</h1>
                             <div class="flex flex-row space-x-4">
                                 <div class="flex flex-col w-1/2">
-                                    <label for="naam">Code</label>
-                                    <input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                    <label for="testCode">Testcode</label>
+                                    <input type="text" id="testCode" name="testCode" bind:value={testCode} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
                                 </div>
                                 <div class="flex flex-col w-1/2">
-                                    <label for="naam">Eenheid</label>
-                                    <input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                    <label for="testNaam">Eenheid</label>
+                                    <input type="text" id="testNaam" name="testNaam" bind:value={testNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
                                 </div>
                             </div>
-                            <div class="flex flex-row space-x-4 mt-4">
+                            <div class="flex flex-row space-x-4 my-4">
                                 <div class="flex flex-col w-1/2">
-                                    <label for="naam">Naam</label>
-                                    <input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                    <label for="eenheid">Naam</label>
+                                    <input type="text" id="eenheid" name="eenheid" bind:value={eenheid} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
                                 </div>
+                                <!-- https://svelte.dev/repl/16778e290bf548f790dc45d249bed94d?version=3.46.4  -->
                                 <div class="flex flex-col w-1/2">
-                                    <label for="naam">Categorie</label>
-                                    <input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col mt-4">
-                                <label for="naam">Referentiewaarde</label>
-                                <div class="flex flex-row items-center justify-between">
-                                    <input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3 w-1/2">
-                                    <CloseModal>
-                                        <button type="button" class="bg-green-500 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow w-56 font-bold text-lg">Opslaan
-                                        <div class="w-5 h-5 ml-5"><IoMdCheckmarkCircle/></div>
-                                        </button>
-                                    </CloseModal>
+                                    <label for="testcategorie">Categorie</label>
+                                    <select id="testcategorie" name="testcategorie" bind:value={testcategorie} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                        <option value="" disabled>Selecteer een categorie</option>
+                                        {#each testcategorieën as categorie}
+                                            <option value={categorie.id}>{categorie.naam}</option>
+                                        {/each}
+                                    </select>                                
                                 </div>
                             </div>
 
+                            <CloseModal>
+                                <button type="button" class="bg-green-500 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow w-56 font-bold text-lg">Opslaan
+                                <div class="w-5 h-5 ml-5"><IoMdCheckmarkCircle/></div>
+                                </button>
+                            </CloseModal>
 
                         </Content>
                         <Trigger>
@@ -400,7 +420,7 @@
                     class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">                                                 
                 </div>
                 <div class="col-span-2">
-                    <p class="text-gray-400">Code</p>
+                    <p class="text-gray-400">Testcode</p>
                     <p>{test?.testCode || 'Loading...'}</p>
                 </div>
                 <div class="col-span-4">
