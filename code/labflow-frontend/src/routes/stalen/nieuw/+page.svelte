@@ -63,6 +63,7 @@
     let testcategorie = '';
 
     let testcategorieën: any[] = [];
+    let eenheden: any[] = [];
     let errorVeldenTest = {
         testCode: false,
         testNaam: false,
@@ -96,22 +97,21 @@
 
     loadTests();
 
-    // laden categorieën voor popup test aanmaken
-    async function loadTestCategorieën() {
+    // laden categorieën & eenheden voor popup test aanmaken
+    async function loadTestCategorieënEnEenheden() {
         if (token != null) {
             try {
                 testcategorieën = await fetchAll(token, 'testcategorieen');
-                console.log(testcategorieën)
+                eenheden = await fetchAll(token, 'readeenheid');
+                console.log(eenheden)
             } catch (error) {
-                console.error("testcategorieën kon niet gefetched worden:", error);
+                console.error("testcategorieën/eenheden kon(den) niet gefetched worden:", error);
             }
         } else {
             console.error("jwt error");
             goto('/login');
         }
     }
-
-    loadTestCategorieën();
 
     function setLaborant() {
         let isValid = false;
@@ -160,7 +160,59 @@
         }
     }
 
-    let errorMessage = '';
+    // POST: Aanmaken van een nieuwe test
+    let errorMessageTest = '';
+    async function nieuweTest() {
+        // resetten errorvelden
+        errorVeldenTest = { testCode: false, testNaam: false, eenheid: false, testcategorie: false };
+        let isValid = true;
+
+        if (!testCode) {
+            errorVeldenTest.testCode = true;
+            isValid = false;
+        }
+        if (!testNaam) {
+            errorVeldenTest.testNaam = true;
+            isValid = false;
+        }
+        if (!eenheid) {
+            errorVeldenTest.eenheid = true;
+            isValid = false;
+        }
+        if (!testcategorie) {
+            errorVeldenTest.testcategorie = true;
+            isValid = false;
+        }
+        if (!isValid) {
+            errorMessageTest = 'Vul alle verplichte velden in.';
+            return;
+        } try {
+            await fetch("http://localhost:8080/api/createtest", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    testCode: testCode,
+                    naam: testNaam,
+                    eenheid: {
+                        id: eenheid
+                    },
+                    testcategorie: {
+                        id: testcategorie
+                    }
+                }),
+            });
+        } catch (error) {
+            console.error("test kon niet worden aangemaakt: ", error);
+        }
+        tests = await fetchAll(token, 'tests'); // tests refreshen, triggert een refresh
+        filteredTests = tests;
+        return;
+    }
+
+    let errorMessageStaal = '';
     // POST: Aanmaken van een nieuwe staal
     async function nieuweStaal() {
         // Resetten van de errorvelden
@@ -185,9 +237,9 @@
             errrorVeldenStaal.geslacht = true;
             isValid = false;
         }
-        // errormessage tonen indien niet alle velden zijn ingevuld
+        // errorMessageStaal tonen indien niet alle velden zijn ingevuld
         if (!isValid) {
-            errorMessage = 'Vul alle verplichte velden in.';
+            errorMessageStaal = 'Vul alle verplichte velden in.';
             return;
         }
         
@@ -258,8 +310,8 @@
     <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 
         <h1 class="font-bold text-xl mb-2">Patiëntgegevens</h1>
-        {#if errorMessage}
-            <div class="text-red-500 mb-2">{errorMessage}</div>
+        {#if errorMessageStaal}
+            <div class="text-red-500 mb-2">{errorMessageStaal}</div>
         {/if}
         <div class="flex flex-row space-x-4">
             <!-- Invullen patientgegevens -->
@@ -363,42 +415,54 @@
                     <Modal>
                         <Content>
                             <h1 class="font-bold text-xl mb-4">Test Aanmaken</h1>
+                            {#if errorMessageTest}
+                            <div class="text-red-500 mb-2">{errorMessageTest}</div>
+                            {/if}
                             <div class="flex flex-row space-x-4">
                                 <div class="flex flex-col w-1/2">
                                     <label for="testCode">Testcode</label>
-                                    <input type="text" id="testCode" name="testCode" bind:value={testCode} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                    <input type="text" id="testCode" name="testCode" bind:value={testCode} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                    {errorVeldenTest.testCode ? 'border-2 border-red-500' : ''}">
                                 </div>
                                 <div class="flex flex-col w-1/2">
                                     <label for="testNaam">Eenheid</label>
-                                    <input type="text" id="testNaam" name="testNaam" bind:value={testNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                    <select id="eenheid" name="eenheid" bind:value={eenheid} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                    {errorVeldenTest.eenheid ? 'border-2 border-red-500' : ''}">
+                                        <option value="" disabled>Selecteer een eenheid</option>
+                                        {#each eenheden as eenheid}
+                                            <option value={eenheid.id}>{eenheid.naam} ({eenheid.afkorting})</option>
+                                        {/each}
+                                    </select>
                                 </div>
                             </div>
                             <div class="flex flex-row space-x-4 my-4">
                                 <div class="flex flex-col w-1/2">
-                                    <label for="eenheid">Naam</label>
-                                    <input type="text" id="eenheid" name="eenheid" bind:value={eenheid} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                    <label for="naam">Naam</label>
+                                    <input type="text" id="naam" name="naam" bind:value={testNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                    {errorVeldenTest.testNaam ? 'border-2 border-red-500' : ''}">
                                 </div>
                                 <!-- https://svelte.dev/repl/16778e290bf548f790dc45d249bed94d?version=3.46.4  -->
                                 <div class="flex flex-col w-1/2">
                                     <label for="testcategorie">Categorie</label>
-                                    <select id="testcategorie" name="testcategorie" bind:value={testcategorie} class="rounded-lg text-black bg-gray-200 h-12 pl-3">
+                                    <select id="testcategorie" name="testcategorie" bind:value={testcategorie} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                    {errorVeldenTest.testcategorie ? 'border-2 border-red-500' : ''}">
                                         <option value="" disabled>Selecteer een categorie</option>
                                         {#each testcategorieën as categorie}
                                             <option value={categorie.id}>{categorie.naam}</option>
                                         {/each}
-                                    </select>                                
+                                    </select>
                                 </div>
                             </div>
 
                             <CloseModal>
-                                <button type="button" class="bg-green-500 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow w-56 font-bold text-lg">Opslaan
+                                <button on:click={nieuweTest} type="button" class="bg-green-500 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow w-56 font-bold text-lg">Opslaan
                                 <div class="w-5 h-5 ml-5"><IoMdCheckmarkCircle/></div>
                                 </button>
                             </CloseModal>
 
                         </Content>
                         <Trigger>
-                            <button class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
+                            <button on:click={loadTestCategorieënEnEenheden} class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
                                 <div class="w-3 h-3 mr-2"><FaPlus/></div>
                                 Test aanmaken
                             </button>
