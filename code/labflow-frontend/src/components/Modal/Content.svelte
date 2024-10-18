@@ -21,7 +21,8 @@
 		height: 100%;
 		overflow: auto;
 		background-color: rgb(0,0,0); 
-		background-color: rgba(0,0,0,0.4);
+		/* opacity */
+		background-color: rgba(0,0,0,0.7);
 	}
 	.content {
 		position: relative;
@@ -29,14 +30,14 @@
 		margin: 15% auto;
 		padding: 20px;
 		border: 1px solid #888;
-		width: 80%;
+		width: 60%;
 	}
 	.close-button {
 		position: absolute;
 		top: 0;
 		right: 0.5rem;
 		color: #aaa;
-		font-size: 28px;
+		font-size: 40px;
 		font-weight: bold;
 		cursor: pointer;
 	}

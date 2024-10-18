@@ -16,7 +16,11 @@
     // @ts-ignore
     import GoX from 'svelte-icons/go/GoX.svelte'
     import { getUserId } from "$lib/globalFunctions";
+    // popup laborantgegevens
     import Modal from "../../../components/Modal/Modal.svelte";
+    import Content from "../../../components/Modal/Content.svelte";
+    import Trigger from "../../../components/Modal/Trigger.svelte";
+	import AutoTrigger from "../../../components/Modal/AutoTrigger.svelte";
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -150,7 +154,22 @@
 </script>
 
 
+<!-- popup modal voor het ingeven van de laborantgegevens die automatisch opent onmount van de pagina -->
+<Modal>
+	<Content>
+        <h1 class="font-bold text-xl mb-2">laborantgegevens</h1>
+		<div>
+
+        </div>
+	</Content>
+	<AutoTrigger>
+	</AutoTrigger>
+</Modal>
+
+<!-- navbar -->
 <Nav/>
+
+<!-- pagina content -->
 <div class="px-8">
     <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 
