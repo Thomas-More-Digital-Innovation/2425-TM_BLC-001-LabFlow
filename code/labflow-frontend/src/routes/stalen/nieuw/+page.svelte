@@ -31,6 +31,14 @@
     let voornaam = '';
     let geslacht = '';
     let geboortedatum = '';
+
+    let errrorVelden = {
+        naam: false,
+        voornaam: false,
+        geslacht: false,
+        geboortedatum: false
+    }
+
     let userId = getUserId();
 
     // geselecteerde tests
@@ -59,6 +67,7 @@
     function filterTests() {
         filteredTests = tests.filter(test => {
             const codeMatch = test.testCode.toString().toLowerCase().includes(searchCode.toLowerCase());
+            console.log(geselecteerdeTests);
             return codeMatch;
         });
     }
@@ -66,31 +75,59 @@
     // verwijderen van zoekparameter, terug alle tests tonen
     function verwijderZoek() {
         searchCode = '';
-        filterTests();
+        filteredTests = tests;
     }
 
-    // Checken of een test geselecteerd is zodat de checkbox gechecked kan worden
-    function isSelected(testCode: number): boolean {
-        return geselecteerdeTests.includes(testCode);
+    // toevoegen van geselecteerde test, of verwijderen indien al geselecteerd
+    function toggleTestSelectie(testCode: number) {
+        if (geselecteerdeTests.includes(testCode)) {
+            geselecteerdeTests = geselecteerdeTests.filter(code => code !== testCode);
+        } else {
+            geselecteerdeTests = [...geselecteerdeTests, testCode];
+        }
     }
 
-    // Verwijder alle geselecteerde tests
-    function verwijderSelectie() {
-        geselecteerdeTests = [];
-        console.log(geselecteerdeTests);
-    }
-
+    let errorMessage = '';
     // POST: Aanmaken van een nieuwe staal
     async function nieuweStaal() {
+        // Resetten van de errorvelden
+        errrorVelden = { naam: false, voornaam: false, geslacht: false, geboortedatum: false };
+
+        // Validatie van de input
+        let isValid = true;
+
+        if (!naam) {
+            errrorVelden.naam = true;
+            isValid = false;
+        }
+        if (!voornaam) {
+            errrorVelden.voornaam = true;
+            isValid = false;
+        }
+        if (!geboortedatum) {
+            errrorVelden.geboortedatum = true;
+            isValid = false;
+        }
+        if (!geslacht) {
+            errrorVelden.geslacht = true;
+            isValid = false;
+        }
+        // errormessage tonen indien niet alle velden zijn ingevuld
+        if (!isValid) {
+            errorMessage = 'Vul alle verplichte velden in.';
+            return;
+        }
+        
         const geselecteerdeTestsArray = Array.from(geselecteerdeTests).map(testCode => ({
-            test: { testCode: testCode } // van set naar array voor in onze json body, mappen obv testCode
+            test: { testCode: testCode }
         }));
+
         try {
             await fetch("http://localhost:8080/api/createstaal", {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
                 },
                 body: JSON.stringify({
                     staalCode: nieuweStaalCode,
@@ -117,6 +154,9 @@
     <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 
         <h1 class="font-bold text-xl mb-2">Patiëntgegevens</h1>
+        {#if errorMessage}
+            <div class="text-red-500 mb-2">{errorMessage}</div>
+        {/if}
         <div class="flex flex-row space-x-4">
             <!-- Invullen patientgegevens -->
             <div class="grid grid-cols-5 bg-white rounded-lg h-20 w-5/6 space-x-2  px-2">
@@ -131,7 +171,7 @@
                     id="naam"
                     name="naam"
                     bind:value={naam}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVelden.naam ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Voornaam</p>
@@ -140,7 +180,7 @@
                     id="voornaam"
                     name="voornaam"
                     bind:value={voornaam}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVelden.voornaam ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Geboortedatum</p>
@@ -149,17 +189,17 @@
                     id="geboortedatum"
                     name="geboortedatum"
                     bind:value={geboortedatum}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 px-3">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 px-3 {errrorVelden.geboortedatum ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center pl-5">
                     <!-- https://svelte.dev/repl/2b143322f242467fbf2b230baccc0484?version=3.23.2 -->
                     <p class="text-gray-400">Geslacht</p>
                     <div>
-                        <label class="container mr-5">
+                        <label class="container mr-5 {errrorVelden.geslacht ? 'text-red-500 font-bold' : ''}">
                             <input type="radio" name="radio" bind:group={geslacht} value="M">
                             Man
                         </label>
-                        <label class="container">
+                        <label class="container {errrorVelden.geslacht ? 'text-red-500 font-bold' : ''}">
                             <input type="radio" name="radio" bind:group={geslacht} value="V">
                             Vrouw
                         </label>
@@ -201,12 +241,9 @@
                     </button>
                 </div>
             
-                <div class="flex items-center w-1/4">
-                    <!-- verwijder selectie -->
-                    <button on:click={verwijderSelectie} class="bg-red-200 rounded-lg p-3 text-black h-12 w-2/5">Verwijder selectie</button>
-            
+                <div class="flex items-center w-1/3">
                     <!-- dynamisch tonen hoeveel geselecteerde tests -->
-                    <p class="ml-6 pl-5 border-l-2 text-blue-600">
+                    <p class=" text-blue-600">
                         <span>{geselecteerdeTests.length}</span> geselecteerd
                     </p>
                 </div>
@@ -233,12 +270,9 @@
                     <!-- https://svelte.dev/repl/986adbafc5b042cbbf979c1381c7cacc?version=3.50.1 -->
                     <!-- checkbox voor het selecteren van tests -->
                     <input 
-                        type="checkbox" 
-                        checked={isSelected(test.testCode)} 
-                        bind:group={geselecteerdeTests}
-                        name={test}
-                        value={test}
-                        class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">
+                    type="checkbox"
+                    on:change={() => toggleTestSelectie(test.testCode)}
+                    class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">                                                 
                 </div>
                 <div class="col-span-2">
                     <p class="text-gray-400">Code</p>
