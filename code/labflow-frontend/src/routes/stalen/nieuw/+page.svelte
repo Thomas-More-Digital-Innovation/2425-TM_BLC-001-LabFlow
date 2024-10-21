@@ -305,8 +305,8 @@
             <button class="bg-blue-500 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex">Start</button>
         </button>
 	</ContentWithoutClose>
-	<!-- <AutoTrigger>
-	</AutoTrigger> -->
+	<AutoTrigger>
+	</AutoTrigger>
 </Modal>
 {/if}
 
