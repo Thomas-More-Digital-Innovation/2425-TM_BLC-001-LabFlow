@@ -8,8 +8,16 @@
     import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte'
     // @ts-ignore
     import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte'
+    // @ts-ignore
+    import FaCheck from 'svelte-icons/fa/FaCheck.svelte'
+    // @ts-ignore
+    import IoIosClose from 'svelte-icons/io/IoIosClose.svelte'
+    // @ts-ignore
+    import IoMdText from 'svelte-icons/io/IoMdText.svelte'
+
     import { staalCodeStore } from '$lib/store';
 	import { onMount } from "svelte";
+    import { slide } from 'svelte/transition';
 
     // neem de id
     let sampleCode: string | undefined;
@@ -58,6 +66,17 @@
         testCategories = Array.from(categoryMap.values());
         console.log("Unique Test Categories:", testCategories);
     }
+
+    // function for showing the notes
+    let showNoteInput = false; // Track the visibility of the note input field
+
+    function toggleNoteInput() {
+        showNoteInput = !showNoteInput; // Toggle the note input field visibility
+    }
+
+    onMount(() => {
+        loadData();
+    });
 </script>
 
 <Nav/>
@@ -108,22 +127,94 @@
             <!-- left section -->
             <div class="bg-white w-1/3 h-[75vh] rounded-xl p-4">
                 <p class="text-blue-500">3 labels</p>
-                <!-- standaard label -->
-                <div class=" border border-gray-200 rounded-xl flex justify-between items-center p-4 my-3">
-                    <p class="font-bold text-lg">César Van Leuffelen</p>
-                    <p class="py-3 px-8 rounded-full text-white bg-blue-500">standaard</p>
+                <!-- check labels -->
+                <div class=" border border-gray-200 rounded-xl flex justify-between items-center p-4 my-3 hover:bg-gray-100 hover:scale-[101%] transition">
+                    <p class="font-bold text-lg">Done</p>
+                    <div class={`p-3 rounded-full text-white h-12`} style={`background-color: #23E22C;`}><FaCheck /></div>
                 </div>
-                <!-- loop labels -->
-                <LabelCart labelName="Serum" color="#000" />
-                
+                <!-- not check labels -->
+                <div class=" border border-gray-200 rounded-xl flex justify-between items-center p-4 my-3 hover:bg-gray-100 hover:scale-[101%] transition">
+                    <p class="font-bold text-lg">Not Done</p>
+                    <div class={`p-1 rounded-full text-white h-12`} style={`background-color: #E3E3E3;`}><IoIosClose/></div>
+                </div>
             </div>
              <!-- right section -->
             <div class="w-2/3 flex flex-col justify-between space-y-4">
-                <!-- pdf previewer -->
+                <!-- white box -->
                 <div class="w-full h-full bg-white rounded-xl">
-                    
+                    <!-- header-->
+                    <div class="h-1/6 flex justify-between mx-6">
+                        <!-- left -->
+                        <div class="flex justify-start items-center">
+                            <div class={`p-8 rounded-full text-white`} style={`background-color: #000;`}></div>
+                            <h2 class="ml-8 font-bold text-lg">Serum</h2>
+                        </div>
+                        <!-- right (button) -->
+                         <div class="flex justify-end items-center">
+                            <button class="bg-blue-600 text-xl rounded-lg p-3 text-white h-1/2 w-full flex flex-row items-center justify-center">Volgende</button>
+                         </div>
+                    </div>
+                    <!-- List-->
+                     <div class="h-5/6 mx-6">
+                        <div class="w-full p-4 bg-white border border-gray-200 rounded-xl">
+                            <div class="w-full p-4 flex items-center justify-between">
+                                <!-- Code Section -->
+                                <div class="flex flex-col items-start">
+                                    <span class="text-sm text-gray-500">Code</span>
+                                    <span class="text-xl font-semibold">121</span>
+                                </div>
+
+                                <!-- Test Section -->
+                                <div class="flex flex-col items-start">
+                                    <span class="text-sm text-gray-500">Test</span>
+                                    <span class="text-xl font-semibold">HDL-Cholestrol</span>
+                                </div>
+
+                                <!-- Unit Section -->
+                                <div class="flex flex-col items-start">
+                                    <span class="text-sm text-gray-500">Waarde</span>
+                                    <input type="text" class="bg-gray-200 h-10 rounded-lg border border-gray-400 px-1"/>
+                                </div>
+
+                                <!-- Unit Section -->
+                                <div class="flex flex-col items-start">
+                                    <span class="text-sm text-gray-500">Eenheid</span>
+                                    <span class="text-xl font-semibold">mg/dL</span>
+                                </div>
+
+                                <!-- Checkbox Section -->
+                                <div class="flex flex-col items-center">
+                                    <span class="text-sm text-gray-500">Gefaald</span>
+                                    <input type="checkbox" class="w-5 h-5 mt-3 text-blue-500 border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
+                                </div>
+
+                                <!-- nota Section -->
+                                <div>
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-sm text-gray-500">Nota</span>
+                                        <button on:click={toggleNoteInput} class="text-white bg-blue-500 h-12 p-3 rounded-lg">
+                                            <IoMdText />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {#if showNoteInput}
+                                <div>
+                                    <div transition:slide class="mt-4 p-4">
+                                        <span class="text-sm text-gray-500">Nota</span>
+                                        <textarea 
+                                            class="w-full h-20 p-2 rounded-lg border bg-gray-200 border-gray-400 resize-none" 
+                                            placeholder="Voeg een nota toe...">
+                                        </textarea>
+                                    </div>
+                                </div>
+                            {/if}
+                        </div>
+                        
+                    </div>
                 </div>
             </div>
          </div>
     </div>
 </main>
+

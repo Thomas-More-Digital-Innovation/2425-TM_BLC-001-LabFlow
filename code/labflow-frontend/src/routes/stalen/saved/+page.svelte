@@ -20,13 +20,13 @@
     <p class="text-2xl text-gray-600">Je testen zijn geregistreerd. Je kan ze terugvinden op het beginscherm.</p>
     <!-- navigation buttons -->
     <div class="flex justify-center space-x-4 items-center my-6">
-        <button on:click={() => { goto("/stalen") }} class="bg-gray-400 text-lg rounded-lg p-3 w-56 text-white h-14 flex flex-row items-center justify-center">
-                    <div class="w-5 h-5 mr-2"><FaArrowLeft/></div>
-                    Home
+        <button on:click={() => { goto("/stalen/registreren") }} class="bg-gray-400 text-lg rounded-lg p-3 w-56 text-white h-14 flex flex-row items-center justify-center">
+                    <div class="w-5 h-5 mr-2"></div>
+                    Waarde Registreren
                 </button>
                 <!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
-                <button on:click={() => { goto("/stalen/registreren") }} class="bg-blue-600 text-lg rounded-lg w-56 p-3 text-white h-14 flex flex-row items-center justify-center">
-                    Waarde Registreren
+                <button on:click={() => { goto("/stalen") }} class="bg-blue-600 text-lg rounded-lg w-56 p-3 text-white h-14 flex flex-row items-center justify-center">
+                    Home
                     <div class="w-5 h-5 ml-2"><FaArrowRight/></div>
                 </button>
     </div>
