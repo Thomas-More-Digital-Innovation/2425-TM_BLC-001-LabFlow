@@ -26,7 +26,7 @@
     import { id } from "../../../components/Modal/store.js";
 	import Trigger from "../../../components/Modal/Trigger.svelte";
     import Content from "../../../components/Modal/Content.svelte";
-	import CloseModal from "../../../components/Modal/closeModal.svelte";
+	import { onMount } from "svelte";
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -95,7 +95,9 @@
         }
     }
 
-    loadTests();
+    onMount(() => {
+        loadTests();
+    })
 
     // laden categorieën & eenheden voor popup test aanmaken
     async function loadTestCategorieënEnEenheden() {
@@ -103,7 +105,6 @@
             try {
                 testcategorieën = await fetchAll(token, 'testcategorieen');
                 eenheden = await fetchAll(token, 'readeenheid');
-                console.log(eenheden)
             } catch (error) {
                 console.error("testcategorieën/eenheden kon(den) niet gefetched worden:", error);
             }
@@ -150,11 +151,15 @@
         filteredTests = tests;
     }
 
+    // verwijderen van geselecteerde testen
+    function verwijderSelectie() {
+        geselecteerdeTests = [];
+    }
+
     // toevoegen van geselecteerde test, of verwijderen indien al geselecteerd
     function toggleTestSelectie(testCode: number) {
         if (geselecteerdeTests.includes(testCode)) {
             geselecteerdeTests = geselecteerdeTests.filter(code => code !== testCode);
-            console.log(tests);
         } else {
             geselecteerdeTests = [...geselecteerdeTests, testCode];
         }
@@ -399,6 +404,9 @@
                         <GoX />
                     </button>
                 </div>
+
+                <button type="button" on:click={verwijderSelectie} class="bg-red-500 h-12 w-36 rounded-lg text-white mx-6">Verwijder selectie</button>
+
             
                 <div class="flex items-center w-1/3">
                     <!-- dynamisch tonen hoeveel geselecteerde tests -->
@@ -482,6 +490,7 @@
                     <input 
                     type="checkbox"
                     on:change={() => toggleTestSelectie(test.testCode)}
+                    checked={geselecteerdeTests.includes(test.testCode)}
                     class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">                                                 
                 </div>
                 <div class="col-span-2">
