@@ -16,6 +16,11 @@
     // @ts-ignore
     import GoX from 'svelte-icons/go/GoX.svelte'
     import { getUserId } from "$lib/globalFunctions";
+    // popup laborantgegevens
+    import Modal from "../../../components/Modal/Modal.svelte";
+	import AutoTrigger from "../../../components/Modal/AutoTrigger.svelte";
+	import ContentWithoutClose from "../../../components/Modal/ContentWithoutClose.svelte";
+    import { id } from "../../../components/Modal/store.js";
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -31,11 +36,27 @@
     let voornaam = '';
     let geslacht = '';
     let geboortedatum = '';
+
+    // laborantgegevens
+    let laborantNaam = '';
+    let laborantRNummer = '';
+    // modal id
+
+    let errrorVelden = {
+        naam: false,
+        voornaam: false,
+        geslacht: false,
+        geboortedatum: false,
+        laborantNaam: false,
+        laborantRNummer: false
+    }
+
     let userId = getUserId();
 
     // geselecteerde tests
     let geselecteerdeTests: any[] = [];
 
+    let loading = true;
     // fetchen van tests op "tests"
     // verkrijgen nieuwe staalcode op "/api/newStaalCode"
     async function loadData() {
@@ -44,6 +65,7 @@
                 tests = await fetchAll(token, 'tests');
                 filteredTests = tests; // zonder filter worden alle tests ingeladen
                 nieuweStaalCode = await fetchAll(token, 'newStaalCode'); // fetchen van nieuwe staalcode
+                loading = false; // zorgt ervoor dat de modal pas opent wanneer de data is ingeladen
             } catch (error) {
                 console.error("data kon niet gefetched worden:", error);
             }
@@ -55,10 +77,34 @@
 
     loadData();
 
+
+    function setLaborant() {
+        let isValid = false;
+        laborantRNummer = laborantRNummer.toUpperCase();
+        // regex voor R-nummer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes 
+        const regex = /^R\d{7}$/;
+
+        if (!laborantNaam) {
+            errrorVelden.laborantNaam = true;
+        }
+        if (!laborantRNummer) {
+            errrorVelden.laborantRNummer = true;
+        }
+
+        if (laborantNaam && laborantRNummer && regex.test(laborantRNummer)) {
+            isValid = true;
+        }
+        if (isValid) {
+            return $id = null;
+        }
+        return;
+    }
+
     // zoeken op basis van code
     function filterTests() {
         filteredTests = tests.filter(test => {
             const codeMatch = test.testCode.toString().toLowerCase().includes(searchCode.toLowerCase());
+            console.log(geselecteerdeTests);
             return codeMatch;
         });
     }
@@ -66,31 +112,59 @@
     // verwijderen van zoekparameter, terug alle tests tonen
     function verwijderZoek() {
         searchCode = '';
-        filterTests();
+        filteredTests = tests;
     }
 
-    // Checken of een test geselecteerd is zodat de checkbox gechecked kan worden
-    function isSelected(testCode: number): boolean {
-        return geselecteerdeTests.includes(testCode);
+    // toevoegen van geselecteerde test, of verwijderen indien al geselecteerd
+    function toggleTestSelectie(testCode: number) {
+        if (geselecteerdeTests.includes(testCode)) {
+            geselecteerdeTests = geselecteerdeTests.filter(code => code !== testCode);
+        } else {
+            geselecteerdeTests = [...geselecteerdeTests, testCode];
+        }
     }
 
-    // Verwijder alle geselecteerde tests
-    function verwijderSelectie() {
-        geselecteerdeTests = [];
-        console.log(geselecteerdeTests);
-    }
-
+    let errorMessage = '';
     // POST: Aanmaken van een nieuwe staal
     async function nieuweStaal() {
+        // Resetten van de errorvelden
+        errrorVelden = { naam: false, voornaam: false, geslacht: false, geboortedatum: false, laborantNaam: true, laborantRNummer: true };
+
+        // Validatie van de input
+        let isValid = true;
+
+        if (!naam) {
+            errrorVelden.naam = true;
+            isValid = false;
+        }
+        if (!voornaam) {
+            errrorVelden.voornaam = true;
+            isValid = false;
+        }
+        if (!geboortedatum) {
+            errrorVelden.geboortedatum = true;
+            isValid = false;
+        }
+        if (!geslacht) {
+            errrorVelden.geslacht = true;
+            isValid = false;
+        }
+        // errormessage tonen indien niet alle velden zijn ingevuld
+        if (!isValid) {
+            errorMessage = 'Vul alle verplichte velden in.';
+            return;
+        }
+        
         const geselecteerdeTestsArray = Array.from(geselecteerdeTests).map(testCode => ({
-            test: { testCode: testCode } // van set naar array voor in onze json body, mappen obv testCode
+            test: { testCode: testCode }
         }));
+
         try {
             await fetch("http://localhost:8080/api/createstaal", {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
                 },
                 body: JSON.stringify({
                     staalCode: nieuweStaalCode,
@@ -98,12 +172,15 @@
                     patientVoornaam: voornaam,
                     patientGeslacht: geslacht,
                     patientGeboorteDatum: geboortedatum,
+                    laborantNaam: laborantNaam,
+                    laborantRnummer: laborantRNummer,
                     user: {
                         id: userId
                     },
                     registeredTests: geselecteerdeTestsArray
                 }),
             });
+            console.log(laborantNaam, laborantRNummer);
         } catch (error) {
             console.error("staal kon niet worden aangemaakt: ", error);
         }
@@ -112,11 +189,42 @@
 </script>
 
 
+<!-- popup modal voor het ingeven van de laborantgegevens die automatisch opent onmount van de pagina -->
+<!-- loading variabele zorgt ervoor dat de modal pas opent wanneer de data is ingeladen -->
+{#if !loading}
+<Modal>
+	<ContentWithoutClose>
+		<h1 class="font-bold text-xl mb-2">laborantgegevens</h1>
+		<div class="flex space-x-4 mb-4 ">
+			<div class="flex flex-col w-1/2">
+				<label for="naam">Volledige Naam</label>
+				<input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVelden.laborantNaam ? 'border-2 border-red-500' : ''}">
+			</div>
+			<div class="flex flex-col w-1/2">
+                <label for="r-nummer">R-Nummer <span class="{errrorVelden.laborantRNummer ? 'text-red-500 inline-block' : 'hidden'}">moet in format rXXXXXXX met 7 cijfers</span></label>
+				<input type="text" id="r-nummer" name="r-nummer" bind:value={laborantRNummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVelden.laborantRNummer ? 'border-2 border-red-500' : ''}">
+			</div>
+		</div>
+        <button type="button" on:click={setLaborant}>
+            <button class="bg-blue-500 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex">Start</button>
+        </button>
+	</ContentWithoutClose>
+	<AutoTrigger>
+	</AutoTrigger>
+</Modal>
+{/if}
+
+<!-- navbar -->
 <Nav/>
+
+<!-- pagina content -->
 <div class="px-8">
     <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 
         <h1 class="font-bold text-xl mb-2">Patiëntgegevens</h1>
+        {#if errorMessage}
+            <div class="text-red-500 mb-2">{errorMessage}</div>
+        {/if}
         <div class="flex flex-row space-x-4">
             <!-- Invullen patientgegevens -->
             <div class="grid grid-cols-5 bg-white rounded-lg h-20 w-5/6 space-x-2  px-2">
@@ -131,7 +239,7 @@
                     id="naam"
                     name="naam"
                     bind:value={naam}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVelden.naam ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Voornaam</p>
@@ -140,7 +248,7 @@
                     id="voornaam"
                     name="voornaam"
                     bind:value={voornaam}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVelden.voornaam ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Geboortedatum</p>
@@ -149,17 +257,17 @@
                     id="geboortedatum"
                     name="geboortedatum"
                     bind:value={geboortedatum}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 px-3">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 px-3 {errrorVelden.geboortedatum ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center pl-5">
                     <!-- https://svelte.dev/repl/2b143322f242467fbf2b230baccc0484?version=3.23.2 -->
                     <p class="text-gray-400">Geslacht</p>
                     <div>
-                        <label class="container mr-5">
+                        <label class="container mr-5 {errrorVelden.geslacht ? 'text-red-500 font-bold' : ''}">
                             <input type="radio" name="radio" bind:group={geslacht} value="M">
                             Man
                         </label>
-                        <label class="container">
+                        <label class="container {errrorVelden.geslacht ? 'text-red-500 font-bold' : ''}">
                             <input type="radio" name="radio" bind:group={geslacht} value="V">
                             Vrouw
                         </label>
@@ -201,12 +309,9 @@
                     </button>
                 </div>
             
-                <div class="flex items-center w-1/4">
-                    <!-- verwijder selectie -->
-                    <button on:click={verwijderSelectie} class="bg-red-200 rounded-lg p-3 text-black h-12 w-2/5">Verwijder selectie</button>
-            
+                <div class="flex items-center w-1/3">
                     <!-- dynamisch tonen hoeveel geselecteerde tests -->
-                    <p class="ml-6 pl-5 border-l-2 text-blue-600">
+                    <p class=" text-blue-600">
                         <span>{geselecteerdeTests.length}</span> geselecteerd
                     </p>
                 </div>
@@ -233,12 +338,9 @@
                     <!-- https://svelte.dev/repl/986adbafc5b042cbbf979c1381c7cacc?version=3.50.1 -->
                     <!-- checkbox voor het selecteren van tests -->
                     <input 
-                        type="checkbox" 
-                        checked={isSelected(test.testCode)} 
-                        bind:group={geselecteerdeTests}
-                        name={test}
-                        value={test}
-                        class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">
+                    type="checkbox"
+                    on:change={() => toggleTestSelectie(test.testCode)}
+                    class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">                                                 
                 </div>
                 <div class="col-span-2">
                     <p class="text-gray-400">Code</p>
