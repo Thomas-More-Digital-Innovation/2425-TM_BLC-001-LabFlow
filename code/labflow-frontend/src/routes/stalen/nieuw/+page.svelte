@@ -3,6 +3,7 @@
     import { goto } from '$app/navigation';
     import { getCookie, fetchAll } from '$lib/globalFunctions';
     import { getRol } from '$lib/globalFunctions';
+    import { getUserId } from "$lib/globalFunctions";
     // @ts-ignore
     import FaTrashAlt from 'svelte-icons/fa/FaTrashAlt.svelte'
     // @ts-ignore
@@ -15,12 +16,17 @@
     import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte'
     // @ts-ignore
     import GoX from 'svelte-icons/go/GoX.svelte'
-    import { getUserId } from "$lib/globalFunctions";
-    // popup laborantgegevens
+    // @ts-ignore
+    import IoMdCheckmarkCircle from 'svelte-icons/io/IoMdCheckmarkCircle.svelte'
+
+    // popup laborantgegevens, test & categorie aanmaken
     import Modal from "../../../components/Modal/Modal.svelte";
 	import AutoTrigger from "../../../components/Modal/AutoTrigger.svelte";
 	import ContentWithoutClose from "../../../components/Modal/ContentWithoutClose.svelte";
     import { id } from "../../../components/Modal/store.js";
+	import Trigger from "../../../components/Modal/Trigger.svelte";
+    import Content from "../../../components/Modal/Content.svelte";
+	import CloseModal from "../../../components/Modal/closeModal.svelte";
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -39,16 +45,30 @@
 
     // laborantgegevens
     let laborantNaam = '';
-    let laborantRNummer = '';
-    // modal id
+    let laborantRnummer = '';
 
-    let errrorVelden = {
+    let errrorVeldenStaal = {
         naam: false,
         voornaam: false,
         geslacht: false,
         geboortedatum: false,
         laborantNaam: false,
-        laborantRNummer: false
+        laborantRnummer: false
+    }
+
+    // variabelen voor popup test aanmaken
+    let testCode = '';
+    let testNaam = '';
+    let eenheid = '';
+    let testcategorie = '';
+
+    let testcategorieën: any[] = [];
+    let eenheden: any[] = [];
+    let errorVeldenTest = {
+        testCode: false,
+        testNaam: false,
+        eenheid: false,
+        testcategorie: false,
     }
 
     let userId = getUserId();
@@ -59,7 +79,7 @@
     let loading = true;
     // fetchen van tests op "tests"
     // verkrijgen nieuwe staalcode op "/api/newStaalCode"
-    async function loadData() {
+    async function loadTests() {
         if (token != null) {
             try {
                 tests = await fetchAll(token, 'tests');
@@ -67,7 +87,7 @@
                 nieuweStaalCode = await fetchAll(token, 'newStaalCode'); // fetchen van nieuwe staalcode
                 loading = false; // zorgt ervoor dat de modal pas opent wanneer de data is ingeladen
             } catch (error) {
-                console.error("data kon niet gefetched worden:", error);
+                console.error("testen kon niet gefetched worden:", error);
             }
         } else {
             console.error("jwt error");
@@ -75,23 +95,38 @@
         }
     }
 
-    loadData();
+    loadTests();
 
+    // laden categorieën & eenheden voor popup test aanmaken
+    async function loadTestCategorieënEnEenheden() {
+        if (token != null) {
+            try {
+                testcategorieën = await fetchAll(token, 'testcategorieen');
+                eenheden = await fetchAll(token, 'readeenheid');
+                console.log(eenheden)
+            } catch (error) {
+                console.error("testcategorieën/eenheden kon(den) niet gefetched worden:", error);
+            }
+        } else {
+            console.error("jwt error");
+            goto('/login');
+        }
+    }
 
     function setLaborant() {
         let isValid = false;
-        laborantRNummer = laborantRNummer.toUpperCase();
+        laborantRnummer = laborantRnummer.toUpperCase();
         // regex voor R-nummer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes 
         const regex = /^R\d{7}$/;
 
         if (!laborantNaam) {
-            errrorVelden.laborantNaam = true;
+            errrorVeldenStaal.laborantNaam = true;
         }
-        if (!laborantRNummer) {
-            errrorVelden.laborantRNummer = true;
+        if (!laborantRnummer || !regex.test(laborantRnummer)) {
+            errrorVeldenStaal.laborantRnummer = true;
         }
 
-        if (laborantNaam && laborantRNummer && regex.test(laborantRNummer)) {
+        if (laborantNaam && laborantRnummer && regex.test(laborantRnummer)) {
             isValid = true;
         }
         if (isValid) {
@@ -119,39 +154,92 @@
     function toggleTestSelectie(testCode: number) {
         if (geselecteerdeTests.includes(testCode)) {
             geselecteerdeTests = geselecteerdeTests.filter(code => code !== testCode);
+            console.log(tests);
         } else {
             geselecteerdeTests = [...geselecteerdeTests, testCode];
         }
     }
 
-    let errorMessage = '';
+    // POST: Aanmaken van een nieuwe test
+    let errorMessageTest = '';
+    async function nieuweTest() {
+        // resetten errorvelden
+        errorVeldenTest = { testCode: false, testNaam: false, eenheid: false, testcategorie: false };
+        let isValid = true;
+
+        if (!testCode) {
+            errorVeldenTest.testCode = true;
+            isValid = false;
+        }
+        if (!testNaam) {
+            errorVeldenTest.testNaam = true;
+            isValid = false;
+        }
+        if (!eenheid) {
+            errorVeldenTest.eenheid = true;
+            isValid = false;
+        }
+        if (!testcategorie) {
+            errorVeldenTest.testcategorie = true;
+            isValid = false;
+        }
+        if (!isValid) {
+            errorMessageTest = 'Vul alle verplichte velden in.';
+            return;
+        } try {
+            await fetch("http://localhost:8080/api/createtest", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    testCode: testCode,
+                    naam: testNaam,
+                    eenheid: {
+                        id: eenheid
+                    },
+                    testcategorie: {
+                        id: testcategorie
+                    }
+                }),
+            });
+        } catch (error) {
+            console.error("test kon niet worden aangemaakt: ", error);
+        }
+        tests = await fetchAll(token, 'tests'); // tests refreshen, triggert een refresh
+        filteredTests = tests;
+        return $id = null;
+    }
+
+    let errorMessageStaal = '';
     // POST: Aanmaken van een nieuwe staal
     async function nieuweStaal() {
         // Resetten van de errorvelden
-        errrorVelden = { naam: false, voornaam: false, geslacht: false, geboortedatum: false, laborantNaam: true, laborantRNummer: true };
+        errrorVeldenStaal = { naam: false, voornaam: false, geslacht: false, geboortedatum: false, laborantNaam: true, laborantRnummer: true };
 
         // Validatie van de input
         let isValid = true;
 
         if (!naam) {
-            errrorVelden.naam = true;
+            errrorVeldenStaal.naam = true;
             isValid = false;
         }
         if (!voornaam) {
-            errrorVelden.voornaam = true;
+            errrorVeldenStaal.voornaam = true;
             isValid = false;
         }
         if (!geboortedatum) {
-            errrorVelden.geboortedatum = true;
+            errrorVeldenStaal.geboortedatum = true;
             isValid = false;
         }
         if (!geslacht) {
-            errrorVelden.geslacht = true;
+            errrorVeldenStaal.geslacht = true;
             isValid = false;
         }
-        // errormessage tonen indien niet alle velden zijn ingevuld
+        // errorMessageStaal tonen indien niet alle velden zijn ingevuld
         if (!isValid) {
-            errorMessage = 'Vul alle verplichte velden in.';
+            errorMessageStaal = 'Vul alle verplichte velden in.';
             return;
         }
         
@@ -173,14 +261,13 @@
                     patientGeslacht: geslacht,
                     patientGeboorteDatum: geboortedatum,
                     laborantNaam: laborantNaam,
-                    laborantRnummer: laborantRNummer,
+                    laborantRnummer: laborantRnummer,
                     user: {
                         id: userId
                     },
                     registeredTests: geselecteerdeTestsArray
                 }),
             });
-            console.log(laborantNaam, laborantRNummer);
         } catch (error) {
             console.error("staal kon niet worden aangemaakt: ", error);
         }
@@ -198,11 +285,11 @@
 		<div class="flex space-x-4 mb-4 ">
 			<div class="flex flex-col w-1/2">
 				<label for="naam">Volledige Naam</label>
-				<input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVelden.laborantNaam ? 'border-2 border-red-500' : ''}">
+				<input type="text" id="naam" name="naam" bind:value={laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVeldenStaal.laborantNaam ? 'border-2 border-red-500' : ''}">
 			</div>
 			<div class="flex flex-col w-1/2">
-                <label for="r-nummer">R-Nummer <span class="{errrorVelden.laborantRNummer ? 'text-red-500 inline-block' : 'hidden'}">moet in format rXXXXXXX met 7 cijfers</span></label>
-				<input type="text" id="r-nummer" name="r-nummer" bind:value={laborantRNummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVelden.laborantRNummer ? 'border-2 border-red-500' : ''}">
+                <label for="r-nummer">R-Nummer <span class="{errrorVeldenStaal.laborantRnummer ? 'text-red-500 inline-block' : 'hidden'}">moet in format rXXXXXXX met 7 cijfers</span></label>
+				<input type="text" id="r-nummer" name="r-nummer" bind:value={laborantRnummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3 {errrorVeldenStaal.laborantRnummer ? 'border-2 border-red-500' : ''}">
 			</div>
 		</div>
         <button type="button" on:click={setLaborant}>
@@ -222,8 +309,8 @@
     <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 
         <h1 class="font-bold text-xl mb-2">Patiëntgegevens</h1>
-        {#if errorMessage}
-            <div class="text-red-500 mb-2">{errorMessage}</div>
+        {#if errorMessageStaal}
+            <div class="text-red-500 mb-2">{errorMessageStaal}</div>
         {/if}
         <div class="flex flex-row space-x-4">
             <!-- Invullen patientgegevens -->
@@ -239,7 +326,7 @@
                     id="naam"
                     name="naam"
                     bind:value={naam}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVelden.naam ? 'border-2 border-red-500' : ''}">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVeldenStaal.naam ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Voornaam</p>
@@ -248,7 +335,7 @@
                     id="voornaam"
                     name="voornaam"
                     bind:value={voornaam}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVelden.voornaam ? 'border-2 border-red-500' : ''}">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 {errrorVeldenStaal.voornaam ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Geboortedatum</p>
@@ -257,17 +344,17 @@
                     id="geboortedatum"
                     name="geboortedatum"
                     bind:value={geboortedatum}
-                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 px-3 {errrorVelden.geboortedatum ? 'border-2 border-red-500' : ''}">
+                    class="rounded-lg text-black bg-gray-200 h-10 pl-3 px-3 {errrorVeldenStaal.geboortedatum ? 'border-2 border-red-500' : ''}">
                 </div>
                 <div class="flex flex-col justify-center pl-5">
                     <!-- https://svelte.dev/repl/2b143322f242467fbf2b230baccc0484?version=3.23.2 -->
                     <p class="text-gray-400">Geslacht</p>
                     <div>
-                        <label class="container mr-5 {errrorVelden.geslacht ? 'text-red-500 font-bold' : ''}">
+                        <label class="container mr-5 {errrorVeldenStaal.geslacht ? 'text-red-500 font-bold' : ''}">
                             <input type="radio" name="radio" bind:group={geslacht} value="M">
                             Man
                         </label>
-                        <label class="container {errrorVelden.geslacht ? 'text-red-500 font-bold' : ''}">
+                        <label class="container {errrorVeldenStaal.geslacht ? 'text-red-500 font-bold' : ''}">
                             <input type="radio" name="radio" bind:group={geslacht} value="V">
                             Vrouw
                         </label>
@@ -316,17 +403,68 @@
                     </p>
                 </div>
             
-                <!-- knoppen voor aanmaken cat & test -->
+                <!-- knoppen en modals voor aanmaken cat & test -->
                 <div class="flex flex-row justify-end space-x-2 w-1/3">
                     {#if rol === 'admin'}
                     <button class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
                         <div class="w-3 h-3 mr-2"><FaPlus/></div>
                         Categorie aanmaken
                     </button>
-                    <button class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
-                        <div class="w-3 h-3 mr-2"><FaPlus/></div>
-                        Test aanmaken
-                    </button>
+
+                    <Modal>
+                        <Content>
+                            <h1 class="font-bold text-xl mb-4">Test Aanmaken</h1>
+                            {#if errorMessageTest}
+                            <div class="text-red-500 mb-2">{errorMessageTest}</div>
+                            {/if}
+                            <div class="flex flex-row space-x-4">
+                                <div class="flex flex-col w-1/2">
+                                    <label for="testCode">Testcode</label>
+                                    <input type="text" id="testCode" name="testCode" bind:value={testCode} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                    {errorVeldenTest.testCode ? 'border-2 border-red-500' : ''}">
+                                </div>
+                                <div class="flex flex-col w-1/2">
+                                    <label for="testNaam">Eenheid</label>
+                                    <select id="eenheid" name="eenheid" bind:value={eenheid} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                    {errorVeldenTest.eenheid ? 'border-2 border-red-500' : ''}">
+                                        <option value="" disabled>Selecteer een eenheid</option>
+                                        {#each eenheden as eenheid}
+                                            <option value={eenheid.id}>{eenheid.naam} ({eenheid.afkorting})</option>
+                                        {/each}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex flex-row space-x-4 my-4">
+                                <div class="flex flex-col w-1/2">
+                                    <label for="naam">Naam</label>
+                                    <input type="text" id="naam" name="naam" bind:value={testNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                    {errorVeldenTest.testNaam ? 'border-2 border-red-500' : ''}">
+                                </div>
+                                <!-- https://svelte.dev/repl/16778e290bf548f790dc45d249bed94d?version=3.46.4  -->
+                                <div class="flex flex-col w-1/2">
+                                    <label for="testcategorie">Categorie</label>
+                                    <select id="testcategorie" name="testcategorie" bind:value={testcategorie} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                    {errorVeldenTest.testcategorie ? 'border-2 border-red-500' : ''}">
+                                        <option value="" disabled>Selecteer een categorie</option>
+                                        {#each testcategorieën as categorie}
+                                            <option value={categorie.id}>{categorie.naam}</option>
+                                        {/each}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button on:click={nieuweTest} type="button" class="bg-green-500 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow w-56 font-bold text-lg">Opslaan
+                            <div class="w-5 h-5 ml-5"><IoMdCheckmarkCircle/></div>
+                            </button>
+                        </Content>
+
+                        <Trigger>
+                            <button on:click={loadTestCategorieënEnEenheden} class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
+                                <div class="w-3 h-3 mr-2"><FaPlus/></div>
+                                Test aanmaken
+                            </button>
+                        </Trigger>
+                    </Modal>
                     {/if}
                 </div>
             </div>
@@ -343,16 +481,20 @@
                     class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">                                                 
                 </div>
                 <div class="col-span-2">
-                    <p class="text-gray-400">Code</p>
+                    <p class="text-gray-400">Testcode</p>
                     <p>{test?.testCode || 'Loading...'}</p>
                 </div>
-                <div class="col-span-5">
+                <div class="col-span-4">
                     <p class="text-gray-400">Naam</p>
                     <p class="truncate">{test?.naam || 'Loading...'}</p>
                 </div>
-                <div class="col-span-3">
+                <div class="col-span-2">
                     <p class="text-gray-400">Categorie</p>
                     <p>{test?.testcategorie.naam || 'Loading...'}</p>
+                </div>
+                <div class="col-span-2">
+                    <p class="text-gray-400">Eenheid</p>
+                    <p>{test?.eenheid.naam || 'Loading...'}</p>
                 </div>
                 <!-- admin-only crud knoppen -->
                 {#if rol === 'admin'}
