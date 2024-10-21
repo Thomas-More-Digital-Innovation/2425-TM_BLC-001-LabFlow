@@ -30,6 +30,7 @@
     import Content from "../../../components/Modal/Content.svelte";
     // https://svelte-awesome-color-picker.vercel.app/
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
+    import { loadTestCategorieën, loadEenheden } from '$lib/fetchFunctions';
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -110,20 +111,6 @@
         loadTests();
     })
 
-    // laden categorieën & eenheden voor popup test aanmaken
-    async function loadTestCategorieënEnEenheden() {
-        if (token != null) {
-            try {
-                testcategorieën = await fetchAll(token, 'testcategorieen');
-                eenheden = await fetchAll(token, 'readeenheid');
-            } catch (error) {
-                console.error("testcategorieën/eenheden kon(den) niet gefetched worden:", error);
-            }
-        } else {
-            console.error("jwt error");
-            goto('/login');
-        }
-    }
 
     function setLaborant() {
         let isValid = false;
@@ -642,7 +629,13 @@
                         </Content>
 
                         <Trigger>
-                            <button on:click={loadTestCategorieënEnEenheden} class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
+                            <button on:click={async () => { 
+                                const fetchedTestcategorieën = await loadTestCategorieën(); 
+                                const fetchedEenheden = await loadEenheden(); 
+                            
+                                if (fetchedTestcategorieën) testcategorieën = fetchedTestcategorieën;
+                                if (fetchedEenheden) eenheden = fetchedEenheden;
+                            }} class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
                                 <div class="w-3 h-3 mr-2"><FaPlus/></div>
                                 Test aanmaken
                             </button>
@@ -686,7 +679,7 @@
                             <!-- Edit Button -->
                             <Modal>
                                 <Trigger>
-                                    <button type="button" class="h-10 w-10 bg-blue-400 p-2 rounded-lg text-white" on:click={() => { openModalTestId = test.id; loadTestCategorieënEnEenheden(); }}>
+                                    <button type="button" class="h-10 w-10 bg-blue-400 p-2 rounded-lg text-white" on:click={() => { openModalTestId = test.id; loadTestCategorieën(); loadEenheden(); }}>
                                         <FaRegEdit />
                                     </button>
                                 </Trigger>

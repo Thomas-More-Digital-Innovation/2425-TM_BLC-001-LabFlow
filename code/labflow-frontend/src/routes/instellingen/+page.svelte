@@ -1,5 +1,5 @@
 <script>
-    import Nav from "../../components/nav.svelte";
+    import Nav from '../../components/nav.svelte';
     // @ts-ignore
     import FaClipboardList from 'svelte-icons/fa/FaClipboardList.svelte';
     // @ts-ignore
@@ -13,7 +13,7 @@
     let navElement = "Categorie";
 </script>
 
-<Nav />
+<Nav/>
 <div class="px-8 flex flex-row">
 
     <!-- 3 knoppen -->
