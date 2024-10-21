@@ -2,4 +2,7 @@
     import '../app.css'
 </script>    
 
-<slot /> <!-- Include this to allow child components to render -->
+<body class="h-screen">
+    <slot /> <!-- Include this to allow child components to render -->
+</body>
+
