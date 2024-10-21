@@ -387,7 +387,7 @@
             return;
         }
         try {
-            await fetch(`http://localhost:8080/api/updatetest/${test.id}`, {
+            const response = await fetch(`http://localhost:8080/api/updatetest/${test.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -404,12 +404,18 @@
                     }
                 }),
             });
+            const data = await response.status;
+            if (data === 409) {
+                editTestErrorMessage = 'De testcode bestaat al.';
+            } else {
+                return $id = null;
+            }
         } catch (error) {
-            console.error("categorie kon niet worden aangemaakt: ", error);
+            console.error("test kon niet worden aangepast: ", error);
+            return;
         }
-        return $id = null;
+        
     }
-
 </script>
 
 
@@ -671,7 +677,7 @@
                     </div>
                     <div class="col-span-2">
                         <p class="text-gray-400">Eenheid</p>
-                        <p>{test?.eenheid.afkorting || ''}: {test?.eenheid.naam || ''}</p>
+                        <p class="truncate">{test?.eenheid.afkorting || ''}: {test?.eenheid.naam || ''}</p>
                     </div> 
 
                     <!-- Admin-only CRUD buttons -->
@@ -680,7 +686,7 @@
                             <!-- Edit Button -->
                             <Modal>
                                 <Trigger>
-                                    <button class="h-10 w-10 bg-blue-400 p-2 rounded-lg text-white" on:click={() => { openModalTestId = test.id; loadTestCategorieënEnEenheden(); }}>
+                                    <button type="button" class="h-10 w-10 bg-blue-400 p-2 rounded-lg text-white" on:click={() => { openModalTestId = test.id; loadTestCategorieënEnEenheden(); }}>
                                         <FaRegEdit />
                                     </button>
                                 </Trigger>

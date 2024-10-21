@@ -14,6 +14,7 @@ public class Test {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // voor auto-increment in SQLite
     private Long id;
 
+    @Column(unique = true)
     private String testCode;
 
     private String naam;
