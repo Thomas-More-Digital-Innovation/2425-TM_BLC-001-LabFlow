@@ -4,6 +4,8 @@
     import { getCookie, fetchAll } from '$lib/globalFunctions';
     import { getRol } from '$lib/globalFunctions';
     import { getUserId } from "$lib/globalFunctions";
+    import { onMount } from "svelte";
+
     // @ts-ignore
     import FaTrashAlt from 'svelte-icons/fa/FaTrashAlt.svelte'
     // @ts-ignore
@@ -26,10 +28,12 @@
     import { id } from "../../../components/Modal/store.js";
 	import Trigger from "../../../components/Modal/Trigger.svelte";
     import Content from "../../../components/Modal/Content.svelte";
-	import { onMount } from "svelte";
+    // https://svelte-awesome-color-picker.vercel.app/
+	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 
     // voor het inladen van crud voor admins
     const rol = getRol();
+    let userId = getUserId();
 
     let tests: any[] = [];
     let filteredTests: any[] = [];
@@ -71,7 +75,14 @@
         testcategorie: false,
     }
 
-    let userId = getUserId();
+    // variabelen voor popup categorie aanmaken
+    let categorienaam = '';
+    let hex = "";
+
+    let errorVeldenCategorie = {
+        categorienaam: false,
+        kleur: false,
+    }
 
     // geselecteerde tests
     let geselecteerdeTests: any[] = [];
@@ -282,6 +293,45 @@
         }
         return goto("/stalen/labels");
     }
+
+    let errorMessageCategorie = '';
+        // POST: Aanmaken van een nieuwe categorie
+        async function nieuweCategorie() {
+            errorVeldenCategorie = { categorienaam: false, kleur: false };
+            let isValid = true;
+            const regex = /^#([0-9A-F]{3}){1,2}$/i;
+
+            if (!categorienaam) {
+                errorVeldenCategorie.categorienaam = true;
+                isValid = false;
+            }
+            if (!hex || !regex.test(hex)) {
+                errorVeldenCategorie.kleur = true;
+                isValid = false;
+            }
+            // errorMessageStaal tonen indien niet alle velden zijn ingevuld
+            if (!isValid) {
+                errorMessageCategorie = 'Geef de categorie een naam en een kleur.';
+                return;
+            }
+
+            try {
+            await fetch("http://localhost:8080/api/createtestcategorie", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    naam: categorienaam,
+                    kleur: hex,
+                }),
+            });
+        } catch (error) {
+            console.error("categorie kon niet worden aangemaakt: ", error);
+        }
+        return $id = null;
+    }
 </script>
 
 
@@ -305,8 +355,8 @@
             <button class="bg-blue-500 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex">Start</button>
         </button>
 	</ContentWithoutClose>
-	<AutoTrigger>
-	</AutoTrigger>
+	<!-- <AutoTrigger>
+	</AutoTrigger> -->
 </Modal>
 {/if}
 
@@ -418,10 +468,47 @@
                 <!-- knoppen en modals voor aanmaken cat & test -->
                 <div class="flex flex-row justify-end space-x-2 w-1/3">
                     {#if rol === 'admin'}
-                    <button class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
-                        <div class="w-3 h-3 mr-2"><FaPlus/></div>
-                        Categorie aanmaken
-                    </button>
+                    <Modal>
+                        <Content>
+                            <h1 class="font-bold text-xl mb-4">Categorie Aanmaken</h1>
+                            {#if errorMessageCategorie}
+                            <div class="text-red-500 mb-2">{errorMessageCategorie}</div>
+                            {/if}
+                            <div class="w-200 flex flex-row place-content-between">
+                                <div class="flex flex-col w-3/5 place-content-between">
+                                    <div class="flex flex-col">
+                                        <label for="categorienaam">Naam</label>
+                                        <input type="text" id="categorienaam" name="categorienaam" bind:value={categorienaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                        {errorVeldenCategorie.categorienaam ? 'border-2 border-red-500' : ''}">
+                                    </div>
+                                    <div>
+                                        <button on:click={nieuweCategorie} type="button" class="bg-green-500 rounded-lg p-3 mb-3 text-black h-12 flex flex-row items-center justify-center flex-grow w-56 font-bold text-lg">Opslaan
+                                            <div class="w-5 h-5 ml-5"><IoMdCheckmarkCircle/></div>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col">
+                                    <label for="kleur" class="pl-2 {errorVeldenCategorie.kleur ? 'text-red-500 font-bold' : ''}">Kleur</label>
+                                    <div>
+                                        <ColorPicker
+                                            bind:hex
+                                            components={ChromeVariant}
+                                            sliderDirection="horizontal"
+                                            isDialog={false}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </Content>
+
+                        <Trigger>
+                            <button class="bg-gray-200 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow">
+                                <div class="w-3 h-3 mr-2"><FaPlus/></div>
+                                Categorie aanmaken
+                            </button>
+                        </Trigger>
+
+                    </Modal>
 
                     <Modal>
                         <Content>
