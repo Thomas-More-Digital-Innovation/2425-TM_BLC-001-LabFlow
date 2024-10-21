@@ -679,7 +679,14 @@
                             <!-- Edit Button -->
                             <Modal>
                                 <Trigger>
-                                    <button type="button" class="h-10 w-10 bg-blue-400 p-2 rounded-lg text-white" on:click={() => { openModalTestId = test.id; loadTestCategorieën(); loadEenheden(); }}>
+                                    <button type="button" class="h-10 w-10 bg-blue-400 p-2 rounded-lg text-white" on:click={async () => { 
+                                        openModalTestId = test.id;
+                                        
+                                        const fetchedTestcategorieën = await loadTestCategorieën(); 
+                                        const fetchedEenheden = await loadEenheden();
+                                        if (fetchedTestcategorieën) testcategorieën = fetchedTestcategorieën;
+                                        if (fetchedEenheden) eenheden = fetchedEenheden;
+                                    }}>
                                         <FaRegEdit />
                                     </button>
                                 </Trigger>
