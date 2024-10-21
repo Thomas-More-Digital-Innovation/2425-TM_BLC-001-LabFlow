@@ -16,7 +16,7 @@
     // @ts-ignore
     import GoX from 'svelte-icons/go/GoX.svelte'
     import { getUserId } from "$lib/globalFunctions";
-    import { id } from '$lib/store';
+    import { staalId } from '$lib/store';
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -107,7 +107,7 @@
             });
             // César: doorgeven van aangemaakte staal's id naar volgend scherm
             const data = await response.json();
-            id.set(data.id);
+            staalId.set(data.id);
 
         } catch (error) {
             console.error("staal kon niet worden aangemaakt: ", error);

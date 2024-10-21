@@ -8,12 +8,12 @@
     import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte'
     // @ts-ignore
     import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte'
-    import { id } from '$lib/store';
+    import { staalId } from '$lib/store';
 	import { onMount } from "svelte";
 
     // neem de id
     let sampleId: string | undefined;
-    id.subscribe(value => {
+    staalId.subscribe(value => {
         sampleId = value;
     });
     
