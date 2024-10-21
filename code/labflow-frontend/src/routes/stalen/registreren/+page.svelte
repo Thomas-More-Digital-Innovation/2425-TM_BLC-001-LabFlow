@@ -58,38 +58,6 @@
         testCategories = Array.from(categoryMap.values());
         console.log("Unique Test Categories:", testCategories);
     }
-
-    // load the pdf
-    let pdfSrc = '';
-
-    async function loadPdf() {
-        try {
-            const response = await fetch(`http://localhost:8080/api/pdf/generatelabel/${staalId}`, {
-                method: 'GET', // Change to POST if necessar
-                headers: {
-                'Content-Type': 'application/pdf', // Ensure correct content-type
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch the PDF');
-            }
-
-            // Convert response to blob
-            const pdfBlob = await response.blob();
-
-            // Create a URL for the blob and set it as the iframe source
-            pdfSrc = URL.createObjectURL(pdfBlob);
-            console.log('PDF URL:', pdfSrc);
-        } catch (error) {
-            console.error('Error fetching PDF:', error);
-        }
-    }
-
-    onMount(() => {
-        loadData();
-    })
-
 </script>
 
 <Nav/>
@@ -129,7 +97,7 @@
                     Annuleren
                 </button>
                 <!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
-                <button on:click={() => { goto("/stalen/saved") }} class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
+                <button on:click={() => { goto("/stalen/done") }} class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
                     Volgende
                     <div class="w-5 h-5 ml-2"><FaArrowRight/></div>
                 </button>
@@ -139,47 +107,22 @@
          <div class="flex space-x-4 h-full">
             <!-- left section -->
             <div class="bg-white w-1/3 h-[75vh] rounded-xl p-4">
-                <p class="text-blue-500">{testCategories.length + 1} labels</p>
+                <p class="text-blue-500">3 labels</p>
                 <!-- standaard label -->
                 <div class=" border border-gray-200 rounded-xl flex justify-between items-center p-4 my-3">
                     <p class="font-bold text-lg">César Van Leuffelen</p>
                     <p class="py-3 px-8 rounded-full text-white bg-blue-500">standaard</p>
                 </div>
                 <!-- loop labels -->
-                 {#each testCategories as testcategorie}
-                    <LabelCart labelName={testcategorie.naam} color={testcategorie.kleur} />
-                 {/each}
+                <LabelCart labelName="Serum" color="#000" />
+                
             </div>
              <!-- right section -->
             <div class="w-2/3 flex flex-col justify-between space-y-4">
                 <!-- pdf previewer -->
-                <div class="w-full h-4/5">
-                    <iframe src="http://localhost:8080/files/label_Maes_Victor.pdf" title="pdf label preview" width="100%" class="h-full rounded-xl" />
+                <div class="w-full h-full bg-white rounded-xl">
+                    
                 </div>
-                <!-- bedienings knoppen -->
-                 <div class="w-full h-1/5 bg-slate-200 flex justify-between items-baseline">
-                    <!-- left button-->
-                    <div class="w-1/4 mt-auto">
-                        <button class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-full flex flex-row items-center justify-center">
-                            afdrukken
-                        </button>
-                    </div>
-                    <!-- right selects -->
-                    <div class=" w-2/4 mt-auto flex justify-between items-center">
-                        <div class="w-1/2">
-                            <p>hoeveelheid</p>
-                            <input type="number" placeholder="0" class="rounded-lg text-xl p-3 h-20 w-11/12 bg-white border border-gray-400">
-                        </div>
-                        <div class="w-1/2">
-                            <p>printer</p>
-                            <select class="rounded-lg text-xl p-3 h-20 bg-white w-full border border-gray-400">
-                                <option value="standaard">- selecteer -</option>
-                                <option value="heparine">printer lokaal A</option>
-                                <option value="heparine">printer lokaal B</option>
-                            </select>
-                        </div>
-                    </div>
-                 </div>
             </div>
          </div>
     </div>

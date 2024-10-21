@@ -50,8 +50,8 @@ public class StaalController {
     public String newStaalCode() { return staalService.newStaalCode(); }
 
     // Krijg een staal op basis van id
-    @GetMapping("/staal/{id}")
-    public Staal getStaal(@PathVariable Long id) {
-        return staalService.readById(id);
+    @GetMapping("/staal/{code}")
+    public Staal getStaal(@PathVariable int code) {
+        return staalService.readByStaalCode(code);
     }
 }

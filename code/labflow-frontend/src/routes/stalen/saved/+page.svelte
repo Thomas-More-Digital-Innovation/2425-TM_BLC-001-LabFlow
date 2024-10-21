@@ -25,7 +25,7 @@
                     Home
                 </button>
                 <!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
-                <button on:click={() => { goto("/stalen") }} class="bg-blue-600 text-lg rounded-lg w-56 p-3 text-white h-14 flex flex-row items-center justify-center">
+                <button on:click={() => { goto("/stalen/registreren") }} class="bg-blue-600 text-lg rounded-lg w-56 p-3 text-white h-14 flex flex-row items-center justify-center">
                     Waarde Registreren
                     <div class="w-5 h-5 ml-2"><FaArrowRight/></div>
                 </button>
