@@ -15,7 +15,6 @@
     import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte'
     // @ts-ignore
     import GoX from 'svelte-icons/go/GoX.svelte'
-    import { getUserId } from "$lib/globalFunctions";
     import { staalId } from '$lib/store';
 
     // voor het inladen van crud voor admins
