@@ -332,6 +332,24 @@
         }
         return $id = null;
     }
+
+    // crud buttons voor admin
+     async function deleteTest(id: number) {
+        console.log(id);
+
+        try {
+            await fetch(`http://localhost:8080/api/deletetest/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+            });
+        } catch (error) {
+            console.error("Test kon niet worden verwijderd: ", error);
+        }
+        loadTests();
+        return;
+    }
 </script>
 
 
@@ -355,8 +373,8 @@
             <button class="bg-blue-500 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex">Start</button>
         </button>
 	</ContentWithoutClose>
-	<AutoTrigger>
-	</AutoTrigger>
+	<!-- <AutoTrigger>
+	</AutoTrigger> -->
 </Modal>
 {/if}
 
@@ -488,7 +506,7 @@
                                     </div>
                                 </div>
                                 <div class="flex flex-col">
-                                    <label for="kleur" class="pl-2 {errorVeldenCategorie.kleur ? 'text-red-500 font-bold' : ''}">Kleur</label>
+                                    <p class="pl-2 {errorVeldenCategorie.kleur ? 'text-red-500 font-bold' : ''}">Kleur</p>
                                     <div>
                                         <ColorPicker
                                             bind:hex
@@ -569,7 +587,7 @@
             </div>
             
             <!-- tabel met alle tests -->
-            {#each filteredTests as test}
+            {#each filteredTests as test, index}
             <div class="grid grid-cols-12 gap-4 h-16 items-center px-3 border-b border-gray-300">
                 <div class="col-span-1">
                     <!-- https://svelte.dev/repl/986adbafc5b042cbbf979c1381c7cacc?version=3.50.1 -->
@@ -602,9 +620,20 @@
                     <div class="h-10 w-10 bg-blue-400 p-2 rounded-lg text-white">
                         <FaRegEdit />
                     </div>
-                    <div class="h-10 w-10 bg-red-500 p-2 rounded-lg text-white">
-                        <FaTrashAlt />
-                    </div>
+                    {#if test.confirmDelete}
+                        <button type="button" on:click={() => deleteTest(test?.id)} class="h-10 w-10 bg-red-500 p-2 rounded-lg text-white">
+                            <FaTrashAlt />
+                        </button>
+                    {:else}
+                        <button type="button" on:click={() => {
+                            filteredTests.forEach((t, i) => {
+                                if (i !== index) t.confirmDelete = false;
+                            });
+                            test.confirmDelete = true;
+                        }} class="h-10 w-10 bg-red-300 p-2 rounded-lg text-white">
+                            <GoX />
+                        </button>
+                    {/if}
                 </div>
                 {/if}
             </div>
