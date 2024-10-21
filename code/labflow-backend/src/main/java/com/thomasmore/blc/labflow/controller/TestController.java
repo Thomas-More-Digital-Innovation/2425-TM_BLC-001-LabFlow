@@ -15,7 +15,7 @@ public class TestController {
     private TestService testService;
 
     // create
-    @PostMapping("/createTest")
+    @PostMapping("/createtest")
     public void create(@RequestBody Test test) {
         testService.create(test);
     }
@@ -27,13 +27,13 @@ public class TestController {
     }
 
     // update
-    @PutMapping("/updateTest/{id}")
+    @PutMapping("/updatetest/{id}")
     public ResponseEntity<Test> update(@PathVariable Long id, @RequestBody Test test) {
         return testService.update(id, test);
     }
 
     // delete
-    @DeleteMapping("/deleteTest/{id}")
+    @DeleteMapping("/deletetest/{id}")
     public ResponseEntity<Integer> delete(@PathVariable Long id) {
         return testService.delete(id);
     }
