@@ -332,6 +332,90 @@
         }
         return $id = null;
     }
+
+    // crud buttons voor admin
+     async function deleteTest(id: number) {
+        console.log(id);
+
+        try {
+            await fetch(`http://localhost:8080/api/deletetest/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+            });
+        } catch (error) {
+            console.error("Test kon niet worden verwijderd: ", error);
+        }
+        loadTests();
+        return;
+    }
+
+    // variabele voor het openen van de modal voor de juiste test
+    let openModalTestId: number | null = null;
+
+    let editTestError = {
+        testCode: false,
+        naam: false,
+        eenheid: false,
+        testcategorie: false
+    }
+    let editTestErrorMessage = '';
+    // edit de test: PUT request
+    async function editTest(test: any) {
+        editTestError = { testCode: false, naam: false, eenheid: false, testcategorie: false };
+        let isValid = true;
+
+        if (!test.testCode) {
+            editTestError.testCode = true;
+            isValid = false;
+        }
+        if (!test.naam) {
+            editTestError.naam = true;
+            isValid = false;
+        }
+        if (!test.eenheid.id) {
+            editTestError.eenheid = true;
+            isValid = false;
+        }
+        if (!test.testcategorie.id) {
+            editTestError.testcategorie = true;
+            isValid = false;
+        }
+        if (!isValid) {
+            editTestErrorMessage = 'Vul alle verplichte velden in.';
+            return;
+        }
+        try {
+            const response = await fetch(`http://localhost:8080/api/updatetest/${test.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    testCode: test.testCode,
+                    naam: test.naam,
+                    eenheid: {
+                        id: test.eenheid.id
+                    },
+                    testcategorie: {
+                        id: test.testcategorie.id
+                    }
+                }),
+            });
+            const data = await response.status;
+            if (data === 409) {
+                editTestErrorMessage = 'De testcode bestaat al.';
+            } else {
+                return $id = null;
+            }
+        } catch (error) {
+            console.error("test kon niet worden aangepast: ", error);
+            return;
+        }
+        
+    }
 </script>
 
 
@@ -376,7 +460,7 @@
             <div class="grid grid-cols-5 bg-white rounded-lg h-20 w-5/6 space-x-2  px-2">
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Code</p>
-                    <p class="font-bold">{nieuweStaalCode || "loading..."}</p>
+                    <p class="font-bold">{nieuweStaalCode || ""}</p>
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Achternaam</p>
@@ -488,7 +572,7 @@
                                     </div>
                                 </div>
                                 <div class="flex flex-col">
-                                    <label for="kleur" class="pl-2 {errorVeldenCategorie.kleur ? 'text-red-500 font-bold' : ''}">Kleur</label>
+                                    <p class="pl-2 {errorVeldenCategorie.kleur ? 'text-red-500 font-bold' : ''}">Kleur</p>
                                     <div>
                                         <ColorPicker
                                             bind:hex
@@ -569,45 +653,110 @@
             </div>
             
             <!-- tabel met alle tests -->
-            {#each filteredTests as test}
-            <div class="grid grid-cols-12 gap-4 h-16 items-center px-3 border-b border-gray-300">
-                <div class="col-span-1">
-                    <!-- https://svelte.dev/repl/986adbafc5b042cbbf979c1381c7cacc?version=3.50.1 -->
-                    <!-- checkbox voor het selecteren van tests -->
-                    <input 
-                    type="checkbox"
-                    on:change={() => toggleTestSelectie(test.testCode)}
-                    checked={geselecteerdeTests.includes(test.testCode)}
-                    class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">                                                 
-                </div>
-                <div class="col-span-2">
-                    <p class="text-gray-400">Testcode</p>
-                    <p>{test?.testCode || 'Loading...'}</p>
-                </div>
-                <div class="col-span-4">
-                    <p class="text-gray-400">Naam</p>
-                    <p class="truncate">{test?.naam || 'Loading...'}</p>
-                </div>
-                <div class="col-span-2">
-                    <p class="text-gray-400">Categorie</p>
-                    <p>{test?.testcategorie.naam || 'Loading...'}</p>
-                </div>
-                <div class="col-span-2">
-                    <p class="text-gray-400">Eenheid</p>
-                    <p>{test?.eenheid.naam || 'Loading...'}</p>
-                </div>
-                <!-- admin-only crud knoppen -->
-                {#if rol === 'admin'}
-                <div class="col-span-1 flex justify-end space-x-2">
-                    <div class="h-10 w-10 bg-blue-400 p-2 rounded-lg text-white">
-                        <FaRegEdit />
+            {#each filteredTests as test, index}
+                <div class="grid grid-cols-12 gap-4 h-16 items-center px-3 border-b border-gray-300">
+                    <div class="col-span-1">
+                        <!-- Checkbox for selecting tests -->
+                        <input 
+                            type="checkbox"
+                            on:change={() => toggleTestSelectie(test.testCode)}
+                            checked={geselecteerdeTests.includes(test.testCode)}
+                            class="w-5 h-5 mt-2 appearance-none border-2 border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">
                     </div>
-                    <div class="h-10 w-10 bg-red-500 p-2 rounded-lg text-white">
-                        <FaTrashAlt />
+                    <div class="col-span-2">
+                        <p class="text-gray-400">Testcode</p>
+                        <p>{test?.testCode || ''}</p>
                     </div>
+                    <div class="col-span-4">
+                        <p class="text-gray-400">Naam</p>
+                        <p class="truncate">{test?.naam || ''}</p>
+                    </div>
+                    <div class="col-span-2">
+                        <p class="text-gray-400">Categorie</p>
+                        <p>{test?.testcategorie.naam || ''}</p>
+                    </div>
+                    <div class="col-span-2">
+                        <p class="text-gray-400">Eenheid</p>
+                        <p class="truncate">{test?.eenheid.afkorting || ''}: {test?.eenheid.naam || ''}</p>
+                    </div> 
+
+                    <!-- Admin-only CRUD buttons -->
+                    {#if rol === 'admin'}
+                        <div class="col-span-1 flex justify-end space-x-2">
+                            <!-- Edit Button -->
+                            <Modal>
+                                <Trigger>
+                                    <button type="button" class="h-10 w-10 bg-blue-400 p-2 rounded-lg text-white" on:click={() => { openModalTestId = test.id; loadTestCategorieënEnEenheden(); }}>
+                                        <FaRegEdit />
+                                    </button>
+                                </Trigger>
+                                {#if openModalTestId === test.id}
+                                    <Content>
+                                        <h1 class="font-bold text-xl mb-4">Test Aanpassen - {test.naam}</h1>
+                                        {#if editTestErrorMessage}
+                                            <div class="text-red-500 mb-2">{editTestErrorMessage}</div>
+                                        {/if}
+                                        <div class="flex flex-row space-x-4">
+                                            <div class="flex flex-col w-1/2">
+                                                <label for="testCode-{test.id}">Testcode</label>
+                                                <input type="text" id="testCode-{test.id}" name="testCode" bind:value={test.testCode} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                                {editTestError.testCode ? 'border-2 border-red-500' : ''}">
+                                            </div>
+                                            <div class="flex flex-col w-1/2">
+                                                <label for="eenheid-{test.id}">Eenheid</label>
+                                                <select id="eenheid-{test.id}" name="eenheid" bind:value={test.eenheid.id} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                                {editTestError.eenheid ? 'border-2 border-red-500' : ''}">
+                                                    <option value="" disabled>Selecteer een eenheid</option>
+                                                    {#each eenheden as eenheid}
+                                                        <option value={eenheid.id}>{eenheid.naam} ({eenheid.afkorting})</option>
+                                                    {/each}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-row space-x-4 my-4">
+                                            <div class="flex flex-col w-1/2">
+                                                <label for="testNaam-{test.id}">Naam</label>
+                                                <input type="text" id="testNaam-{test.id}" name="testNaam" bind:value={test.naam} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                                {editTestError.naam ? 'border-2 border-red-500' : ''}">
+                                            </div>
+                                            <div class="flex flex-col w-1/2">
+                                                <label for="testcategorie-{test.id}">Categorie</label>
+                                                <select id="testcategorie-{test.id}" name="testcategorie" bind:value={test.testcategorie.id} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                                {editTestError.testcategorie ? 'border-2 border-red-500' : ''}">
+                                                    <option value="" disabled>Selecteer een categorie</option>
+                                                    {#each testcategorieën as categorie}
+                                                        <option value={categorie.id}>{categorie.naam}</option>
+                                                    {/each}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <button type="button" class="bg-green-500 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow w-56 font-bold text-lg" on:click={async () => await editTest(test)}>
+                                            Opslaan
+                                            <div class="w-5 h-5 ml-5"><IoMdCheckmarkCircle/></div>
+                                        </button>
+                                    </Content>
+                                {/if}
+                            </Modal>
+
+                            <!-- Delete button -->
+                            {#if test.confirmDelete}
+                                <button type="button" on:click={() => deleteTest(test?.id)} class="h-10 w-10 bg-red-500 p-2 rounded-lg text-white">
+                                    <FaTrashAlt />
+                                </button>
+                            {:else}
+                                <button type="button" on:click={() => {
+                                    filteredTests.forEach((t, i) => {
+                                        if (i !== index) t.confirmDelete = false;
+                                    });
+                                    test.confirmDelete = true;
+                                }} class="h-10 w-10 bg-red-300 p-2 rounded-lg text-white">
+                                    <GoX />
+                                </button>
+                            {/if}
+                        </div>
+                    {/if}
                 </div>
-                {/if}
-            </div>
             {/each}
         </div>
     </div>
