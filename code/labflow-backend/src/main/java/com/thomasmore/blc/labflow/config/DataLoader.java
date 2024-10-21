@@ -184,13 +184,13 @@ public class DataLoader implements CommandLineRunner {
         testRepository.save(test630);
         Test test631 = new Test("631", "APTT", seconds, citraatCat);
         testRepository.save(test631);
-        Test test221 = new Test("221", "ESR", millimetersPerHour, serumCat);
+        Test test221 = new Test("221", "ESR", millimetersPerHour, edtaCat);
         testRepository.save(test221);
         Test test222 = new Test("222", "Reumafactor", notAvailable, serumCat);
         testRepository.save(test222);
         Test test223 = new Test("223", "ANA", notAvailable, serumCat);
         testRepository.save(test223);
-        Test test224 = new Test("224", "HLA B27", notAvailable, serumCat);
+        Test test224 = new Test("224", "HLA B27", notAvailable, edtaCat);
         testRepository.save(test224);
         Test test280 = new Test("280", "Epstein Barr IgG", notAvailable, serumCat);
         testRepository.save(test280);
@@ -202,13 +202,13 @@ public class DataLoader implements CommandLineRunner {
         testRepository.save(test727);
         Test test728 = new Test("728", "Immunofentoypering", notAvailable, edtaCat);
         testRepository.save(test728);
-        Test test729 = new Test("729", "Karyotypering", notAvailable, serumCat);
+        Test test729 = new Test("729", "Karyotypering", notAvailable, heparineCat);
         testRepository.save(test729);
-        Test test730 = new Test("730", "Glucose 6 fosfaat dehydrogenase", notAvailable, serumCat);
+        Test test730 = new Test("730", "Glucose 6 fosfaat dehydrogenase", notAvailable, edtaCat);
         testRepository.save(test730);
-        Test test100 = new Test("100", "Glucose", milligramsPerDeciliter, serumCat);
+        Test test100 = new Test("100", "Glucose", milligramsPerDeciliter, fluorideCat);
         testRepository.save(test100);
-        Test test103 = new Test("103", "Hemoglobine A1c", percentage, serumCat);
+        Test test103 = new Test("103", "Hemoglobine A1c", percentage, edtaCat);
         testRepository.save(test103);
         Test test120 = new Test("120", "Cholesterol", milligramsPerDeciliter, serumCat);
         testRepository.save(test120);
@@ -256,9 +256,9 @@ public class DataLoader implements CommandLineRunner {
         testRepository.save(test185);
         Test test186 = new Test("186", "CK", unitsPerLiter, serumCat);
         testRepository.save(test186);
-        Test test187 = new Test("187", "Troponine", unitsPerLiter, serumCat);
+        Test test187 = new Test("187", "Troponine", unitsPerLiter, heparineCat);
         testRepository.save(test187);
-        Test test188 = new Test("188", "CK-MB", unitsPerLiter, serumCat);
+        Test test188 = new Test("188", "CK-MB", unitsPerLiter, heparineCat);
         testRepository.save(test188);
         Test test160 = new Test("160", "Totaal eiwit", gramsPerLiter, serumCat);
         testRepository.save(test160);
@@ -294,13 +294,13 @@ public class DataLoader implements CommandLineRunner {
         testRepository.save(test430);
         Test test431 = new Test("431", "LH", unitsPerLiter, serumCat);
         testRepository.save(test431);
-        Test test550 = new Test("550", "Totaal Eiwit", gramsPerLiter, serumCat);
+        Test test550 = new Test("550", "Totaal Eiwit", gramsPerLiter, urineCat);
         testRepository.save(test550);
-        Test test551 = new Test("551", "Glucose", gramsPerLiter, serumCat);
+        Test test551 = new Test("551", "Glucose", gramsPerLiter, urineCat);
         testRepository.save(test551);
-        Test test552 = new Test("552", "Osmolaliteit", milliosmolesPerKilogram, serumCat);
+        Test test552 = new Test("552", "Osmolaliteit", milliosmolesPerKilogram, urineCat);
         testRepository.save(test552);
-        Test test553 = new Test("553", "Creatinine clearance", millilitersPerMinute, serumCat);
+        Test test553 = new Test("553", "Creatinine clearance", millilitersPerMinute, urineCat);
         testRepository.save(test553);
 
 
