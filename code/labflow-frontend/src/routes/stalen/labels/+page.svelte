@@ -1,6 +1,6 @@
 <script lang="ts">
     import Nav from "../../../components/nav.svelte";
-    import LabelCart from "../../../components/LabelCart.svelte";
+    import LabelCart from "./../../../components/LabelCart.svelte";
     import { goto } from '$app/navigation';
     import { getCookie, fetchAll } from '$lib/globalFunctions';
     import { getRol } from '$lib/globalFunctions';
@@ -27,9 +27,9 @@
     async function loadData() {
         if (token != null) {
             try {
-                const url:string = `stalen/${id}`;
+                const url:string = `stalen/${sampleId}`;
                 tests = await fetchAll(token, url);
-                console.log(url);
+                console.log(sampleId);
             } catch (error) {
                 console.error("data kon niet gefetched worden:", error);
             }
