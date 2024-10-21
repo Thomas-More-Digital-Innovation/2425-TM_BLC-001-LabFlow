@@ -16,6 +16,7 @@
     // @ts-ignore
     import GoX from 'svelte-icons/go/GoX.svelte'
     import { getUserId } from "$lib/globalFunctions";
+    import { id } from '$lib/store';
 
     // voor het inladen van crud voor admins
     const rol = getRol();
@@ -86,7 +87,7 @@
             test: { testCode: testCode } // van set naar array voor in onze json body, mappen obv testCode
         }));
         try {
-            await fetch("http://localhost:8080/api/createstaal", {
+            const response  = await fetch("http://localhost:8080/api/createstaal", {
                 method: "POST",
                 headers: {
                 "Content-Type": "application/json",
@@ -104,6 +105,10 @@
                     registeredTests: geselecteerdeTestsArray
                 }),
             });
+            // César: doorgeven van aangemaakte staal's id naar volgend scherm
+            const data = await response.json();
+            id.set(data.id);
+
         } catch (error) {
             console.error("staal kon niet worden aangemaakt: ", error);
         }

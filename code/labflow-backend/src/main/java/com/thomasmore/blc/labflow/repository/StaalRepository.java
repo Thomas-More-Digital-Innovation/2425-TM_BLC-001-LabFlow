@@ -19,4 +19,7 @@ public interface StaalRepository extends JpaRepository<Staal, Integer> {
     // verkrijgen grootste staalcode voor het aanmaken van een nieuwe staal
     @Query("SELECT MAX(t.staalCode) FROM Staal t")
     String findLargestStaalCode();
+
+    // verkrijg staal op basis van staalcode
+    public Staal findByStaalCode(int staalCode);
 }

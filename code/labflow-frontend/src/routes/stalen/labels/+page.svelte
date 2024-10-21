@@ -8,9 +8,40 @@
     import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte'
     // @ts-ignore
     import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte'
+    import { id } from '$lib/store';
+	import { onMount } from "svelte";
 
-    import { getUserId } from "$lib/globalFunctions";
-	import Layout from "../../+layout.svelte";
+    // neem de id
+    let sampleId: string | undefined;
+    id.subscribe(value => {
+        sampleId = value;
+    });
+    
+    // inladen data
+    const rol = getRol();
+
+    let tests: any[] = [];
+    const token = getCookie('authToken') || '';
+
+    // alle tests categorieën ophalen die bij de testen horen
+    async function loadData() {
+        if (token != null) {
+            try {
+                const url:string = `stalen/${id}`;
+                tests = await fetchAll(token, url);
+                console.log(url);
+            } catch (error) {
+                console.error("data kon niet gefetched worden:", error);
+            }
+        } else {
+            console.error("jwt error");
+            goto('/login');
+        }
+    }
+
+    onMount(() => {
+        loadData();
+    })
 
 </script>
 
@@ -23,7 +54,7 @@
             <div class="grid grid-cols-5 bg-white rounded-lg h-20 w-5/6 space-x-2  px-2">
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Code</p>
-                    <p class="font-bold">Nieuw<!--{nieuweStaalCode || "loading..."}--></p>
+                    <p class="font-bold">2024000001<!--{nieuweStaalCode || "loading..."}--></p>
                 </div>
                 <div class="flex flex-col justify-center">
                     <p class="text-gray-400">Achternaam</p>
@@ -51,7 +82,7 @@
                     Terug
                 </button>
                 <!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
-                <button on:click={() => { goto("/stalen") }} class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
+                <button on:click={() => { goto("/stalen/saved") }} class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
                     Volgende
                     <div class="w-5 h-5 ml-2"><FaArrowRight/></div>
                 </button>
@@ -73,8 +104,8 @@
              <!-- right section -->
             <div class="w-2/3 flex flex-col justify-between space-y-4">
                 <!-- pdf previewer -->
-                <div class="w-full h-4/5 bg-gray-400">
-                    <iframe src="https://s28.q4cdn.com/392171258/files/doc_downloads/test.pdf" title="pdf label preview" width="100%" class="h-full" />
+                <div class="w-full h-4/5">
+                    <iframe src="https://s28.q4cdn.com/392171258/files/doc_downloads/test.pdf" title="pdf label preview" width="100%" class="h-full rounded-xl" />
                 </div>
                 <!-- bedienings knoppen -->
                  <div class="w-full h-1/5 bg-slate-200 flex justify-between items-baseline">
@@ -88,7 +119,7 @@
                     <div class=" w-2/4 mt-auto flex justify-between items-center">
                         <div class="w-1/2">
                             <p>hoeveelheid</p>
-                            <input type="number" class="rounded-lg text-xl p-3 h-20 w-11/12 bg-white border border-gray-400">
+                            <input type="number" placeholder="0" class="rounded-lg text-xl p-3 h-20 w-11/12 bg-white border border-gray-400">
                         </div>
                         <div class="w-1/2">
                             <p>printer</p>

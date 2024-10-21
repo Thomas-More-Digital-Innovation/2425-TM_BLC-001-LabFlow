@@ -48,4 +48,10 @@ public class StaalController {
     // Krijg de grootste StaalCode + 1 voor een nieuwe test aan te maken
     @GetMapping("/newStaalCode")
     public String newStaalCode() { return staalService.newStaalCode(); }
+
+    // Krijg een staal op basis van id
+    @GetMapping("/staal/{id}")
+    public Staal getStaal(@PathVariable Long id) {
+        return staalService.readById(id);
+    }
 }
