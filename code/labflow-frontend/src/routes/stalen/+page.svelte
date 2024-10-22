@@ -14,6 +14,8 @@
     import FaTrashAlt from 'svelte-icons/fa/FaTrashAlt.svelte'
     // @ts-ignore
     import FaRegEdit from 'svelte-icons/fa/FaRegEdit.svelte'
+    // @ts-ignore
+    import IoMdCheckmarkCircle from 'svelte-icons/io/IoMdCheckmarkCircle.svelte'
     // modal
     import Modal from '../../components/Modal/Modal.svelte';
     import Trigger from '../../components/Modal/Trigger.svelte';
@@ -36,6 +38,17 @@
     let searchCode = '';
     let searchDate = '';
     const token = getCookie('authToken') || '';
+
+    let editStaalError = {
+        staalCode: false,
+        patientVoornaam: false,
+        patientAchternaam: false,
+        patientGeboorteDatum: false,
+        patientGeslacht: false,
+        laborantNaam: false,
+        laborantRnummer: false,
+        user: false
+    };
 
 
     onMount(async () => {
@@ -181,7 +194,54 @@
                                     </Trigger>
                                     {#if openModalTestId === staal.id}
                                         <Content>
-                                            
+                                            <div class="flex flex-row space-x-4 my-4">
+                                                <div class="flex flex-col w-1/3">
+                                                    <label for="staalCode-{staal.staalCode}">Staalcode</label>
+                                                    <input type="text" id="staalCode-{staal.id}" name="staalCode" bind:value={staal.staalCode} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                                    {editStaalError.staalCode ? 'border-2 border-red-500' : ''}">
+                                                </div>
+                                                <div class="flex flex-col w-1/3">
+                                                    <label for="patientVoornaam-{staal.id}">Patientvoornaam</label>
+                                                    <input type="text" id="staalCode-{staal.id}" name="Patientvoornaam" bind:value={staal.patientVoornaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                                    {editStaalError.patientVoornaam ? 'border-2 border-red-500' : ''}">
+                                                </div>
+                                                <div class="flex flex-col w-1/3">
+                                                    <label for="Patientachternaam-{staal.id}">Patientachternaam</label>
+                                                    <input type="text" id="Patientachternaam-{staal.id}" name="Patientachternaam" bind:value={staal.patientAchternaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                                    {editStaalError.patientAchternaam ? 'border-2 border-red-500' : ''}">
+                                                </div>
+                                            </div>
+
+                                            <div class="flex flex-row space-x-4 my-4">
+                                                <div class="flex flex-col w-1/3">
+                                                    <label for="Laborantnaam-{staal.id}">Naam Laborant</label>
+                                                    <input type="text" id="Laborantnaam-{staal.id}" name="Laborantnaam" bind:value={staal.laborantNaam} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                                    {editStaalError.laborantNaam ? 'border-2 border-red-500' : ''}">
+                                                </div>
+                                                <div class="flex flex-col w-1/3">
+                                                    <label for="LaborantRnummer-{staal.id}">Rnummer Laborant</label>
+                                                    <input type="text" id="LaborantRnummer-{staal.id}" name="LaborantRnummer" bind:value={staal.laborantRnummer} class="rounded-lg text-black bg-gray-200 h-12 pl-3
+                                                    {editStaalError.laborantNaam ? 'border-2 border-red-500' : ''}">
+                                                </div>
+                                                <div class="flex flex-col w-1/3">
+                                                    <label for="patientGeslacht-{staal.id}">Patientgeslacht</label>
+                                                    <div>
+                                                        <label class="container mr-5 {editStaalError.patientGeslacht ? 'text-red-500 font-bold' : ''}">
+                                                            <input type="radio" name="radio" bind:group={staal.patientGeslacht} value="M">
+                                                            Man
+                                                        </label>
+                                                        <label class="container {editStaalError.patientGeslacht ? 'text-red-500 font-bold' : ''}">
+                                                            <input type="radio" name="radio" bind:group={staal.patientGeslacht} value="V">
+                                                            Vrouw
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+    
+                                            <button type="button" class="bg-green-500 rounded-lg p-3 text-black h-12 flex flex-row items-center justify-center flex-grow w-56 font-bold text-lg" on:click={async () => await editTest(test)}>
+                                                Opslaan
+                                                <div class="w-5 h-5 ml-5"><IoMdCheckmarkCircle/></div>
+                                            </button>
                                         </Content>
                                     {/if}
                                 </Modal>
