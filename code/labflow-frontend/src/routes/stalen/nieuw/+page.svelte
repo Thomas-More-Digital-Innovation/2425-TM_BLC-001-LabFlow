@@ -271,7 +271,7 @@
                     registeredTests: geselecteerdeTestsArray
                 }),
             });
-            // César: doorgeven van aangemaakte staal's id naar volgend scherm
+            // doorgeven van aangemaakte staal's id naar volgend scherm
             const data = await response.json();
             staalId.set(data.id);
 
@@ -323,7 +323,6 @@
     // crud buttons voor admin
      async function deleteTest(id: number) {
         console.log(id);
-
         try {
             await fetch(`http://localhost:8080/api/deletetest/${id}`, {
                 method: "DELETE",

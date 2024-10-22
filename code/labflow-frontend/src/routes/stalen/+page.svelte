@@ -1,12 +1,25 @@
 <script lang="ts">
     import Nav from "../../components/nav.svelte";
     import { onMount } from 'svelte';
+    import { getRol } from '$lib/globalFunctions';
+    import { fetchStalen } from '$lib/fetchFunctions';
+    import { getCookie } from '$lib/globalFunctions';
     // @ts-ignore
     import GoPlus from 'svelte-icons/go/GoPlus.svelte';
     // @ts-ignore
     import IoMdSettings from 'svelte-icons/io/IoMdSettings.svelte';
-    import { getRol } from '$lib/globalFunctions';
-    import { fetchStalen } from '$lib/fetchFunctions';
+    // @ts-ignore
+    import GoX from 'svelte-icons/go/GoX.svelte'
+    // @ts-ignore
+    import FaTrashAlt from 'svelte-icons/fa/FaTrashAlt.svelte'
+    // @ts-ignore
+    import FaRegEdit from 'svelte-icons/fa/FaRegEdit.svelte'
+    // modal
+    import Modal from '../../components/Modal/Modal.svelte';
+    import Trigger from '../../components/Modal/Trigger.svelte';
+    import Content from '../../components/Modal/Content.svelte';
+
+    let openModalTestId: number | null = null;
 
     // achtergrond en klikbaar maken van instellingen gebaseerd op rol
     let bgColor = 'bg-blue-400';
@@ -22,6 +35,7 @@
     let filteredStalen: any[] = [];
     let searchCode = '';
     let searchDate = '';
+    const token = getCookie('authToken') || '';
 
 
     onMount(async () => {
@@ -55,6 +69,26 @@
         searchCode = '';
         searchDate = '';
         filterStalen();
+    }
+
+    // delete staal
+        async function deleteStaal(id: number) {
+        console.log(id);
+        try {
+            await fetch(`http://localhost:8080/api/deletestaal/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+            });
+        } catch (error) {
+            console.error("Staal kon niet worden verwijderd: ", error);
+        }
+        const result = await fetchStalen();
+        if (result) {
+            stalen = result.stalen;
+            filteredStalen = result.filteredStalen;
+        }
     }
 </script>
 
@@ -101,8 +135,8 @@
         </div>
 
         <div class="space-y-3">
-            {#each filteredStalen as staal}
-                <div class="grid grid-cols-7 gap-4 bg-white rounded-lg h-16 items-center px-3">
+            {#each filteredStalen as staal, index}
+                <div class="grid grid-cols-8 gap-4 bg-white rounded-lg h-16 items-center px-3">
                     <div>
                         <p class="text-gray-400">Code</p>
                         <p>{staal?.staalCode || 'Loading...'}</p>
@@ -130,6 +164,45 @@
                     <div>
                         <p class="text-gray-400 font-bold">Laborant</p>
                         <p>{staal?.laborantNaam || 'Loading...'}</p>
+                    </div>
+                    <div>
+
+                        <!-- Admin-only CRUD buttons -->
+                        {#if rol === 'admin'}
+                            <div class="col-span-1 flex justify-end space-x-2">
+                                <!-- Edit Button -->
+                                <Modal>
+                                    <Trigger>
+                                        <button type="button" class="h-10 w-10 bg-blue-400 p-2 rounded-lg text-white" on:click={async () => { 
+                                            openModalTestId = staal.id;
+                                        }}>
+                                            <FaRegEdit />
+                                        </button>
+                                    </Trigger>
+                                    {#if openModalTestId === staal.id}
+                                        <Content>
+                                            
+                                        </Content>
+                                    {/if}
+                                </Modal>
+        
+                                <!-- Delete button -->
+                                {#if staal?.confirmDelete}
+                                    <button type="button" on:click={() => deleteStaal(staal?.id)} class="h-10 w-10 bg-red-500 p-2 rounded-lg text-white">
+                                        <FaTrashAlt />
+                                    </button>
+                                {:else}
+                                    <button type="button" on:click={() => {
+                                        filteredStalen.forEach((s, i) => {
+                                            if (i !== index) s.confirmDelete = false;
+                                        });
+                                        staal.confirmDelete = true;
+                                    }} class="h-10 w-10 bg-red-300 p-2 rounded-lg text-white">
+                                        <GoX />
+                                    </button>
+                                {/if}
+                            </div>
+                        {/if}
                     </div>
                 </div>
             {/each}
