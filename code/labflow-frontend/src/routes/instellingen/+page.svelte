@@ -10,7 +10,8 @@
     import CategorieënBeheren from '../../components/Instellingen/CategorieënBeheren.svelte';
     import GebruikersBeheren from '../../components/Instellingen/GebruikersBeheren.svelte';
 
-    let navElement = "Categorie";
+    // default staat nu op testen beheren
+    let navElement = "Test";
 </script>
 
 <Nav/>

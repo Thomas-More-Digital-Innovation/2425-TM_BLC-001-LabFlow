@@ -1,12 +1,12 @@
 <script lang="ts">
     import Nav from "../../components/nav.svelte";
+    import { onMount } from 'svelte';
     // @ts-ignore
     import GoPlus from 'svelte-icons/go/GoPlus.svelte';
     // @ts-ignore
     import IoMdSettings from 'svelte-icons/io/IoMdSettings.svelte';
     import { getRol } from '$lib/globalFunctions';
-    import { goto } from '$app/navigation';
-    import { getCookie, fetchAll } from '$lib/globalFunctions';
+    import { fetchStalen } from '$lib/fetchFunctions';
 
     // achtergrond en klikbaar maken van instellingen gebaseerd op rol
     let bgColor = 'bg-blue-400';
@@ -23,23 +23,14 @@
     let searchCode = '';
     let searchDate = '';
 
-    async function loadData() {
-        const token = getCookie('authToken') || '';
 
-        if (token != null) {
-            try {
-                stalen = await fetchAll(token, 'stalen');
-                filteredStalen = stalen; // zonder filter worden alle stalen ingeladen
-            } catch (error) {
-                console.error("data kon niet gefetched worden:", error);
-            }
-        } else {
-            console.error("jwt error");
-            goto('/login');
+    onMount(async () => {
+        const result = await fetchStalen();
+        if (result) {
+            stalen = result.stalen;
+            filteredStalen = result.filteredStalen;
         }
-    }
-
-    loadData();
+    });
 
     // Function om te filteren op staalcode en datum
     function filterStalen() {
