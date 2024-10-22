@@ -51,7 +51,7 @@
 
         <div class="space-y-3">
             {#each filteredStalen as staal}
-                <div class="grid grid-cols-7 gap-4 bg-white rounded-lg h-16 items-center px-3">
+                <div class="grid grid-cols-7 gap-4 bg-white rounded-lg h-16 items-center px-3 shadow-md">
                     <div>
                         <p class="text-gray-400">Code</p>
                         <p>{staal?.staalCode || 'Loading...'}</p>

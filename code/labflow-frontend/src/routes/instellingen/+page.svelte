@@ -11,7 +11,7 @@
     import GebruikersBeheren from '../../components/Instellingen/GebruikersBeheren.svelte';
 
     // default staat nu op testen beheren
-    let navElement = "Test";
+    let navElement = "Categorie";
 </script>
 
 <Nav/>

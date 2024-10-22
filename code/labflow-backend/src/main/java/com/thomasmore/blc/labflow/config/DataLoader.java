@@ -55,12 +55,12 @@ public class DataLoader implements CommandLineRunner {
 
 
         // aanmaken testcategorie
-        Testcategorie edtaCat = new Testcategorie("EDTA", "paars");
-        Testcategorie citraatCat = new Testcategorie("Citraat", "blauw");
-        Testcategorie serumCat = new Testcategorie("Serum", "rood");
-        Testcategorie heparineCat = new Testcategorie("Heparine", "groen");
-        Testcategorie fluorideCat = new Testcategorie("Fluoride", "grijs");
-        Testcategorie urineCat = new Testcategorie("Urine", "geel");
+        Testcategorie edtaCat = new Testcategorie("EDTA", "#AE00FF");
+        Testcategorie citraatCat = new Testcategorie("Citraat", "#0073FF");
+        Testcategorie serumCat = new Testcategorie("Serum", "#FF1000");
+        Testcategorie heparineCat = new Testcategorie("Heparine", "#60FF19");
+        Testcategorie fluorideCat = new Testcategorie("Fluoride", "#C4C3C2");
+        Testcategorie urineCat = new Testcategorie("Urine", "#FFFB00");
         testCategorieRepository.save(edtaCat);
         testCategorieRepository.save(citraatCat);
         testCategorieRepository.save(serumCat);
@@ -70,16 +70,16 @@ public class DataLoader implements CommandLineRunner {
 
 
         // Stalen, dit is voor development, geen echte waarden
-        Staal staal1 = new Staal(2024000001, "César", "Van Leuffelen", java.sql.Date.valueOf("2004-07-29"), 'M', "Nathan Neve", "RN12345", user1);
-        Staal staal2 = new Staal(2024000002, "Lucas", "Peeters", java.sql.Date.valueOf("1985-07-21"), 'M', "Sofie", "RN67890", user2);
-        Staal staal3 = new Staal(2024000003, "Mila", "Vermeulen", java.sql.Date.valueOf("1993-02-11"), 'V', "Bart", "RN13579", user1);
-        Staal staal4 = new Staal(2024000004, "Liam", "Claes", java.sql.Date.valueOf("1992-11-30"), 'M', "Lies", "RN24680", user2);
-        Staal staal5 = new Staal(2024000005, "Olivia", "Dubois", java.sql.Date.valueOf("2000-01-08"), 'V', "An", "RN11223", user1);
-        Staal staal6 = new Staal(2024000006, "Noah", "De Smet", java.sql.Date.valueOf("1987-03-16"), 'M', "Koen", "RN44556", user2);
-        Staal staal7 = new Staal(2024000007, "Marie", "De Vries", java.sql.Date.valueOf("1991-09-25"), 'V', "Katrien", "RN77889", user1);
-        Staal staal8 = new Staal(2024000008, "Arthur", "Van Damme", java.sql.Date.valueOf("1988-12-19"), 'M', "Jan", "RN99001", user2);
-        Staal staal9 = new Staal(2024000009, "Charlotte", "Jacobs", java.sql.Date.valueOf("1995-04-03"), 'V', "Eva", "RN22334", user1);
-        Staal staal10 = new Staal(2024000010, "Victor", "Maes", java.sql.Date.valueOf("1990-06-10"), 'M', "Lotte", "RN55667", user2);
+        Staal staal1 = new Staal(2024000001L, "César", "Van Leuffelen", java.sql.Date.valueOf("2004-07-29"), 'M', "Nathan Neve", "R1234567", user1);
+        Staal staal2 = new Staal(2024000002L, "Lucas", "Peeters", java.sql.Date.valueOf("1985-07-21"), 'M', "Sofie", "R1234567", user2);
+        Staal staal3 = new Staal(2024000003L, "Mila", "Vermeulen", java.sql.Date.valueOf("1993-02-11"), 'V', "Bart", "R1234567", user1);
+        Staal staal4 = new Staal(2024000004L, "Liam", "Claes", java.sql.Date.valueOf("1992-11-30"), 'M', "Lies", "R1234567", user2);
+        Staal staal5 = new Staal(2024000005L, "Olivia", "Dubois", java.sql.Date.valueOf("2000-01-08"), 'V', "An", "R1234567", user1);
+        Staal staal6 = new Staal(2024000006L, "Noah", "De Smet", java.sql.Date.valueOf("1987-03-16"), 'M', "Koen", "R1234567", user2);
+        Staal staal7 = new Staal(2024000007L, "Marie", "De Vries", java.sql.Date.valueOf("1991-09-25"), 'V', "Katrien", "R1234567", user1);
+        Staal staal8 = new Staal(2024000008L, "Arthur", "Van Damme", java.sql.Date.valueOf("1988-12-19"), 'M', "Jan", "R1234567", user2);
+        Staal staal9 = new Staal(2024000009L, "Charlotte", "Jacobs", java.sql.Date.valueOf("1995-04-03"), 'V', "Eva", "R1234567", user1);
+        Staal staal10 = new Staal(2024000010L, "Victor", "Maes", java.sql.Date.valueOf("1990-06-10"), 'M', "Lotte", "R1234567", user2);
 
         staalRepository.save(staal1);
         staalRepository.save(staal2);
