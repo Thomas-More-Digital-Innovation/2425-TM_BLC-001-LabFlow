@@ -25,7 +25,7 @@
         console.log(categorieën);
     });
 
-    ///// verwijderen van een categorie /////
+    ///// DELETE verwijderen van een categorie /////
     async function deleteCategorie(id: string) {
         console.log(id);
         try {
@@ -46,7 +46,7 @@
     }
 
 
-    ///// aanmaken van een categorie /////
+    ///// POST aanmaken van een categorie /////
     let categorienaam = '';
     let hex = "";
 
@@ -102,7 +102,29 @@
         return;
     }
 
-
+    ///// PUT aanpassen van een categorie /////
+    async function updateCategorie(id: string) {
+        let categorieHex ='';
+        const categorie = categorieën.find(c => c.id === id);
+        console.log(categorie);
+        if (!categorie) return;
+        try {
+            await fetch(`http://localhost:8080/api/testCategorieen/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    naam: categorie.naam,
+                    kleur: categorie.kleur,
+                }),
+            });
+        } catch (error) {
+            console.error("Categorie kon niet worden aangepast: ", error);
+        }
+        return;
+    }
 </script>
 
 <div class="flex flex-col w-full ml-5">
@@ -161,7 +183,11 @@
                 <div class="grid grid-cols-12 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
                     <!-- Naam -->
                     <div class="col-span-4">
-                        <input type="text" id="categorie-{categorie?.id}" bind:value={categorie.naam} class="bg-gray-200 rounded-lg h-14 text-lg pl-3 w-full" />
+                        <input type="text" 
+                            on:blur={() => updateCategorie(categorie.id)} 
+                            id="categorie-{categorie?.id}" 
+                            bind:value={categorie.naam} 
+                            class="bg-gray-200 rounded-lg h-14 text-lg pl-3 w-full" />
                     </div>
                     
                     <!-- Kleur Picker -->
@@ -171,7 +197,8 @@
                                 label="Kies een kleur" 
                                 components={ChromeVariant} 
                                 sliderDirection="horizontal"
-                            />
+                                bind:hex={categorie.kleur}
+                                on:input={() => updateCategorie(categorie.id)} />
                         </div>
                     </div>
                     
