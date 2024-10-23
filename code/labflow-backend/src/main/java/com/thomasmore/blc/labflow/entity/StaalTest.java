@@ -26,6 +26,11 @@ public class StaalTest implements Serializable {
     @Nullable
     private String result;
 
+    @Nullable
+    private String note;
+
+    private Boolean failed = false;
+
     public StaalTest() {
     }
 
@@ -73,5 +78,22 @@ public class StaalTest implements Serializable {
 
     public void setResult(@Nullable String result) {
         this.result = result;
+    }
+
+    @Nullable
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(@Nullable String note) {
+        this.note = note;
+    }
+
+    public Boolean getFailed() {
+        return failed;
+    }
+
+    public void setFailed(Boolean failed) {
+        this.failed = failed;
     }
 }

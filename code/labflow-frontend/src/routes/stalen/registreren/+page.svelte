@@ -23,25 +23,40 @@
     let sampleCode: string | undefined;
     staalCodeStore.subscribe(value => {
         sampleCode = value;
-        console.log("Dit is staalcode:" + sampleCode);
     });
 
     let tests: any[] = [];
+    let openNoteId: string | null = null;
+    let done: boolean = false;
     let staal: any = {};
     let staalId: String = '';
     let testCategories: any[] = [];
+    let selectedCategory: any = {};
     const token = getCookie('authToken') || '';
+
+    // update variables
+    let updateValue: string = '';
+    let updateNote: string = '';
+    let status: boolean = false;
+    let allDone: boolean = false;
+
 
     // alle tests categorieën ophalen die bij de testen horen
     async function loadData() {
+        console.log("reloading data...");
         if (token != null) {
             try {
                 staal = await fetchAll(token, `staal/${sampleCode}`);
                 // assign id to staalId
                 staalId = staal.id
-                console.log(staalId)
                 // Extract unique test categories
                 extractUniqueTestCategories(staal.registeredTests);
+                // put all tests assigned to a 'staal' in the tests array
+                tests = staal.registeredTests;
+
+                // check completion status after loading data
+                checkAllDoneForCategory(selectedCategory.id);
+                checkAllTestsDone();
             } catch (error) {
                 console.error("data kon niet gefetched worden:", error);
             }
@@ -64,18 +79,117 @@
 
         // Convert Map to an array of unique categories
         testCategories = Array.from(categoryMap.values());
+        if (selectedCategory.id == undefined) {
+            selectedCategory = testCategories[0];
+        }
         console.log("Unique Test Categories:", testCategories);
     }
 
-    // function for showing the notes
-    let showNoteInput = false; // Track the visibility of the note input field
+    function toggleNoteInput(testId: string) {
+        openNoteId = openNoteId == testId ? null : testId;
+    }
 
-    function toggleNoteInput() {
-        showNoteInput = !showNoteInput; // Toggle the note input field visibility
+    function setCategory(id: string) {
+        selectedCategory = testCategories.find(category => category.id == id);
+    }
+
+    // update function voor resultaat
+    async function updateResult(value: string, testId: string, note: string) {
+        updateValue = value;
+        try {
+            let body;
+
+            if (!status) {
+                body = {
+                    "result": updateValue,
+                    "note": updateNote,
+                    "failed": status
+                }
+            } else {
+                body = {
+                    "result": '',
+                    "note": updateNote,
+                    "failed": status
+                }
+            }
+
+            const headers = {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            }
+
+            const response = await fetch(`http://localhost:8080/api/updatestaaltest/${staalId}/${testId}`, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            loadData();
+            return data;
+        } catch (error) {
+            console.error("update error: ", error);
+            loadData();
+            throw error;
+        }
+    }
+
+    // update function voor de note
+    async function updateNoteValue(value: string, testId: string, result:string) {
+        updateNote = value;
+        try {
+            const body = {
+                "result": result,
+                "note": updateNote,
+                "failed": status
+            }
+
+            const headers = {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            }
+
+            const response = await fetch(`http://localhost:8080/api/updatestaaltest/${staalId}/${testId}`, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log("update succesvol: ", data);
+            return data;
+            
+        } catch (error) {
+            console.error("update error: ", error);
+            throw error;
+        }
+    }
+
+    function handleCheckboxChange(test: any) {
+        status = !status;
+        updateResult(test.result, test.test.id, test.note);
+    }
+
+    function checkAllDoneForCategory(testcategorie: any):boolean {
+        // for each test with the same testcategory as the parameter testcategorie, check if all tests are done
+        const testsForCategory = tests.filter(test => test.test.testcategorie.id == testcategorie.id);
+        return testsForCategory.every(test => test.result || test.failed);
+    }
+
+    function checkAllTestsDone() {
+        allDone = allDone = tests.every(test => test.result || test.failed);
     }
 
     onMount(() => {
-        loadData();
+        loadData().then(() => checkAllTestsDone()) ;
     });
 </script>
 
@@ -126,17 +240,20 @@
          <div class="flex space-x-4 h-full">
             <!-- left section -->
             <div class="bg-white w-1/3 h-[75vh] rounded-xl p-4">
-                <p class="text-blue-500">3 labels</p>
-                <!-- check labels -->
-                <div class=" border border-gray-200 rounded-xl flex justify-between items-center p-4 my-3 hover:bg-gray-100 hover:scale-[101%] transition">
-                    <p class="font-bold text-lg">Done</p>
-                    <div class={`p-3 rounded-full text-white h-12`} style={`background-color: #23E22C;`}><FaCheck /></div>
-                </div>
-                <!-- not check labels -->
-                <div class=" border border-gray-200 rounded-xl flex justify-between items-center p-4 my-3 hover:bg-gray-100 hover:scale-[101%] transition">
-                    <p class="font-bold text-lg">Not Done</p>
-                    <div class={`p-1 rounded-full text-white h-12`} style={`background-color: #E3E3E3;`}><IoIosClose/></div>
-                </div>
+                <p class="text-blue-500">{testCategories.length} labels</p>
+                {#each testCategories as testcategorie}
+                    <button on:click={() => setCategory(testcategorie.id)} class="border border-gray-200 rounded-xl w-full flex justify-between items-center p-4 my-3 hover:bg-gray-100 hover:scale-[101%] transition cursor-pointer">
+                        <div class="flex justify-start items-center">
+                            <div class="px-1 py-6 rounded-full" style={`background-color: ${testcategorie.kleur || "#000"};`}></div>
+                            <p class="font-bold text-lg ml-3">{testcategorie?.naam || "loading..."}</p>
+                        </div>
+                        {#if checkAllDoneForCategory(testcategorie)}
+                            <div class={`p-3 rounded-full text-white h-12`} style="background-color: #23E22C;"><FaCheck /></div>
+                        {:else}
+                            <div class={`rounded-full text-white h-12`} style="background-color: #E3E3E3;"><IoIosClose /></div>
+                        {/if}
+                    </button>
+                {/each}
             </div>
              <!-- right section -->
             <div class="w-2/3 flex flex-col justify-between space-y-4">
@@ -146,71 +263,66 @@
                     <div class="h-1/6 flex justify-between mx-6">
                         <!-- left -->
                         <div class="flex justify-start items-center">
-                            <div class={`p-8 rounded-full text-white`} style={`background-color: #000;`}></div>
-                            <h2 class="ml-8 font-bold text-lg">Serum</h2>
+                            <div class={`p-8 rounded-full text-white`} style={`background-color: ${selectedCategory?.kleur || "#000"};`}></div>
+                            <h2 class="ml-8 font-bold text-lg">{selectedCategory?.naam}</h2>
                         </div>
-                        <!-- right (button) -->
-                         <div class="flex justify-end items-center">
-                            <button class="bg-blue-600 text-xl rounded-lg p-3 text-white h-1/2 w-full flex flex-row items-center justify-center">Volgende</button>
-                         </div>
                     </div>
                     <!-- List-->
                      <div class="h-5/6 mx-6">
-                        <div class="w-full p-4 bg-white border border-gray-200 rounded-xl">
-                            <div class="w-full p-4 flex items-center justify-between">
-                                <!-- Code Section -->
-                                <div class="flex flex-col items-start">
-                                    <span class="text-sm text-gray-500">Code</span>
-                                    <span class="text-xl font-semibold">121</span>
-                                </div>
+                        {#each tests.filter(test => test.test.testcategorie.id == selectedCategory.id) as test}
+                            <div class="w-full bg-white border border-gray-200 rounded-xl my-4 p-4">
+                                <div class="grid grid-cols-[1fr_3fr_auto_auto_2fr_1fr_1fr] items-center">
+                                    <!-- Code Section -->
+                                    <div class="flex flex-col items-start">
+                                        <span class="text-sm text-gray-500">Code</span>
+                                        <span class="text-xl font-semibold">{test.test.testCode}</span>
+                                    </div>
 
-                                <!-- Test Section -->
-                                <div class="flex flex-col items-start">
-                                    <span class="text-sm text-gray-500">Test</span>
-                                    <span class="text-xl font-semibold">HDL-Cholestrol</span>
-                                </div>
+                                    <!-- Test Section -->
+                                    <div class="flex flex-col items-start col-span-2">
+                                        <span class="text-sm text-gray-500">Test</span>
+                                        <span class="text-xl font-semibold">{test.test.naam.length > 20 ? test.test.naam.slice(0, 20) + '...' : test.test.naam}</span>
+                                    </div>
 
-                                <!-- Unit Section -->
-                                <div class="flex flex-col items-start">
-                                    <span class="text-sm text-gray-500">Waarde</span>
-                                    <input type="text" class="bg-gray-200 h-10 rounded-lg border border-gray-400 px-1"/>
-                                </div>
+                                    <!-- Value Section -->
+                                    <div class="flex flex-col items-start">
+                                        <span class="text-sm text-gray-500">Waarde</span>
+                                        <input on:blur={() => updateResult(test.result, test.test.id, test.note)} bind:value={test.result} type="text" class="bg-gray-200 h-10 rounded-lg border border-gray-400 px-1" placeholder={test.result}/>
+                                    </div>
 
-                                <!-- Unit Section -->
-                                <div class="flex flex-col items-start">
-                                    <span class="text-sm text-gray-500">Eenheid</span>
-                                    <span class="text-xl font-semibold">mg/dL</span>
-                                </div>
+                                    <!-- Unit Section -->
+                                    <div class="flex flex-col items-start ml-3">
+                                        <span class="text-sm text-gray-500">Eenheid</span>
+                                        <span class="text-xl font-semibold">{test.test.eenheid.afkorting}</span>
+                                    </div>
 
-                                <!-- Checkbox Section -->
-                                <div class="flex flex-col items-center">
-                                    <span class="text-sm text-gray-500">Gefaald</span>
-                                    <input type="checkbox" class="w-5 h-5 mt-3 text-blue-500 border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
-                                </div>
+                                    <!-- failed -->
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-sm text-gray-500">Gefaald</span>
+                                        <input type="checkbox" class="w-5 h-5 mt-3 text-blue-500 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                                        on:change={() => handleCheckboxChange(test)}>
+                                    </div>
 
-                                <!-- nota Section -->
-                                <div>
+                                    <!-- Note Section -->
                                     <div class="flex flex-col items-center">
                                         <span class="text-sm text-gray-500">Nota</span>
-                                        <button on:click={toggleNoteInput} class="text-white bg-blue-500 h-12 p-3 rounded-lg">
+                                        <button on:click={() => toggleNoteInput(test.test.id)} class="text-white bg-blue-500 h-12 p-3 rounded-lg">
                                             <IoMdText />
                                         </button>
                                     </div>
                                 </div>
-                            </div>
-                            {#if showNoteInput}
+                                {#if openNoteId == test.test.id}
                                 <div>
                                     <div transition:slide class="mt-4 p-4">
                                         <span class="text-sm text-gray-500">Nota</span>
-                                        <textarea 
-                                            class="w-full h-20 p-2 rounded-lg border bg-gray-200 border-gray-400 resize-none" 
-                                            placeholder="Voeg een nota toe...">
-                                        </textarea>
+                                        <input type="text" on:blur={() => updateNoteValue(test.note, test.test.id, test.result)} bind:value={test.note}
+                                            class="w-full h-20 p-2 rounded-lg border bg-gray-200 border-gray-400 resize-none"
+                                            placeholder="Voeg een nota toe..." />
                                     </div>
                                 </div>
                             {/if}
-                        </div>
-                        
+                            </div>
+                        {/each}
                     </div>
                 </div>
             </div>
