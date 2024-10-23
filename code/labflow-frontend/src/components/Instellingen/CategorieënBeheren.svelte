@@ -76,7 +76,7 @@
             }
 
             try {
-            await fetch("http://localhost:8080/api/createtestcategorie", {
+            const response = await fetch("http://localhost:8080/api/createtestcategorie", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -88,6 +88,10 @@
                 }),
             });
             errorMessageCategorie = '';
+            if (response.status === 409) {
+                errorMessageCategorie = 'Deze categorie bestaat al.';
+                console.log(errorMessageCategorie);
+            }
         } catch (error) {
             console.error("categorie kon niet worden aangemaakt: ", error);
         }

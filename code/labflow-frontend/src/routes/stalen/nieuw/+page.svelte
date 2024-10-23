@@ -390,8 +390,7 @@
                     }
                 }),
             });
-            const data = await response.status;
-            if (data === 409) {
+            if (response.status === 409) {
                 editTestErrorMessage = 'De testcode bestaat al.';
             } else {
                 return $id = null;
