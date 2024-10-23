@@ -1,13 +1,19 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     // @ts-ignore
-    import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte'
+    import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte';
     // @ts-ignore
-    import GoX from 'svelte-icons/go/GoX.svelte'
+    import GoX from 'svelte-icons/go/GoX.svelte';
     // @ts-ignore
-    import FaTrashAlt from 'svelte-icons/fa/FaTrashAlt.svelte'
+    import FaTrashAlt from 'svelte-icons/fa/FaTrashAlt.svelte';
+    // @ts-ignore
+    import FaPlus from 'svelte-icons/fa/FaPlus.svelte'
     import { loadTestCategorieën } from "../../lib/fetchFunctions";
-	import { onMount } from "svelte";
+    import { onMount } from "svelte";
+    import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
+    import { getCookie } from "../../lib/globalFunctions";
+    
+    const token = getCookie('authToken') || '';
 
     let categorieën: any[] = [];
 
@@ -19,9 +25,80 @@
         console.log(categorieën);
     });
 
+    ///// verwijderen van een categorie /////
     async function deleteCategorie(id: string) {
         console.log(id);
+        try {
+            await fetch(`http://localhost:8080/api/testcategorie/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+            });
+        } catch (error) {
+            console.error("Categorie kon niet worden verwijderd: ", error);
+        }
+        const result = await loadTestCategorieën();
+        if (result) {
+            categorieën = result;
+        }        
+        return;
     }
+
+
+    ///// aanmaken van een categorie /////
+    let categorienaam = '';
+    let hex = "";
+
+    let errorVeldenCategorie = {
+        categorienaam: false,
+        kleur: false,
+    }
+
+    let errorMessageCategorie = '';
+        async function nieuweCategorie() {
+            errorVeldenCategorie = { categorienaam: false, kleur: false };
+            let isValid = true;
+            const regex = /^#([0-9A-F]{3}){1,2}$/i;
+
+            if (!categorienaam) {
+                errorVeldenCategorie.categorienaam = true;
+                isValid = false;
+            }
+            if (!hex || !regex.test(hex)) {
+                errorVeldenCategorie.kleur = true;
+                isValid = false;
+            }
+            // errorMessageStaal tonen indien niet alle velden zijn ingevuld
+            if (!isValid) {
+                errorMessageCategorie = 'Geef de categorie een naam en een kleur.';
+                return;
+            }
+
+            try {
+            await fetch("http://localhost:8080/api/createtestcategorie", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    naam: categorienaam,
+                    kleur: hex,
+                }),
+            });
+            errorMessageCategorie = '';
+        } catch (error) {
+            console.error("categorie kon niet worden aangemaakt: ", error);
+        }
+        const result = await loadTestCategorieën();
+        if (result) {
+            categorieën = result;
+        }
+        return;
+    }
+
+
 </script>
 
 <div class="flex flex-col w-full ml-5">
@@ -35,32 +112,81 @@
 
     <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
         <div class="space-y-3">
+            <!-- Header -->
+            <div class="grid grid-cols-12 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
+                <div class="col-span-4">
+                    <p>Naam</p>
+                </div>
+                <div class="col-span-4 text-center">
+                    <p>Kleur</p>
+                </div>
+                <div class="col-span-4 text-right">
+                    <p>Acties</p>
+                </div>
+            </div>
+            {#if errorMessageCategorie}
+            <div class="text-red-500 mb-2">{errorMessageCategorie}</div>
+            {/if}
+            <div class="grid grid-cols-12 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
+
+                <!-- Naam -->
+                <div class="col-span-4">
+                    <input type="text" id="nieuwecategorie" bind:value={categorienaam} class="bg-gray-200 rounded-lg h-14 text-lg pl-3 w-full  {errorVeldenCategorie.categorienaam ? 'border-2 border-red-500' : ''}" />
+                </div>
+                
+                <!-- Kleur Picker -->
+                <div class="col-span-4 flex justify-center items-center">
+                        <div class="{errorVeldenCategorie.categorienaam ? 'border-b border-red-500' : ''}">
+                            <ColorPicker
+                            bind:hex
+                            label="Kies een kleur" 
+                            components={ChromeVariant} 
+                            sliderDirection="horizontal"/>
+                        </div>
+                </div>
+                
+                <!-- Acties -->
+                <div class="col-span-4 flex justify-end">
+                    <button type="button" class="h-10 w-10 bg-green-500 p-2 rounded-lg text-white" on:click={nieuweCategorie} aria-label="Nieuwe categorie toevoegen">
+                        <FaPlus />
+                    </button>
+                </div>
+            </div>
+    
             {#each categorieën as categorie, index}
                 <div class="grid grid-cols-12 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
-                    <div class="col-span-2">
-                        <input type="text" class="text-gray-400 text-sm"/>
-                        <p>{categorie?.naam || ''}</p>
+                    <!-- Naam -->
+                    <div class="col-span-4">
+                        <input type="text" id="categorie-{categorie?.id}" bind:value={categorie.naam} class="bg-gray-200 rounded-lg h-14 text-lg pl-3 w-full" />
                     </div>
-                    <div class="flex">
-                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6">
-                            <circle cx="50" cy="50" r="50" fill={categorie?.kleur || '#000'} />
-                        </svg>
+                    
+                    <!-- Kleur Picker -->
+                    <div class="col-span-4 flex justify-center items-center">
+                        <div class="custom-color-picker">
+                            <ColorPicker 
+                                label="Kies een kleur" 
+                                components={ChromeVariant} 
+                                sliderDirection="horizontal"
+                            />
+                        </div>
                     </div>
-                    <div>
+                    
+                    <!-- Acties -->
+                    <div class="col-span-4 flex justify-end">
                         {#if categorie.confirmDelete}
                             <button type="button" on:click={() => deleteCategorie(categorie?.id)} class="h-10 w-10 bg-red-500 p-2 rounded-lg text-white">
                                 <FaTrashAlt />
                             </button>
                         {:else}
-                        <button type="button" on:click={() => {
-                            categorieën.forEach((c, i) => {
-                                if (i !== index) c.confirmDelete = false;
-                            });
-                            categorie.confirmDelete = true;
-                        }} class="h-10 w-10 bg-red-300 p-2 rounded-lg text-white">
-                            <GoX />
-                        </button>
-                    {/if}
+                            <button type="button" on:click={() => {
+                                categorieën.forEach((c, i) => {
+                                    if (i !== index) c.confirmDelete = false;
+                                });
+                                categorie.confirmDelete = true;
+                            }} class="h-10 w-10 bg-red-300 p-2 rounded-lg text-white">
+                                <GoX />
+                            </button>
+                        {/if}
                     </div>
                 </div>
             {/each}

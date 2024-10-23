@@ -1,5 +1,6 @@
 package com.thomasmore.blc.labflow.controller;
 
+import com.thomasmore.blc.labflow.config.UniqueConstraintViolationException;
 import com.thomasmore.blc.labflow.entity.Testcategorie;
 import com.thomasmore.blc.labflow.service.TestCategorieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,11 @@ public class TestCategorieController {
     // Test categorie aanpassen (U)
     @PutMapping("/testCategorieen/{id}")
     public ResponseEntity<Testcategorie> updateTestCategorie(@PathVariable Long id, @RequestBody Testcategorie updateTestCategorie) {
-        testCategorieService.updateTestCategorie(id, updateTestCategorie);
-        return null;
+        try {
+            return testCategorieService.updateTestCategorie(id, updateTestCategorie);
+        } catch (Exception e) {
+            throw new UniqueConstraintViolationException(e.getMessage());
+        }
     }
 
     // Test categorie verwijderen (D)
