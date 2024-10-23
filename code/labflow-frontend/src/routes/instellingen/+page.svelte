@@ -18,7 +18,7 @@
 <div class="px-8 flex flex-row">
 
     <!-- 3 knoppen -->
-    <div class="flex flex-col space-y-3 w-40">
+    <div class="flex flex-col space-y-3 w-40 mt-[73px]">
         <button type="button" on:click={() => navElement = "Categorie"} class="p-3 text-center text-lg bg-blue-400 flex flex-col items-center justify-center w-40 h-40 rounded-2xl text-white">
             <div class="w-14 h-14 mb-5"><FaClipboardList /></div>
             Categorieën beheren
