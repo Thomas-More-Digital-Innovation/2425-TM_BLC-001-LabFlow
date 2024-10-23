@@ -165,7 +165,7 @@ public class Staal {
         for (StaalTest newTest : newTests) {
             if (!registeredTests.contains(newTest)) {
                 registeredTests.add(newTest);
-                newTest.setStaal(this); // Set the reference back to this Staal entity
+                newTest.setStaal(this);
             }
         }
     }
