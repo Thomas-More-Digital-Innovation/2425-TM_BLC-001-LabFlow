@@ -22,7 +22,6 @@
         if (result) {
             categorieën = result;
         }
-        console.log(categorieën);
     });
 
     ///// DELETE verwijderen van een categorie /////
@@ -51,23 +50,23 @@
     // dit geeft een warning in console en geeft de kleur transparant weer (dit is wat ik wil)
     let hex = "";
 
-    let errorVeldenCategorie = {
+    let errorVeldenCategoriePOST = {
         categorienaam: false,
         kleur: false,
     }
 
     let errorMessageCategorie = "";
         async function nieuweCategorie() {
-            errorVeldenCategorie = { categorienaam: false, kleur: false };
+            errorVeldenCategoriePOST = { categorienaam: false, kleur: false };
             let isValid = true;
             const regex = /^#([0-9A-F]{3}){1,2}$/i;
 
             if (!categorienaam) {
-                errorVeldenCategorie.categorienaam = true;
+                errorVeldenCategoriePOST.categorienaam = true;
                 isValid = false;
             }
             if (!hex || !regex.test(hex)) {
-                errorVeldenCategorie.kleur = true;
+                errorVeldenCategoriePOST.kleur = true;
                 isValid = false;
             }
             // errorMessageStaal tonen indien niet alle velden zijn ingevuld
@@ -104,11 +103,33 @@
     }
 
     ///// PUT aanpassen van een categorie /////
+
+    let errorVeldenCategoriePUT = {
+        categorienaam: false,
+        kleur: false,
+    }
+
+    let errorMessageCategoriePUT = "";
+
     async function updateCategorie(id: string) {
-        let categorieHex ='';
         const categorie = categorieën.find(c => c.id === id);
         console.log(categorie);
         if (!categorie) return;
+
+        errorVeldenCategoriePUT = { categorienaam: false, kleur: false };
+        let isValid = true;
+
+        if (!categorie.naam) {
+            errorVeldenCategoriePUT.categorienaam = true;
+            isValid = false;
+        }
+        if (!categorie.kleur) {
+            errorVeldenCategoriePUT.kleur = true;
+        }
+        if (!isValid) {
+            errorMessageCategoriePUT = 'Vul alle verplichte velden in.';
+            return;
+        }
         try {
             await fetch(`http://localhost:8080/api/testCategorieen/${id}`, {
                 method: "PUT",
@@ -121,6 +142,7 @@
                     kleur: categorie.kleur,
                 }),
             });
+            errorMessageCategoriePUT = '';
         } catch (error) {
             console.error("Categorie kon niet worden aangepast: ", error);
         }
@@ -137,7 +159,7 @@
         </button>
     </div>
 
-    <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
+    <div class="bg-slate-100 w-full h-full rounded-2xl p-5">
         <div class="space-y-3">
             <!-- Header -->
             <div class="grid grid-cols-12 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
@@ -158,12 +180,12 @@
 
                 <!-- Naam -->
                 <div class="col-span-4">
-                    <input type="text" id="nieuwecategorie" bind:value={categorienaam} class="bg-gray-200 rounded-lg h-14 text-lg pl-3 w-full  {errorVeldenCategorie.categorienaam ? 'border-2 border-red-500' : ''}" />
+                    <input type="text" id="nieuwecategorie" bind:value={categorienaam} class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full  {errorVeldenCategoriePOST.categorienaam ? 'border-2 border-red-500' : ''}" />
                 </div>
                 
                 <!-- Kleur Picker -->
                 <div class="col-span-4 flex justify-center items-center">
-                        <div class="{errorVeldenCategorie.categorienaam ? 'border-b border-red-500' : ''}">
+                        <div class="{errorVeldenCategoriePOST.categorienaam ? 'border-b border-red-500' : ''}">
                             <ColorPicker
                             bind:hex
                             label="Kies een kleur" 
@@ -179,6 +201,10 @@
                     </button>
                 </div>
             </div>
+
+            {#if errorMessageCategoriePUT}
+            <div class="text-red-500 mb-2">{errorMessageCategoriePUT}</div>
+            {/if}
     
             {#each categorieën as categorie, index}
                 <div class="grid grid-cols-12 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
@@ -188,7 +214,7 @@
                             on:blur={() => updateCategorie(categorie.id)} 
                             id="categorie-{categorie?.id}" 
                             bind:value={categorie.naam} 
-                            class="bg-gray-200 rounded-lg h-14 text-lg pl-3 w-full" />
+                            class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full" />
                     </div>
                     
                     <!-- Kleur Picker -->
