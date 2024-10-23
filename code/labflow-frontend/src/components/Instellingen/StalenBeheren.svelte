@@ -183,6 +183,8 @@
         }
         if (!staal.laborantRnummer || !regex.test(staal.laborantRnummer)) {
             errorVeldenStaalPUT.laborantRnummer = true;
+            errorMessageStaalPUT = 'RNummer moet beginnen met een R en gevolgd worden door 7 cijfers.';
+            return;
         }
         if (staal.laborantNaam && staal.laborantRnummer && regex.test(staal.laborantRnummer)) {
             isValid = true;
