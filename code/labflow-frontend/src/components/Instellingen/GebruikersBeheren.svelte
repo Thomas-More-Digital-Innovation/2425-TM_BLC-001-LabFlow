@@ -7,16 +7,22 @@
 	import { onMount } from 'svelte';
 	import { fetchUsers } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
+	import { fetchRollen } from '$lib/fetchFunctions';
 
 	const token = getCookie('authToken') || '';
 
 	let users: any[] = [];
+	let rollen: any[] = [];
 
 	onMount(async () => {
-		const result = await fetchUsers();
-		if (result) {
-			users = result;
-			console.log(result);
+		const resultUsers = await fetchUsers();
+		if (resultUsers) {
+			users = resultUsers;
+		}
+		const resultRollen = await fetchRollen();
+		if (resultRollen) {
+			rollen = resultRollen;
+			console.log(resultRollen);
 		}
 	});
 

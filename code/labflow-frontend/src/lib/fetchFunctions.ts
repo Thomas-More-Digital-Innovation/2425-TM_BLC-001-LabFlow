@@ -68,3 +68,18 @@ export async function fetchUsers() {
         goto('/login');
     }
 }
+
+// fetchen van rollen
+export async function fetchRollen() {
+    if (token) {
+        try {
+            const rollen = await fetchAll(token, 'rollen');
+            return rollen;
+        } catch (error) {
+            console.error("Rollen konden niet gefetched worden:", error);
+        }
+    } else {
+        console.error("JWT error: token missing of invalid");
+        goto('/login');
+    }
+}
