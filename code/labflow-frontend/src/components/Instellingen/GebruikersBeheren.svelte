@@ -1,19 +1,187 @@
-<script>
-    import { goto } from "$app/navigation";
-    // @ts-ignore
-    import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte'
+<script lang="ts">
+	import { goto } from '$app/navigation';
+	// @ts-ignore
+	import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte';
+	import { onMount } from 'svelte';
+	import { fetchUsers } from '$lib/fetchFunctions';
+	import { getCookie } from '$lib/globalFunctions';
+
+	const token = getCookie('authToken') || '';
+
+	let users: any[] = [];
+
+	onMount(async () => {
+		const result = await fetchUsers();
+		if (result) {
+			users = result;
+			console.log(result);
+		}
+	});
+
+	///// DELETE verwijderen van een gebruiker /////
+	async function deleteUser(id: string) {
+		console.log(id);
+		try {
+			await fetch(`http://localhost:8080/api/users/${id}`, {
+				method: 'DELETE'
+			});
+		} catch (error) {
+			console.error('Gebruiker kon niet worden verwijderd: ', error);
+		}
+		const result = await fetchUsers();
+		if (result) {
+			users = result;
+		}
+		return;
+	}
+
+	///// POST aanmaken van een gebruiker /////
+	let voornaam = '';
+	let achternaam = '';
+	let email = '';
+	let wachtwoord = '';
+	let rol = '';
+
+	let errorVeldenGebruikerPOST = {
+		voornaam: false,
+		achternaam: false,
+		email: false,
+		wachtwoord: false,
+		rol: false
+	};
+
+	let errorMessageGebruiker = '';
+
+	async function nieuweGebruiker() {
+		errorVeldenGebruikerPOST = {
+			voornaam: false,
+			achternaam: false,
+			email: false,
+			wachtwoord: false,
+			rol: false
+		};
+		let isValid = true;
+		if (!voornaam) {
+			errorVeldenGebruikerPOST.voornaam = true;
+			isValid = false;
+		}
+		if (!achternaam) {
+			errorVeldenGebruikerPOST.achternaam = true;
+			isValid = false;
+		}
+		if (!email) {
+			errorVeldenGebruikerPOST.email = true;
+			isValid = false;
+		}
+		if (!wachtwoord) {
+			errorVeldenGebruikerPOST.wachtwoord = true;
+			isValid = false;
+		}
+		if (!rol) {
+			errorVeldenGebruikerPOST.rol = true;
+			isValid = false;
+		}
+		if (!isValid) {
+			errorMessageGebruiker = 'Vul alle verplictte velden in.';
+			return;
+		}
+
+		try {
+			await fetch(`http://localhost:8080/register`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + token
+				},
+				body: JSON.stringify({
+					voornaam: voornaam,
+					achternaam: achternaam,
+					email: email,
+					wachtwoord: wachtwoord,
+					rol: rol
+				})
+			});
+		} catch (error) {
+			console.error('Gebruiker kon niet worden aangemaakt: ', error);
+		}
+		const result = await fetchUsers();
+		if (result) {
+			users = result;
+		}
+		return;
+	}
 </script>
 
 <div class="flex flex-col w-full ml-5">
-    <div class="flex flex-row justify-between w-full h-14 mb-5">
-        <h1 class="font-bold text-3xl">Gebruikers beheren</h1>
-        <button type="button" on:click={async () => { await goto("/stalen"); }} class="bg-gray-400 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex">
-            <div class="w-4 h-4 mr-2"><FaArrowLeft/></div>
-            <p>Terug</p>
-        </button>
-    </div>
+	<div class="flex flex-row justify-between w-full h-14 mb-5">
+		<h1 class="font-bold text-3xl">Gebruikers beheren</h1>
+		<button
+			type="button"
+			on:click={async () => {
+				await goto('/stalen');
+			}}
+			class="bg-gray-400 text-xl rounded-lg p-3 text-white h-12 w-32 justify-center items-center flex"
+		>
+			<div class="w-4 h-4 mr-2"><FaArrowLeft /></div>
+			<p>Terug</p>
+		</button>
+	</div>
 
-    <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
-        gebruikers
-    </div>
+	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
+		<div class="space-y-3">
+			<!-- Header -->
+			<div class="grid grid-cols-6 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
+				<div class="col-span-1">
+					<p>Voornaam</p>
+				</div>
+				<div class="col-span-1 text-center">
+					<p>Achternaam</p>
+				</div>
+				<div class="col-span-1 text-center">
+					<p>Email</p>
+				</div>
+				<div class="col-span-1 text-center">
+					<p>Wachtwoord</p>
+				</div>
+				<div class="col-span-1 text-center">
+					<p>Rol</p>
+				</div>
+				<div class="col-span-1 text-right">
+					<p>Acties</p>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-12 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
+				<div class="col-span-4">
+					<input
+						type="text"
+						id="nieuwecategorie"
+						bind:value={categorienaam}
+						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
+                    {errorVeldenCategoriePOST.categorienaam ? 'border-2 border-red-500' : ''}"
+					/>
+				</div>
+				<div class="col-span-4">
+					<input
+						type="text"
+						id="nieuwecategorie"
+						bind:value={categorienaam}
+						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
+                    {errorVeldenCategoriePOST.categorienaam ? 'border-2 border-red-500' : ''}"
+					/>
+				</div>
+				<!-- Acties -->
+				<div class="col-span-4 flex justify-end">
+					<button
+						type="button"
+						class="h-10 w-10 bg-green-500 p-2 rounded-lg text-white"
+						on:click={nieuweCategorie}
+						aria-label="Nieuwe categorie toevoegen"
+					>
+						<FaPlus />
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
