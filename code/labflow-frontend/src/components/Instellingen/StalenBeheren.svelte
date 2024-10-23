@@ -56,6 +56,33 @@
     }
 
     async function updateStaal(id: string) {
+        const staal = stalen.find(s => s.id === id);
+        console.log(staal);
+        if (!staal) return;
+        try {
+            await fetch(`http://localhost:8080/api/updatestaal/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    staalCode: staal.staalCode,
+                    aanmaakDatum: staal.aanmaakDatum,
+                    laborantNaam: staal.laborantNaam,
+                    laborantRnummer: staal.laborantRnummer,
+                    patientAchternaam: staal.patientAchternaam,
+                    patientVoornaam: staal.patientVoornaam,
+                    patientGeslacht: staal.patientGeslacht,
+                    patientGeboorteDatum: staal.patientGeboorteDatum,
+                    user: {
+                        id: staal.user.id
+                    }
+                }),
+            });
+        } catch (error) {
+            console.error("Staal kon niet worden aangepast: ", error);
+        }
         return;
     }
 </script>
@@ -83,11 +110,11 @@
         <div class="space-y-3">
             <!-- Header -->
             <div class="grid grid-cols-8 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold space-x-3">
-                <div class="col-span-1">
-                    <p>Code</p>
-                </div>
                 <div class="col-span-1 text-left">
                     <p>Aanmaakdatum</p>
+                </div>
+                <div class="col-span-1">
+                    <p>Code</p>
                 </div>
                 <div class="col-span-1 text-left">
                     <p>Naam</p>
@@ -114,16 +141,16 @@
                     <div class="grid grid-cols-8 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3">
 
                         <div class="col-span-1">
+                            <span 
+                                class=" rounded-lg h-14 text-lg pl-3 w-full p-2">
+                                {new Date(staal.aanmaakDatum).toLocaleDateString() || 'Loading...'}
+                            </span>
+                        </div>
+                        <div class="col-span-1">
                             <input type="text" 
                                 on:blur={() => updateStaal(staal.id)} 
                                 id="staal-{staal?.id}" 
                                 bind:value={staal.staalCode} 
-                                class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full" />
-                        </div>
-                        <div class="col-span-1">
-                            <input type="date" 
-                                on:blur={() => updateStaal(staal.id)}
-                                bind:value={staal.aanmaakDatum} 
                                 class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full" />
                         </div>
                         <div class="col-span-1">
@@ -143,15 +170,15 @@
                                 on:change={() => updateStaal(staal.id)} 
                                 bind:value={staal.patientGeslacht} 
                                 class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full">
-                                <option value="M">Man</option>
-                                <option value="V">Vrouw</option>
+                                <option value="V">Man</option>
+                                <option value="M">Vrouw</option>
                             </select>
                         </div>
                         <div class="col-span-1">
                             <input type="date" 
                                 on:blur={() => updateStaal(staal.id)}
                                 bind:value={staal.patientGeboorteDatum}
-                                class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full" />
+                                class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full p-2" />
                         </div>
                         <div class="col-span-1 ">
                             <input type="text" 

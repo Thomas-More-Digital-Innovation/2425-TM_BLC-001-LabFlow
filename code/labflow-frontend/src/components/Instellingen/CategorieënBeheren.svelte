@@ -104,7 +104,6 @@
 
     ///// PUT aanpassen van een categorie /////
     async function updateCategorie(id: string) {
-        let categorieHex ='';
         const categorie = categorieën.find(c => c.id === id);
         console.log(categorie);
         if (!categorie) return;
