@@ -30,7 +30,7 @@ public class PdfGeneratorService {
         document.open();
 
         // staal info
-        int staalCode = staal.getStaalCode();
+        Long staalCode = staal.getStaalCode();
         String voornaam = staal.getPatientVoornaam();
         String achternaam = staal.getPatientAchternaam();
         Date geboortedatum = staal.getPatientGeboorteDatum();
@@ -88,7 +88,7 @@ public class PdfGeneratorService {
 
         // Patient info
         List<StaalTest> registeredTests = staal.getRegisteredTests();
-        int staalCode = staal.getStaalCode();
+        Long staalCode = staal.getStaalCode();
         String voornaam = staal.getPatientVoornaam();
         String achternaam = staal.getPatientAchternaam();
         Date geboortedatum = staal.getPatientGeboorteDatum();

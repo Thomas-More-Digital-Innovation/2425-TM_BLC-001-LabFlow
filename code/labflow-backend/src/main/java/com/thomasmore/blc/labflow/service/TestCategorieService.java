@@ -3,6 +3,7 @@ package com.thomasmore.blc.labflow.service;
 import com.thomasmore.blc.labflow.entity.Testcategorie;
 import com.thomasmore.blc.labflow.repository.TestCategorieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

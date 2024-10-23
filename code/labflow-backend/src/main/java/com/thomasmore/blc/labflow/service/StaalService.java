@@ -46,7 +46,7 @@ public class StaalService {
             existingStaal.setStaalCode(staal.getStaalCode());
             existingStaal.setLaborantNaam(staal.getLaborantNaam());
             existingStaal.setUser(staal.getUser());
-            existingStaal.setRegisteredTests(staal.getRegisteredTests()); // Fix to match correct field
+            existingStaal.setRegisteredTests(staal.getRegisteredTests());
             existingStaal.setLaborantRnummer(staal.getLaborantRnummer());
             existingStaal.setPatientAchternaam(staal.getPatientAchternaam());
             existingStaal.setPatientVoornaam(staal.getPatientVoornaam());

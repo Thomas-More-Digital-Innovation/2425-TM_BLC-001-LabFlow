@@ -1,9 +1,6 @@
 package com.thomasmore.blc.labflow.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Testcategorie {
@@ -11,6 +8,7 @@ public class Testcategorie {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // voor auto-increment in SQLite
     private Long id;
 
+    @Column(unique=true)
     private String naam;
 
     private String kleur;

@@ -1,9 +1,10 @@
 package com.thomasmore.blc.labflow.controller;
 
+import com.thomasmore.blc.labflow.config.UniqueConstraintViolationException;
 import com.thomasmore.blc.labflow.entity.Testcategorie;
 import com.thomasmore.blc.labflow.service.TestCategorieService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,11 @@ public class TestCategorieController {
     // Test categorie aanmaken (C)
     @PostMapping("/createtestcategorie")
     public void createTestCategorie(@RequestBody Testcategorie testcategorie) {
-        testCategorieService.createTestcategorie(testcategorie);
+        try {
+            testCategorieService.createTestcategorie(testcategorie);
+        } catch (Exception e) {
+            throw new UniqueConstraintViolationException(e.getMessage());
+        }
     }
 
     // Test Categorie bekijken (R)
@@ -30,8 +35,7 @@ public class TestCategorieController {
     // Test categorie aanpassen (U)
     @PutMapping("/testCategorieen/{id}")
     public ResponseEntity<Testcategorie> updateTestCategorie(@PathVariable Long id, @RequestBody Testcategorie updateTestCategorie) {
-        testCategorieService.updateTestCategorie(id, updateTestCategorie);
-        return null;
+        return testCategorieService.updateTestCategorie(id, updateTestCategorie);
     }
 
     // Test categorie verwijderen (D)
