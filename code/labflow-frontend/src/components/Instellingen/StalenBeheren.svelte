@@ -11,6 +11,8 @@
     import { onMount } from 'svelte';
     import { fetchStalen } from "$lib/fetchFunctions";
     import { getCookie } from "$lib/globalFunctions";
+    import { getUserId } from "$lib/globalFunctions";
+
 
     const token = getCookie('authToken') || '';
 
@@ -65,6 +67,7 @@
     let patientGeboorteDatum = '';
     let laborantNaam = '';
     let laborantRnummer = '';
+    let userId = getUserId();
 
     let errorVeldenStaalPOST = {
         staalcode: false,
@@ -76,12 +79,69 @@
         laborantRnummer: false    
     }
 
+    let errorMessageStaalPOST = '';
     async function nieuweStaal() {
+        // Resetten van de errorvelden
+        errorVeldenStaalPOST = { staalcode: false, naam: false, voornaam: false, geslacht: false, geboortedatum: false, laborantNaam: false, laborantRnummer: false };
+        let isValid = true;
+        if (!StaalCode) {
+            errorVeldenStaalPOST.staalcode = true;
+            isValid = false;
+        }
+        if (!patientAchternaam) {
+            errorVeldenStaalPOST.naam = true;
+            isValid = false;
+        }
+        if (!patientVoornaam) {
+            errorVeldenStaalPOST.voornaam = true;
+            isValid = false;
+        }
+        if (!patientGeslacht) {
+            errorVeldenStaalPOST.geslacht = true;
+            isValid = false;
+        }
+        if (!patientGeboorteDatum) {
+            errorVeldenStaalPOST.geboortedatum = true;
+            isValid = false;
+        }
+        if (!laborantNaam) {
+            errorVeldenStaalPOST.laborantNaam = true;
+            isValid = false;
+        }
+        if (!laborantRnummer) {
+            errorVeldenStaalPOST.laborantRnummer = true;
+            isValid = false;
+        }
+        if (!isValid) {
+            errorMessageStaalPOST = 'Vul alle verplichte velden in.';
+            return;
+        }
+        try {
+            const response  = await fetch("http://localhost:8080/api/createstaal", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    staalCode: StaalCode,
+                    patientAchternaam: patientAchternaam,
+                    patientVoornaam: patientVoornaam,
+                    patientGeslacht: patientGeslacht,
+                    patientGeboorteDatum: patientGeboorteDatum,
+                    laborantNaam: laborantNaam,
+                    laborantRnummer: laborantRnummer,
+                    user: {
+                        id: userId
+                    },
+                }),
+            });
+            errorMessageStaalPOST = '';
+        } catch (error) {
+            console.error("Staal kon niet worden aangemaakt: ", error);
+        }
         return;
     }
-
-
-
 
     ///// PUT Staal aanpassen /////
     let errorVeldenStaalPUT = {
@@ -94,7 +154,7 @@
         laborantRnummer: false
     }
 
-    let errorMessageStaal = '';
+    let errorMessageStaalPUT = '';
 
     async function updateStaal(id: string) {
         const staal = stalen.find(s => s.id === id);
@@ -105,7 +165,7 @@
         staal.laborantRnummer = staal.laborantRnummer.toUpperCase();
         // regex voor R-nummer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes 
         const regex = /^R\d{7}$/;
-        const errorVeldenStaal = {
+        const errorVeldenStaalPUT = {
             staalcode: false,
             naam: false,
             voornaam: false,
@@ -113,6 +173,10 @@
             geboortedatum: false,
             laborantNaam: false,
             laborantRnummer: false
+        }
+        if (!staal.StaalCode) {
+            errorVeldenStaalPUT.staalcode = true;
+            isValid = false;
         }
         if (!staal.laborantNaam) {
             errorVeldenStaalPUT.laborantNaam = true;
@@ -139,12 +203,8 @@
             errorVeldenStaalPUT.geslacht = true;
             isValid = false;
         }
-        if (!staal.StaalCode) {
-            errorVeldenStaalPUT.staalcode = true;
-            isValid = false;
-        }
         if (!isValid) {
-            errorMessageStaal = 'Vul alle verplichte velden in.';
+            errorMessageStaalPUT = 'Vul alle verplichte velden in.';
             return;
         }
         try {
@@ -168,7 +228,7 @@
                     }
                 }),
             });
-            errorMessageStaal = '';
+            errorMessageStaalPUT = '';
         } catch (error) {
             console.error("Staal kon niet worden aangepast: ", error);
         }
@@ -227,6 +287,9 @@
                     <p>Acties</p>
                 </div>
             </div>
+            {#if errorMessageStaalPOST}
+            <div class="text-red-500 mb-2">{errorMessageStaalPOST}</div>
+            {/if}
             <div class="grid grid-cols-9 space-x-3 bg-white rounded-lg h-20 items-center px-3 shadow-md">
                 <div class="col-span-1">
                     <p class="bg-white rounded-lg h-14 text-lg pl-3 w-full" />
@@ -244,11 +307,16 @@
                     {errorVeldenStaalPOST.voornaam ? 'border-2 border-red-500' : ''}" />
                 </div>
                 <div class="col-span-1">
-                    <input type="text" id="patientGeslacht" bind:value={patientGeslacht} class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full  
-                    {errorVeldenStaalPOST.geslacht ? 'border-2 border-red-500' : ''}" />
+                    <select  
+                    bind:value={patientGeslacht} 
+                    class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
+                    {errorVeldenStaalPOST.geslacht ? 'border-2 border-red-500' : ''}">
+                    <option value="V">Man</option>
+                    <option value="M">Vrouw</option>
+                </select>
                 </div>
                 <div class="col-span-1">
-                    <input type="text" id="patientGeboorteDatum" bind:value={patientGeboorteDatum} class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full  
+                    <input type="date" id="patientGeboorteDatum" bind:value={patientGeboorteDatum} class="px-2 bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full  
                     {errorVeldenStaalPOST.geboortedatum ? 'border-2 border-red-500' : ''}" />
                 </div>
                 <div class="col-span-1">
@@ -268,8 +336,8 @@
                     </button>
                 </div>
             </div>
-            {#if errorMessageStaal}
-            <div class="text-red-500 mb-2">{errorMessageStaal}</div>
+            {#if errorMessageStaalPUT}
+            <div class="text-red-500 mb-2">{errorMessageStaalPUT}</div>
             {/if}
             <div class="space-y-3">
                 {#each filteredStalen as staal, index}
