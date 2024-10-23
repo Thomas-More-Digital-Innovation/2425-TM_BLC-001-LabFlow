@@ -173,9 +173,48 @@
         }
     }
 
-    function handleCheckboxChange(test: any) {
-        status = !status;
-        updateResult(test.result, test.test.id, test.note);
+    async function handleCheckboxChange(test: any) {
+        // Toggle the failed status
+        const isChecked = !test.failed;
+        test.failed = isChecked;
+        
+        // If failed, disable the input and clear the result, else enable the input
+        if (isChecked) {
+            test.result = null;  // Set result to null when checked
+        } else {
+            test.result = '';  // Set result to empty string when unchecked
+        }
+
+        // Update the result and failed status in the database
+        try {
+            const body = {
+                result: test.result,  // null if failed, otherwise empty string or input value
+                note: test.note || '',  // Keep the note as it is or empty string
+                failed: test.failed     // Update the failed status
+            };
+
+            const headers = {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            };
+
+            const response = await fetch(`http://localhost:8080/api/updatestaaltest/${staalId}/${test.test.id}`, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            loadData();
+            console.log("Checkbox change update successful:", data);
+        } catch (error) {
+            loadData();
+            console.error("Failed to update test status:", error);
+        }
     }
 
     function checkAllDoneForCategory(testcategorie: any):boolean {
@@ -230,7 +269,7 @@
                     Annuleren
                 </button>
                 <!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
-                <button on:click={() => { goto("/stalen/done") }} class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center">
+                <button on:click={() => { goto("/stalen/done") }} class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed" disabled={!allDone}>
                     Volgende
                     <div class="w-5 h-5 ml-2"><FaArrowRight/></div>
                 </button>
@@ -287,7 +326,14 @@
                                     <!-- Value Section -->
                                     <div class="flex flex-col items-start">
                                         <span class="text-sm text-gray-500">Waarde</span>
-                                        <input on:blur={() => updateResult(test.result, test.test.id, test.note)} bind:value={test.result} type="text" class="bg-gray-200 h-10 rounded-lg border border-gray-400 px-1" placeholder={test.result}/>
+                                        <input 
+                                            on:blur={() => updateResult(test.result, test.test.id, test.note)}
+                                            bind:value={test.result}
+                                            type="text"
+                                            class="bg-gray-200 h-10 rounded-lg border border-gray-400 px-1 disabled:border-0 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                            placeholder={test.result}
+                                            disabled={test.failed}
+                                        />
                                     </div>
 
                                     <!-- Unit Section -->
@@ -299,8 +345,12 @@
                                     <!-- failed -->
                                     <div class="flex flex-col items-center">
                                         <span class="text-sm text-gray-500">Gefaald</span>
-                                        <input type="checkbox" class="w-5 h-5 mt-3 text-blue-500 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                                        on:change={() => handleCheckboxChange(test)}>
+                                        <input 
+                                            type="checkbox" 
+                                            class="w-5 h-5 mt-3 text-blue-500 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                                            checked={test.failed}
+                                            on:change={() => handleCheckboxChange(test)}
+                                        />
                                     </div>
 
                                     <!-- Note Section -->
