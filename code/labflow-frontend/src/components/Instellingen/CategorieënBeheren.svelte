@@ -47,7 +47,8 @@
 
 
     ///// POST aanmaken van een categorie /////
-    let categorienaam = '';
+    let categorienaam = "";
+    // dit geeft een warning in console en geeft de kleur transparant weer (dit is wat ik wil)
     let hex = "";
 
     let errorVeldenCategorie = {
@@ -55,7 +56,7 @@
         kleur: false,
     }
 
-    let errorMessageCategorie = '';
+    let errorMessageCategorie = "";
         async function nieuweCategorie() {
             errorVeldenCategorie = { categorienaam: false, kleur: false };
             let isValid = true;
