@@ -2,6 +2,8 @@
 	import { goto } from '$app/navigation';
 	// @ts-ignore
 	import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte';
+	// @ts-ignore
+	import FaPlus from 'svelte-icons/fa/FaPlus.svelte';
 	import { onMount } from 'svelte';
 	import { fetchUsers } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
@@ -94,8 +96,8 @@
 					Authorization: 'Bearer ' + token
 				},
 				body: JSON.stringify({
-					voornaam: voornaam,
-					achternaam: achternaam,
+					voorNaam: voornaam,
+					achterNaam: achternaam,
 					email: email,
 					wachtwoord: wachtwoord,
 					rol: rol
@@ -130,20 +132,20 @@
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 		<div class="space-y-3">
 			<!-- Header -->
-			<div class="grid grid-cols-6 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
+			<div class="grid grid-cols-6 gap-4 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
 				<div class="col-span-1">
 					<p>Voornaam</p>
 				</div>
-				<div class="col-span-1 text-center">
+				<div class="col-span-1 text-left">
 					<p>Achternaam</p>
 				</div>
-				<div class="col-span-1 text-center">
+				<div class="col-span-1 text-left">
 					<p>Email</p>
 				</div>
-				<div class="col-span-1 text-center">
+				<div class="col-span-1 text-left">
 					<p>Wachtwoord</p>
 				</div>
-				<div class="col-span-1 text-center">
+				<div class="col-span-1 text-left">
 					<p>Rol</p>
 				</div>
 				<div class="col-span-1 text-right">
@@ -151,31 +153,58 @@
 				</div>
 			</div>
 
-			<div class="grid grid-cols-12 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
-				<div class="col-span-4">
+			<div class="grid grid-cols-6 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
+				<div class="col-span-1">
 					<input
 						type="text"
 						id="nieuwecategorie"
-						bind:value={categorienaam}
+						bind:value={voornaam}
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
-                    {errorVeldenCategoriePOST.categorienaam ? 'border-2 border-red-500' : ''}"
+                    {errorVeldenGebruikerPOST.voornaam ? 'border-2 border-red-500' : ''}"
 					/>
 				</div>
-				<div class="col-span-4">
+				<div class="col-span-1">
 					<input
 						type="text"
 						id="nieuwecategorie"
-						bind:value={categorienaam}
+						bind:value={achternaam}
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
-                    {errorVeldenCategoriePOST.categorienaam ? 'border-2 border-red-500' : ''}"
+                    {errorVeldenGebruikerPOST.achternaam ? 'border-2 border-red-500' : ''}"
+					/>
+				</div>
+				<div class="col-span-1">
+					<input
+						type="text"
+						id="nieuwecategorie"
+						bind:value={email}
+						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
+                    {errorVeldenGebruikerPOST.email ? 'border-2 border-red-500' : ''}"
+					/>
+				</div>
+				<div class="col-span-1">
+					<input
+						type="text"
+						id="nieuwecategorie"
+						bind:value={wachtwoord}
+						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
+                    {errorVeldenGebruikerPOST.wachtwoord ? 'border-2 border-red-500' : ''}"
+					/>
+				</div>
+				<div class="col-span-1">
+					<input
+						type="text"
+						id="nieuwecategorie"
+						bind:value={rol}
+						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
+                    {errorVeldenGebruikerPOST.rol ? 'border-2 border-red-500' : ''}"
 					/>
 				</div>
 				<!-- Acties -->
-				<div class="col-span-4 flex justify-end">
+				<div class="col-span-1 flex justify-end">
 					<button
 						type="button"
 						class="h-10 w-10 bg-green-500 p-2 rounded-lg text-white"
-						on:click={nieuweCategorie}
+						on:click={nieuweGebruiker}
 						aria-label="Nieuwe categorie toevoegen"
 					>
 						<FaPlus />
