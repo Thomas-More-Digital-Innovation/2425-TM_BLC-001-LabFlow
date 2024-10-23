@@ -54,6 +54,10 @@
         }        
         return;
     }
+
+    async function updateStaal(id: string) {
+        return;
+    }
 </script>
 
 <div class="flex flex-col w-full ml-5">
@@ -65,7 +69,7 @@
         </button>
     </div>
 
-    <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
+    <div class="bg-slate-100 w-full h-full rounded-2xl p-5">
 
         <div class="flex space-x-5 mb-5">
             <input 
@@ -78,26 +82,26 @@
         </div>
         <div class="space-y-3">
             <!-- Header -->
-            <div class="grid grid-cols-8 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
+            <div class="grid grid-cols-8 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold space-x-3">
                 <div class="col-span-1">
                     <p>Code</p>
                 </div>
-                <div class="col-span-1 text-center">
+                <div class="col-span-1 text-left">
                     <p>Aanmaakdatum</p>
                 </div>
-                <div class="col-span-1 text-center">
+                <div class="col-span-1 text-left">
                     <p>Naam</p>
                 </div>
-                <div class="col-span-1 text-center">
+                <div class="col-span-1 text-left">
                     <p>Voornaam</p>
                 </div>
-                <div class="col-span-1 text-center">
+                <div class="col-span-1 text-left">
                     <p>Geslacht</p>
                 </div>
-                <div class="col-span-1 text-center">
+                <div class="col-span-1 text-left">
                     <p>Geboortedatum</p>
                 </div>
-                <div class="col-span-1 text-right">
+                <div class="col-span-1 text-left ">
                     <p>Laborant</p>
                 </div>
                 <div class="col-span-1 text-right">
@@ -107,28 +111,55 @@
 
             <div class="space-y-3">
                 {#each filteredStalen as staal, index}
-                    <div class="grid grid-cols-8 bg-white rounded-lg h-16 items-center px-3 shadow-md">
+                    <div class="grid grid-cols-8 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3">
+
                         <div class="col-span-1">
-                            <p>{staal?.staalCode || 'Loading...'}</p>
+                            <input type="text" 
+                                on:blur={() => updateStaal(staal.id)} 
+                                id="staal-{staal?.id}" 
+                                bind:value={staal.staalCode} 
+                                class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full" />
                         </div>
-                        <div class="col-span-1 text-center">
-                            <p>{new Date(staal?.aanmaakDatum).toLocaleDateString() || 'Loading...'}</p>
+                        <div class="col-span-1">
+                            <input type="date" 
+                                on:blur={() => updateStaal(staal.id)}
+                                bind:value={staal.aanmaakDatum} 
+                                class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full" />
                         </div>
-                        <div class="col-span-1 text-center">
-                            <p>{staal?.patientAchternaam || 'Loading...'}</p>
+                        <div class="col-span-1">
+                            <input type="text" 
+                                on:blur={() => updateStaal(staal.id)} 
+                                bind:value={staal.patientAchternaam} 
+                                class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full" />
                         </div>
-                        <div class="col-span-1 text-center">
-                            <p>{staal?.patientVoornaam || 'Loading...'}</p>
+                        <div class="col-span-1">
+                            <input type="text" 
+                                on:blur={() => updateStaal(staal.id)} 
+                                bind:value={staal.patientVoornaam} 
+                                class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full" />
                         </div>
-                        <div class="col-span-1 text-center">
-                            <p>{staal?.patientGeslacht === 'V' ? 'Vrouw' : 'Man'}</p>
+                        <div class="col-span-1">
+                            <select 
+                                on:change={() => updateStaal(staal.id)} 
+                                bind:value={staal.patientGeslacht} 
+                                class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full">
+                                <option value="M">Man</option>
+                                <option value="V">Vrouw</option>
+                            </select>
                         </div>
-                        <div class="col-span-1 text-center">
-                            <p>{new Date(staal?.patientGeboorteDatum).toLocaleDateString() || 'Loading...'}</p>
+                        <div class="col-span-1">
+                            <input type="date" 
+                                on:blur={() => updateStaal(staal.id)}
+                                bind:value={staal.patientGeboorteDatum}
+                                class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full" />
                         </div>
-                        <div class="col-span-1 text-right">
-                            <p>{staal?.laborantNaam || 'Loading...'}</p>
+                        <div class="col-span-1 ">
+                            <input type="text" 
+                                on:blur={() => updateStaal(staal.id)} 
+                                bind:value={staal.laborantNaam} 
+                                class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full" />
                         </div>
+            
                         <!-- Acties -->
                         <div class="col-span-1 flex justify-end">
                             {#if staal.confirmDelete}
@@ -137,7 +168,7 @@
                                 </button>
                             {:else}
                                 <button type="button" on:click={() => {
-                                    stalen.forEach((c, i) => {
+                                    filteredStalen.forEach((c, i) => {
                                         if (i !== index) c.confirmDelete = false;
                                     });
                                     staal.confirmDelete = true;

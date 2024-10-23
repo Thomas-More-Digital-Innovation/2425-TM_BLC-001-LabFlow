@@ -136,7 +136,7 @@
         </button>
     </div>
 
-    <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
+    <div class="bg-slate-100 w-full h-full rounded-2xl p-5">
         <div class="space-y-3">
             <!-- Header -->
             <div class="grid grid-cols-12 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
@@ -157,7 +157,7 @@
 
                 <!-- Naam -->
                 <div class="col-span-4">
-                    <input type="text" id="nieuwecategorie" bind:value={categorienaam} class="bg-gray-200 rounded-lg h-14 text-lg pl-3 w-full  {errorVeldenCategorie.categorienaam ? 'border-2 border-red-500' : ''}" />
+                    <input type="text" id="nieuwecategorie" bind:value={categorienaam} class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full  {errorVeldenCategorie.categorienaam ? 'border-2 border-red-500' : ''}" />
                 </div>
                 
                 <!-- Kleur Picker -->
@@ -187,7 +187,7 @@
                             on:blur={() => updateCategorie(categorie.id)} 
                             id="categorie-{categorie?.id}" 
                             bind:value={categorie.naam} 
-                            class="bg-gray-200 rounded-lg h-14 text-lg pl-3 w-full" />
+                            class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full" />
                     </div>
                     
                     <!-- Kleur Picker -->

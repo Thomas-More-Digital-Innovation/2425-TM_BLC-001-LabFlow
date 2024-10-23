@@ -14,6 +14,6 @@
     </div>
 
     <div class="bg-slate-200 w-full h-full rounded-2xl p-5">
-        test
+        gebruikers
     </div>
 </div>
