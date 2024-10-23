@@ -30,4 +30,9 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody User user){
         return userService.verify(user);
     }
+
+    @DeleteMapping("/deleteuser/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id){
+        return userService.delete(id);
+    }
 }

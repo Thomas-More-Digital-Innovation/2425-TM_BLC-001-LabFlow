@@ -1,5 +1,6 @@
 package com.thomasmore.blc.labflow.service;
 
+import com.thomasmore.blc.labflow.entity.Test;
 import com.thomasmore.blc.labflow.entity.User;
 import com.thomasmore.blc.labflow.repository.UserRepository;
 // transactional zorgt ervoor dat een methode met meerdere database interacties volgens het ACID principe werkt
@@ -58,5 +59,15 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
+    }
+
+    // delete
+    public ResponseEntity<Integer> delete(Long id) {
+        User deleteUser = userRepository.findById(id);
+        if (deleteUser != null) {
+            userRepository.delete(deleteUser);
+            return new ResponseEntity<>(userRepository.findAll().size(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(userRepository.findAll().size(), HttpStatus.NOT_FOUND);
     }
 }
