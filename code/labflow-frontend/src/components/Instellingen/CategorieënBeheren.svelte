@@ -22,7 +22,6 @@
         if (result) {
             categorieën = result;
         }
-        console.log(categorieën);
     });
 
     ///// DELETE verwijderen van een categorie /////
