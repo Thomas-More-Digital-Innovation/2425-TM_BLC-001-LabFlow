@@ -58,7 +58,7 @@
 		rol: false
 	};
 
-	let errorMessageGebruiker = '';
+	let errorMessageGebruikerPOST = '';
 
 	async function nieuweGebruiker() {
 		errorVeldenGebruikerPOST = {
@@ -90,7 +90,7 @@
 			isValid = false;
 		}
 		if (!isValid) {
-			errorMessageGebruiker = 'Vul alle verplictte velden in.';
+			errorMessageGebruikerPOST = 'Vul alle verplichte velden in.';
 			return;
 		}
 
@@ -106,7 +106,9 @@
 					achterNaam: achternaam,
 					email: email,
 					wachtwoord: wachtwoord,
-					rol: rol
+					rol: {
+						id: rol
+					}
 				})
 			});
 		} catch (error) {
@@ -159,6 +161,10 @@
 				</div>
 			</div>
 
+			{#if errorMessageGebruikerPOST}
+				<div class="text-red-500 mb-2">{errorMessageGebruikerPOST}</div>
+			{/if}
+
 			<div class="grid grid-cols-6 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
 				<div class="col-span-1">
 					<input
@@ -189,21 +195,26 @@
 				</div>
 				<div class="col-span-1">
 					<input
-						type="text"
+						type="password"
 						id="nieuwecategorie"
 						bind:value={wachtwoord}
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenGebruikerPOST.wachtwoord ? 'border-2 border-red-500' : ''}"
 					/>
 				</div>
-				<div class="col-span-1">
-					<input
-						type="text"
-						id="nieuwecategorie"
-						bind:value={rol}
-						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
-                    {errorVeldenGebruikerPOST.rol ? 'border-2 border-red-500' : ''}"
-					/>
+				<div class="flex flex-col justify-center col-span-1">
+					<div>
+						{#each rollen as rolItem (rolItem.id)}
+							<label
+								class="container mr-5 {errorVeldenGebruikerPOST.rol
+									? 'text-red-500 font-bold'
+									: ''}"
+							>
+								<input type="radio" name="radio" bind:group={rol} value={rolItem.id} />
+								{rolItem.naam}
+							</label>
+						{/each}
+					</div>
 				</div>
 				<!-- Acties -->
 				<div class="col-span-1 flex justify-end">
