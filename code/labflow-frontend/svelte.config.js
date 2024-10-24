@@ -1,16 +1,14 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-
-/** @type {import('@sveltejs/kit').Config} */
+// Update the config for PostCSS
 const config = {
-  preprocess: [vitePreprocess()],
+  preprocess: vitePreprocess({
+    postcss: true // Enables PostCSS processing, which is required for TailwindCSS
+  }),
 
   kit: {
-      adapter: adapter(),
-      paths: {
-          base: process.env.NODE_ENV === 'production' ? '/sveltekit-github-pages' : '',
-      }
+    adapter: adapter()
   }
 };
 

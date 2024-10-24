@@ -1,10 +1,9 @@
 package com.thomasmore.blc.labflow.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Staal {
@@ -12,7 +11,8 @@ public class Staal {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // voor auto-increment in SQLite
     private Long id;
 
-    private int staalCode;
+    @Column(unique = true)
+    private Long staalCode;
 
     private String patientVoornaam;
 
@@ -26,20 +26,25 @@ public class Staal {
 
     private String laborantRnummer;
 
+    private Date aanmaakDatum;
+
     // foreign key naar de usertabel
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToMany(mappedBy = "stalen")
-    private List<Test> tests = new ArrayList<>();
+    @OneToMany(mappedBy = "staal", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @JsonManagedReference
+    private List<StaalTest> registeredTests = new ArrayList<>();
 
     // lege constructor
     public Staal() {
+        this.aanmaakDatum = new Date();
     }
 
-    // constructor met argumenten
-    public Staal(int staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum, char patientGeslacht, String laborantNaam, String laborantRnummer, User user) {
+    // constructor voor het registreren van een staal zonder tests
+    public Staal(Long staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum,
+                 char patientGeslacht, String laborantNaam, String laborantRnummer, User user) {
         this.staalCode = staalCode;
         this.patientVoornaam = patientVoornaam;
         this.patientAchternaam = patientAchternaam;
@@ -48,6 +53,23 @@ public class Staal {
         this.laborantNaam = laborantNaam;
         this.laborantRnummer = laborantRnummer;
         this.user = user;
+        this.aanmaakDatum = new Date();
+    }
+
+    // constructor voor het registreren van een staal met tests
+    public Staal(Long staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum,
+                 char patientGeslacht, String laborantNaam, String laborantRnummer, User user,
+                 List<StaalTest> registeredTests) {
+        this.staalCode = staalCode;
+        this.patientVoornaam = patientVoornaam;
+        this.patientAchternaam = patientAchternaam;
+        this.patientGeboorteDatum = patientGeboorteDatum;
+        this.patientGeslacht = patientGeslacht;
+        this.laborantNaam = laborantNaam;
+        this.laborantRnummer = laborantRnummer;
+        this.user = user;
+        this.setRegisteredTests(registeredTests); // Use setter to ensure proper association
+        this.aanmaakDatum = new Date();
     }
 
     // getters en setters
@@ -59,11 +81,11 @@ public class Staal {
         this.id = id;
     }
 
-    public int getStaalCode() {
+    public Long getStaalCode() {
         return staalCode;
     }
 
-    public void setStaalCode(int staalCode) {
+    public void setStaalCode(Long staalCode) {
         this.staalCode = staalCode;
     }
 
@@ -115,6 +137,14 @@ public class Staal {
         this.laborantRnummer = laborantRnummer;
     }
 
+    public Date getAanmaakDatum() {
+        return aanmaakDatum;
+    }
+
+    public void setAanmaakDatum(Date aanmaakDatum) {
+        this.aanmaakDatum = aanmaakDatum;
+    }
+
     public User getUser() {
         return user;
     }
@@ -123,11 +153,31 @@ public class Staal {
         this.user = user;
     }
 
-    public List<Test> getTests() {
-        return tests;
+    public List<StaalTest> getRegisteredTests() {
+        return registeredTests;
     }
 
-    public void setTests(ArrayList<Test> tests) {
-        this.tests = tests;
+    public void setRegisteredTests(List<StaalTest> newTests) {
+        // Verwijderen bestaande tests
+        registeredTests.removeIf(existingTest -> !newTests.contains(existingTest));
+
+        // Nieuwe tests toevoegen
+        for (StaalTest newTest : newTests) {
+            if (!registeredTests.contains(newTest)) {
+                registeredTests.add(newTest);
+                newTest.setStaal(this);
+            }
+        }
+    }
+
+    // methodes voor het toevoegen en verwijderen van tests gekoppeld aan één staal
+    public void addRegisteredTest(StaalTest test) {
+        registeredTests.add(test);
+        test.setStaal(this);
+    }
+
+    public void removeRegisteredTest(StaalTest test) {
+        registeredTests.remove(test);
+        test.setStaal(null);
     }
 }

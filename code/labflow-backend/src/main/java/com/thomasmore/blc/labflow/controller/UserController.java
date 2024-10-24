@@ -3,14 +3,13 @@ package com.thomasmore.blc.labflow.controller;
 import com.thomasmore.blc.labflow.entity.User;
 import com.thomasmore.blc.labflow.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173/")  // allow origin van front-end
 public class UserController {
 
     @Autowired
@@ -21,8 +20,14 @@ public class UserController {
         return userService.readUsers();
     }
 
-    @RequestMapping(value = "createuser", method = RequestMethod.POST)
-    public String createUser(@RequestBody User user){
-        return userService.createUser(user);
+    // aanmaken van een user
+    @PostMapping("/register")
+    public User register(@RequestBody User user){
+        return userService.register(user);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User user){
+        return userService.verify(user);
     }
 }
