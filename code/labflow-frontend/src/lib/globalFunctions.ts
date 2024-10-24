@@ -44,6 +44,17 @@ export async function fetchAll(token: string, subject: string) {
         return response;
 }
 
+// voor users
+export async function fetchAllWithoutPrefix(token: string, subject: string) {
+    const headers = {
+        "Authorization": "Bearer " + token
+    };
+
+    const response = await fetch(`http://localhost:8080/${subject}`, { headers })
+        .then(response => response.json());
+        return response;
+}
+
 // https://stackoverflow.com/questions/10730362/get-cookie-by-name 
 export function getCookie(name: string) {
     if (typeof document === 'undefined') {

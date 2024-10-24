@@ -89,6 +89,7 @@
 		}
 	}
 
+
 	onMount(() => {
 		loadData();
 	});
@@ -192,6 +193,7 @@
 							<p>hoeveelheid</p>
 							<input
 								type="number"
+
 								bind:value={hoeveelheid}
 								class="rounded-lg text-xl p-3 h-20 w-11/12 bg-white border border-gray-400"
 							/>
