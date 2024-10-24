@@ -102,13 +102,13 @@
             if (!status) {
                 body = {
                     "result": updateValue,
-                    "note": updateNote,
+                    "note": note,
                     "failed": status
                 }
             } else {
                 body = {
                     "result": '',
-                    "note": updateNote,
+                    "note": note,
                     "failed": status
                 }
             }
