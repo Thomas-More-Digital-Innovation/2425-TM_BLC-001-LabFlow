@@ -90,6 +90,16 @@
 			laborantRnummer: false
 		};
 		let isValid = true;
+		laborantRnummer = laborantRnummer.toUpperCase();
+		const regex = /^R\d{7}$/;
+		if (!laborantRnummer || !regex.test(laborantRnummer)) {
+			errorVeldenStaalPOST.laborantRnummer = true;
+			errorMessageStaalPOST = 'RNummer moet beginnen met een R en gevolgd worden door 7 cijfers.';
+			return;
+		}
+		if (laborantNaam && laborantRnummer && regex.test(laborantRnummer)) {
+			isValid = true;
+		}
 		if (!StaalCode) {
 			errorVeldenStaalPOST.staalcode = true;
 			isValid = false;
@@ -142,7 +152,19 @@
 					}
 				})
 			});
+			StaalCode = '';
+			patientAchternaam = '';
+			patientVoornaam = '';
+			patientGeslacht = '';
+			patientGeboorteDatum = '';
+			laborantNaam = '';
+			laborantRnummer = '';
 			errorMessageStaalPOST = '';
+			const result = await fetchStalen();
+			if (result) {
+				stalen = result.stalen;
+				filteredStalen = result.filteredStalen;
+			}
 		} catch (error) {
 			console.error('Staal kon niet worden aangemaakt: ', error);
 		}
@@ -298,7 +320,7 @@
 					<p>Naam Laborant</p>
 				</div>
 				<div class="col-span-1 text-left">
-					<p>Rnummer Laborant</p>
+					<p>Rnummer</p>
 				</div>
 				<div class="col-span-1 text-right">
 					<p>Acties</p>

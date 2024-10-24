@@ -346,6 +346,7 @@
 										<!-- value komt van de rollen en de bind group is zoals andere imputs in de form gebind aan de user -->
 										<input
 											type="radio"
+											disabled={user?.id === 1 || user?.id === 2}
 											name={`rol-${user.id}`}
 											bind:group={user.rol.id}
 											value={rolItem.id}
@@ -364,7 +365,8 @@
 								<button
 									type="button"
 									on:click={() => deleteUser(String(user?.id))}
-									class="h-10 w-10 bg-red-500 p-2 rounded-lg text-white"
+									class="h-10 w-10 bg-red-500 p-2 rounded-lg text-white
+									{user?.id === 1 || user?.id === 2 ? 'hidden' : ''}"
 								>
 									<FaTrashAlt />
 								</button>
@@ -377,7 +379,8 @@
 										});
 										user.confirmDelete = true;
 									}}
-									class="h-10 w-10 bg-red-300 p-2 rounded-lg text-white"
+									class="h-10 w-10 bg-red-300 p-2 rounded-lg text-white
+									{user?.id === 1 || user?.id === 2 ? 'hidden' : ''}"
 								>
 									<GoX />
 								</button>

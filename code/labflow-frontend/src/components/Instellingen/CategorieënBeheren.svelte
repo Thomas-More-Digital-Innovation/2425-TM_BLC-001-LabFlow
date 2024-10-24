@@ -86,6 +86,8 @@
 					kleur: hex
 				})
 			});
+			categorienaam = '';
+			hex = '';
 			errorMessageCategorie = '';
 			if (response.status === 409) {
 				errorMessageCategorie = 'Deze categorie bestaat al.';
@@ -209,7 +211,7 @@
 				<!-- Acties -->
 				<div class="col-span-4 flex justify-end">
 					<button
-						type="button"
+						type="submit"
 						class="h-10 w-10 bg-green-500 p-2 rounded-lg text-white"
 						on:click={nieuweCategorie}
 						aria-label="Nieuwe categorie toevoegen"
