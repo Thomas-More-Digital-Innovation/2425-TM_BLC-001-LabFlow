@@ -18,7 +18,7 @@
     import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte'
     // @ts-ignore
     import GoX from 'svelte-icons/go/GoX.svelte'
-    import { staalId } from '$lib/store';
+    import { staalCodeStore } from '$lib/store';
     // @ts-ignore
     import IoMdCheckmarkCircle from 'svelte-icons/io/IoMdCheckmarkCircle.svelte'
     // popup laborantgegevens, test & categorie aanmaken
@@ -251,7 +251,7 @@
         }));
 
         try {
-            const response  = await fetch("http://localhost:8080/api/createstaal", {
+            await fetch("http://localhost:8080/api/createstaal", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -271,9 +271,10 @@
                     registeredTests: geselecteerdeTestsArray
                 }),
             });
-            // doorgeven van aangemaakte staal's id naar volgend scherm
-            const data = await response.json();
-            staalId.set(data.id);
+
+          // doorgeven van aangemaakte staal's id naar volgend scherm
+            console.log(nieuweStaalCode);
+            staalCodeStore.set(nieuweStaalCode);
 
         } catch (error) {
             console.error("staal kon niet worden aangemaakt: ", error);

@@ -77,6 +77,11 @@ public class StaalService {
         return staalRepository.findById(id);
     }
 
+    // Get staal by staalcode
+    public Staal readByStaalCode(int staalCode) {
+        return staalRepository.findByStaalCode(staalCode);
+    }
+
     // increment van de grootste testcode voor aanmaken nieuwe test
     public String newStaalCode() {
 
