@@ -139,6 +139,11 @@
 					}
 				})
 			});
+			voornaam = '';
+			achternaam = '';
+			email = '';
+			wachtwoord = '';
+			rol = '';
 		} catch (error) {
 			console.error('Gebruiker kon niet worden aangemaakt: ', error);
 		}

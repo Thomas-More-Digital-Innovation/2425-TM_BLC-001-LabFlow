@@ -70,4 +70,19 @@ public class UserService {
         }
         return new ResponseEntity<>(userRepository.findAll().size(), HttpStatus.NOT_FOUND);
     }
+
+    // update
+    public ResponseEntity<User> update(Long id, User user) {
+        User updateUser = userRepository.findById(id);
+        if (updateUser != null) {
+            updateUser.setEmail(user.getEmail());
+            updateUser.setRol(user.getRol());
+            updateUser.setWachtwoord(user.getWachtwoord());
+            updateUser.setVoorNaam(user.getVoorNaam());
+            updateUser.setAchterNaam(user.getAchterNaam());
+            userRepository.save(updateUser);
+            return new ResponseEntity<>(updateUser, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }

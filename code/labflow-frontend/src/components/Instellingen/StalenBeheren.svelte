@@ -92,14 +92,6 @@
 		let isValid = true;
 		laborantRnummer = laborantRnummer.toUpperCase();
 		const regex = /^R\d{7}$/;
-		if (!laborantRnummer || !regex.test(laborantRnummer)) {
-			errorVeldenStaalPOST.laborantRnummer = true;
-			errorMessageStaalPOST = 'RNummer moet beginnen met een R en gevolgd worden door 7 cijfers.';
-			return;
-		}
-		if (laborantNaam && laborantRnummer && regex.test(laborantRnummer)) {
-			isValid = true;
-		}
 		if (!StaalCode) {
 			errorVeldenStaalPOST.staalcode = true;
 			isValid = false;
@@ -127,6 +119,14 @@
 		if (!laborantRnummer) {
 			errorVeldenStaalPOST.laborantRnummer = true;
 			isValid = false;
+		}
+		if (!laborantRnummer || !regex.test(laborantRnummer)) {
+			errorVeldenStaalPOST.laborantRnummer = true;
+			errorMessageStaalPOST = 'RNummer moet beginnen met een R en gevolgd worden door 7 cijfers.';
+			return;
+		}
+		if (laborantNaam && laborantRnummer && regex.test(laborantRnummer)) {
+			isValid = true;
 		}
 		if (!isValid) {
 			errorMessageStaalPOST = 'Vul alle verplichte velden in.';
