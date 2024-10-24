@@ -151,7 +151,7 @@
 	}
 </script>
 
-<div class="flex flex-col w-full ml-5">
+<div class="flex flex-col w-full ml-5 mb-10">	
 	<div class="flex flex-row justify-between w-full h-14 mb-5">
 		<h1 class="font-bold text-3xl">Categorieën beheren</h1>
 		<button

@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @PutMapping("/updateuser/{id}")
-    public ResponseEntity<Test> update(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
         try {
             return userService.update(id, user);
         } catch (Exception e) {

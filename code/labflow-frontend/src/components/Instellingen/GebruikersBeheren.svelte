@@ -12,23 +12,12 @@
 	import { fetchUsers } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
 	import { fetchRollen } from '$lib/fetchFunctions';
-
+	import { getUserId } from '$lib/globalFunctions';
 	const token = getCookie('authToken') || '';
 
 	let users: any[] = [];
 	let rollen: any[] = [];
-
-	onMount(async () => {
-		const resultUsers = await fetchUsers();
-		if (resultUsers) {
-			users = resultUsers;
-		}
-		const resultRollen = await fetchRollen();
-		if (resultRollen) {
-			rollen = resultRollen;
-			console.log(resultRollen);
-		}
-	});
+	const userId = getUserId();
 
 	onMount(async () => {
 		const resultUsers = await fetchUsers();
@@ -41,7 +30,6 @@
 		const resultRollen = await fetchRollen();
 		if (resultRollen) {
 			rollen = resultRollen;
-			console.log(resultRollen);
 		}
 	});
 
@@ -165,34 +153,75 @@
 		rol: false
 	};
 
-	function updateGebruiker(id: string, newWachtwoord: string) {
-		console.log(id, newWachtwoord);
-
-		fetch(`http://localhost:8080/api/users/${id}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: 'Bearer ' + token
-			},
-			body: JSON.stringify({
-				// Include other fields that may have changed
-				wachtwoord: newWachtwoord
-			})
-		})
-			.then((response) => {
-				if (response.ok) {
-					// Handle success, e.g., show a notification
-				} else {
-					// Handle error
-				}
-			})
-			.catch((error) => {
-				console.error('Error updating user:', error);
+	async function updateGebruiker(id: string, newWachtwoord: string) {
+		console.log('updateGebruiker', id, newWachtwoord);
+		const user = users.find((u) => u.id === id);
+		if (!user) return;
+		let isValid = true;
+		errorVeldenGebruikerPUT = {
+			voornaam: false,
+			achternaam: false,
+			email: false,
+			wachtwoord: false,
+			rol: false
+		};
+		if (!user.voorNaam) {
+			errorVeldenGebruikerPUT.voornaam = true;
+			isValid = false;
+		}
+		if (!user.achterNaam) {
+			errorVeldenGebruikerPUT.achternaam = true;
+			isValid = false;
+		}
+		if (!user.email) {
+			errorVeldenGebruikerPUT.email = true;
+			isValid = false;
+		}
+		if (!user.wachtwoord) {
+			errorVeldenGebruikerPUT.wachtwoord = true;
+			isValid = false;
+		}
+		if (!user.rol) {
+			errorVeldenGebruikerPUT.rol = true;
+			isValid = false;
+		}
+		if (!isValid) {
+			errorMessageGebruikerPUT = 'Vul alle verplichte velden in.';
+			return;
+		}
+		try {
+			await fetch(`http://localhost:8080/updateuser/${id}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + token
+				},
+				body: JSON.stringify({
+					wachtwoord: newWachtwoord ? newWachtwoord : user.wachtwoord, // gebruik het nieuwe wachtwoord als het is ingevuld, anders het oude wachtwoord
+					email: user.email,
+					voorNaam: user.voorNaam,
+					achterNaam: user.achterNaam,
+					rol: {
+						id: user.rol.id
+					}
+				})
 			});
+			errorMessageGebruikerPUT = '';
+			newWachtwoord = '';
+			const result = await fetchUsers();
+			if (result) {
+				users = result;
+			}
+			console.log(users);
+			return;
+		} catch (error) {
+			console.error('Gebruiker kon niet aangepast: ', error);
+		}
+		return;
 	}
 </script>
 
-<div class="flex flex-col w-full ml-5">
+<div class="flex flex-col w-full ml-5 mb-10">
 	<div class="flex flex-row justify-between w-full h-14 mb-5">
 		<h1 class="font-bold text-3xl">Gebruikers beheren</h1>
 		<button
@@ -210,20 +239,20 @@
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 		<div class="space-y-3">
 			<!-- Header -->
-			<div class="grid grid-cols-6 gap-4 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
-				<div class="col-span-1">
+			<div class="grid grid-cols-12 gap-4 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
+				<div class="col-span-2">
 					<p>Voornaam</p>
 				</div>
-				<div class="col-span-1 text-left">
+				<div class="col-span-2 text-left">
 					<p>Achternaam</p>
 				</div>
-				<div class="col-span-1 text-left">
+				<div class="col-span-3 text-left">
 					<p>Email</p>
 				</div>
-				<div class="col-span-1 text-left">
+				<div class="col-span-2 text-left">
 					<p>Wachtwoord</p>
 				</div>
-				<div class="col-span-1 text-left">
+				<div class="col-span-2 text-left">
 					<p>Rol</p>
 				</div>
 				<div class="col-span-1 text-right">
@@ -237,8 +266,8 @@
 			{#if errorMessageGebruikerDELETE}
 				<div class="text-red-500 mb-2">{errorMessageGebruikerDELETE}</div>
 			{/if}
-			<div class="grid grid-cols-6 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3">
-				<div class="col-span-1">
+			<div class="grid grid-cols-12 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3">
+				<div class="col-span-2">
 					<input
 						type="text"
 						id="nieuwecategorie"
@@ -247,7 +276,7 @@
                     {errorVeldenGebruikerPOST.voornaam ? 'border-2 border-red-500' : ''}"
 					/>
 				</div>
-				<div class="col-span-1">
+				<div class="col-span-2">
 					<input
 						type="text"
 						id="nieuwecategorie"
@@ -256,7 +285,7 @@
                     {errorVeldenGebruikerPOST.achternaam ? 'border-2 border-red-500' : ''}"
 					/>
 				</div>
-				<div class="col-span-1">
+				<div class="col-span-3">
 					<input
 						type="text"
 						id="nieuwecategorie"
@@ -265,7 +294,7 @@
                     {errorVeldenGebruikerPOST.email ? 'border-2 border-red-500' : ''}"
 					/>
 				</div>
-				<div class="col-span-1">
+				<div class="col-span-2">
 					<input
 						type="password"
 						id="nieuwecategorie"
@@ -274,7 +303,7 @@
                     {errorVeldenGebruikerPOST.wachtwoord ? 'border-2 border-red-500' : ''}"
 					/>
 				</div>
-				<div class="flex flex-col justify-center col-span-1">
+				<div class="flex flex-col justify-center col-span-2">
 					<div>
 						{#each rollen as rolItem (rolItem.id)}
 							<label
@@ -306,52 +335,77 @@
 			<div class="space-y-3">
 				{#each users as user, index}
 					<div
-						class="grid grid-cols-6 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
+						class="grid grid-cols-12 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
 					>
-						<div class="col-span-1">
+						<div class="col-span-2">
 							<input
 								type="text"
 								on:blur={() => updateGebruiker(user.id, user.newWachtwoord)}
 								bind:value={user.voorNaam}
-								class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
+								disabled={user?.id === 1}
+								class="{user?.id === 1
+									? 'bg-white'
+									: 'bg-gray-100'} rounded-lg h-14 text-lg pl-3 w-full"
 							/>
 						</div>
-						<div class="col-span-1">
+						<div class="col-span-2">
 							<input
 								type="text"
 								on:blur={() => updateGebruiker(user.id, user.newWachtwoord)}
 								bind:value={user.achterNaam}
-								class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
+								disabled={user?.id === 1}
+								class="{user?.id === 1
+									? 'bg-white'
+									: 'bg-gray-100'} rounded-lg h-14 text-lg pl-3 w-full"
 							/>
 						</div>
-						<div class="col-span-1">
+						<div class="col-span-3">
 							<input
 								type="text"
 								on:blur={() => updateGebruiker(user.id, user.newWachtwoord)}
 								bind:value={user.email}
-								class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full p-2"
+								disabled={user?.id === 1}
+								class="{user?.id === 1
+									? 'bg-white'
+									: 'bg-gray-100'} rounded-lg h-14 text-lg pl-3 w-full"
 							/>
 						</div>
-						<div class="col-span-1">
-							<input
-								type="password"
-								on:blur={() => updateGebruiker(user.id, user.newWachtwoord)}
-								bind:value={user.newWachtwoord}
-								class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
-							/>
+						<div class="col-span-2">
+							{#if userId === '1'}
+								<input
+									type="password"
+									on:blur={() => updateGebruiker(user.id, user.newWachtwoord)}
+									bind:value={user.newWachtwoord}
+									disabled={user?.id === 1}
+									class="{user?.id === 1
+										? 'bg-gray-50'
+										: 'bg-gray-100'} rounded-lg h-14 text-lg pl-3 w-full"
+								/>
+							{/if}
+							{#if userId !== '1'}
+								<input
+									type="password"
+									on:blur={() => updateGebruiker(user.id, user.newWachtwoord)}
+									bind:value={user.newWachtwoord}
+									disabled={user?.id === 1 || user?.id === 2 || user?.id === 3}
+									class="{user?.id === 1 || user?.id === 2 || user?.id === 3
+										? 'bg-gray-50'
+										: 'bg-gray-100'} rounded-lg h-14 text-lg pl-3 w-full"
+								/>
+							{/if}
 						</div>
-						<div class="col-span-1">
+						<div class="col-span-2">
 							<div>
 								{#each rollen as rolItem (rolItem.id)}
 									<label
-										class="container mr-5 {errorVeldenGebruikerPOST.rol
+										class="container mr-5 {errorVeldenGebruikerPUT.rol
 											? 'text-red-500 font-bold'
 											: ''}"
 									>
 										<!-- value komt van de rollen en de bind group is zoals andere imputs in de form gebind aan de user -->
 										<input
 											type="radio"
-											disabled={user?.id === 1 || user?.id === 2}
+											disabled={user?.id === 1 || user?.id === 2 || user?.id === 3}
 											name={`rol-${user.id}`}
 											bind:group={user.rol.id}
 											value={rolItem.id}
@@ -371,7 +425,7 @@
 									type="button"
 									on:click={() => deleteUser(String(user?.id))}
 									class="h-10 w-10 bg-red-500 p-2 rounded-lg text-white
-									{user?.id === 1 || user?.id === 2 ? 'hidden' : ''}"
+									{user?.id === 1 || user?.id === 2 || user?.id === 3 ? 'hidden' : ''}"
 								>
 									<FaTrashAlt />
 								</button>
@@ -385,7 +439,7 @@
 										user.confirmDelete = true;
 									}}
 									class="h-10 w-10 bg-red-300 p-2 rounded-lg text-white
-									{user?.id === 1 || user?.id === 2 ? 'hidden' : ''}"
+									{user?.id === 1 || user?.id === 2 || user?.id === 3 ? 'hidden' : ''}"
 								>
 									<GoX />
 								</button>
