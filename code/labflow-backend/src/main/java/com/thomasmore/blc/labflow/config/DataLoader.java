@@ -70,16 +70,16 @@ public class DataLoader implements CommandLineRunner {
 
 
         // Stalen, dit is voor development, geen echte waarden
-        Staal staal1 = new Staal(2024000001, "César", "Van Leuffelen", java.sql.Date.valueOf("2004-07-29"), 'M', "Nathan Neve", "RN12345", user1);
-        Staal staal2 = new Staal(2024000002, "Lucas", "Peeters", java.sql.Date.valueOf("1985-07-21"), 'M', "Sofie", "RN67890", user2);
-        Staal staal3 = new Staal(2024000003, "Mila", "Vermeulen", java.sql.Date.valueOf("1993-02-11"), 'V', "Bart", "RN13579", user1);
-        Staal staal4 = new Staal(2024000004, "Liam", "Claes", java.sql.Date.valueOf("1992-11-30"), 'M', "Lies", "RN24680", user2);
-        Staal staal5 = new Staal(2024000005, "Olivia", "Dubois", java.sql.Date.valueOf("2000-01-08"), 'V', "An", "RN11223", user1);
-        Staal staal6 = new Staal(2024000006, "Noah", "De Smet", java.sql.Date.valueOf("1987-03-16"), 'M', "Koen", "RN44556", user2);
-        Staal staal7 = new Staal(2024000007, "Marie", "De Vries", java.sql.Date.valueOf("1991-09-25"), 'V', "Katrien", "RN77889", user1);
-        Staal staal8 = new Staal(2024000008, "Arthur", "Van Damme", java.sql.Date.valueOf("1988-12-19"), 'M', "Jan", "RN99001", user2);
-        Staal staal9 = new Staal(2024000009, "Charlotte", "Jacobs", java.sql.Date.valueOf("1995-04-03"), 'V', "Eva", "RN22334", user1);
-        Staal staal10 = new Staal(2024000010, "Victor", "Maes", java.sql.Date.valueOf("1990-06-10"), 'M', "Lotte", "RN55667", user2);
+        Staal staal1 = new Staal(2024000001L, "César", "Van Leuffelen", java.sql.Date.valueOf("2004-07-29"), 'M', "Nathan Neve", "R1234567", user1);
+        Staal staal2 = new Staal(2024000002L, "Lucas", "Peeters", java.sql.Date.valueOf("1985-07-21"), 'M', "Sofie", "R1234567", user2);
+        Staal staal3 = new Staal(2024000003L, "Mila", "Vermeulen", java.sql.Date.valueOf("1993-02-11"), 'V', "Bart", "R1234567", user1);
+        Staal staal4 = new Staal(2024000004L, "Liam", "Claes", java.sql.Date.valueOf("1992-11-30"), 'M', "Lies", "R1234567", user2);
+        Staal staal5 = new Staal(2024000005L, "Olivia", "Dubois", java.sql.Date.valueOf("2000-01-08"), 'V', "An", "R1234567", user1);
+        Staal staal6 = new Staal(2024000006L, "Noah", "De Smet", java.sql.Date.valueOf("1987-03-16"), 'M', "Koen", "R1234567", user2);
+        Staal staal7 = new Staal(2024000007L, "Marie", "De Vries", java.sql.Date.valueOf("1991-09-25"), 'V', "Katrien", "R1234567", user1);
+        Staal staal8 = new Staal(2024000008L, "Arthur", "Van Damme", java.sql.Date.valueOf("1988-12-19"), 'M', "Jan", "R1234567", user2);
+        Staal staal9 = new Staal(2024000009L, "Charlotte", "Jacobs", java.sql.Date.valueOf("1995-04-03"), 'V', "Eva", "R1234567", user1);
+        Staal staal10 = new Staal(2024000010L, "Victor", "Maes", java.sql.Date.valueOf("1990-06-10"), 'M', "Lotte", "R1234567", user2);
 
         staalRepository.save(staal1);
         staalRepository.save(staal2);
@@ -184,13 +184,13 @@ public class DataLoader implements CommandLineRunner {
         testRepository.save(test630);
         Test test631 = new Test("631", "APTT", seconds, citraatCat);
         testRepository.save(test631);
-        Test test221 = new Test("221", "ESR", millimetersPerHour, serumCat);
+        Test test221 = new Test("221", "ESR", millimetersPerHour, edtaCat);
         testRepository.save(test221);
         Test test222 = new Test("222", "Reumafactor", notAvailable, serumCat);
         testRepository.save(test222);
         Test test223 = new Test("223", "ANA", notAvailable, serumCat);
         testRepository.save(test223);
-        Test test224 = new Test("224", "HLA B27", notAvailable, serumCat);
+        Test test224 = new Test("224", "HLA B27", notAvailable, edtaCat);
         testRepository.save(test224);
         Test test280 = new Test("280", "Epstein Barr IgG", notAvailable, serumCat);
         testRepository.save(test280);
@@ -202,13 +202,13 @@ public class DataLoader implements CommandLineRunner {
         testRepository.save(test727);
         Test test728 = new Test("728", "Immunofentoypering", notAvailable, edtaCat);
         testRepository.save(test728);
-        Test test729 = new Test("729", "Karyotypering", notAvailable, serumCat);
+        Test test729 = new Test("729", "Karyotypering", notAvailable, heparineCat);
         testRepository.save(test729);
-        Test test730 = new Test("730", "Glucose 6 fosfaat dehydrogenase", notAvailable, serumCat);
+        Test test730 = new Test("730", "Glucose 6 fosfaat dehydrogenase", notAvailable, edtaCat);
         testRepository.save(test730);
-        Test test100 = new Test("100", "Glucose", milligramsPerDeciliter, serumCat);
+        Test test100 = new Test("100", "Glucose", milligramsPerDeciliter, fluorideCat);
         testRepository.save(test100);
-        Test test103 = new Test("103", "Hemoglobine A1c", percentage, serumCat);
+        Test test103 = new Test("103", "Hemoglobine A1c", percentage, edtaCat);
         testRepository.save(test103);
         Test test120 = new Test("120", "Cholesterol", milligramsPerDeciliter, serumCat);
         testRepository.save(test120);
@@ -256,9 +256,9 @@ public class DataLoader implements CommandLineRunner {
         testRepository.save(test185);
         Test test186 = new Test("186", "CK", unitsPerLiter, serumCat);
         testRepository.save(test186);
-        Test test187 = new Test("187", "Troponine", unitsPerLiter, serumCat);
+        Test test187 = new Test("187", "Troponine", unitsPerLiter, heparineCat);
         testRepository.save(test187);
-        Test test188 = new Test("188", "CK-MB", unitsPerLiter, serumCat);
+        Test test188 = new Test("188", "CK-MB", unitsPerLiter, heparineCat);
         testRepository.save(test188);
         Test test160 = new Test("160", "Totaal eiwit", gramsPerLiter, serumCat);
         testRepository.save(test160);
@@ -294,13 +294,13 @@ public class DataLoader implements CommandLineRunner {
         testRepository.save(test430);
         Test test431 = new Test("431", "LH", unitsPerLiter, serumCat);
         testRepository.save(test431);
-        Test test550 = new Test("550", "Totaal Eiwit", gramsPerLiter, serumCat);
+        Test test550 = new Test("550", "Totaal Eiwit", gramsPerLiter, urineCat);
         testRepository.save(test550);
-        Test test551 = new Test("551", "Glucose", gramsPerLiter, serumCat);
+        Test test551 = new Test("551", "Glucose", gramsPerLiter, urineCat);
         testRepository.save(test551);
-        Test test552 = new Test("552", "Osmolaliteit", milliosmolesPerKilogram, serumCat);
+        Test test552 = new Test("552", "Osmolaliteit", milliosmolesPerKilogram, urineCat);
         testRepository.save(test552);
-        Test test553 = new Test("553", "Creatinine clearance", millilitersPerMinute, serumCat);
+        Test test553 = new Test("553", "Creatinine clearance", millilitersPerMinute, urineCat);
         testRepository.save(test553);
 
 

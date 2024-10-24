@@ -11,7 +11,8 @@ public class Staal {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // voor auto-increment in SQLite
     private Long id;
 
-    private int staalCode;
+    @Column(unique = true)
+    private Long staalCode;
 
     private String patientVoornaam;
 
@@ -42,7 +43,7 @@ public class Staal {
     }
 
     // constructor voor het registreren van een staal zonder tests
-    public Staal(int staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum,
+    public Staal(Long staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum,
                  char patientGeslacht, String laborantNaam, String laborantRnummer, User user) {
         this.staalCode = staalCode;
         this.patientVoornaam = patientVoornaam;
@@ -56,7 +57,7 @@ public class Staal {
     }
 
     // constructor voor het registreren van een staal met tests
-    public Staal(int staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum,
+    public Staal(Long staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum,
                  char patientGeslacht, String laborantNaam, String laborantRnummer, User user,
                  List<StaalTest> registeredTests) {
         this.staalCode = staalCode;
@@ -80,11 +81,11 @@ public class Staal {
         this.id = id;
     }
 
-    public int getStaalCode() {
+    public Long getStaalCode() {
         return staalCode;
     }
 
-    public void setStaalCode(int staalCode) {
+    public void setStaalCode(Long staalCode) {
         this.staalCode = staalCode;
     }
 
@@ -156,10 +157,16 @@ public class Staal {
         return registeredTests;
     }
 
-    public void setRegisteredTests(List<StaalTest> tests) {
-        this.registeredTests = tests;
-        for (StaalTest test : tests) {
-            test.setStaal(this); // Ensure the test knows which Staal it belongs to
+    public void setRegisteredTests(List<StaalTest> newTests) {
+        // Verwijderen bestaande tests
+        registeredTests.removeIf(existingTest -> !newTests.contains(existingTest));
+
+        // Nieuwe tests toevoegen
+        for (StaalTest newTest : newTests) {
+            if (!registeredTests.contains(newTest)) {
+                registeredTests.add(newTest);
+                newTest.setStaal(this);
+            }
         }
     }
 
