@@ -20,7 +20,7 @@
 <Nav />
 <div class="px-8 flex flex-row">
 	<!-- 4 knoppen -->
-	<div class="flex flex-col space-y-3 w-40 mt-[74px] mb-10">
+	<div class="flex flex-col space-y-3 w-40 mt-[74px]">
 		<button
 			type="button"
 			on:click={() => (navElement = 'Categorie')}
