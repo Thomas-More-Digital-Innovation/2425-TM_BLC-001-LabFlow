@@ -118,3 +118,7 @@ voor windows: http://localhost:5173/
 voor Linux/Unix-based systemen: http://0.0.0.0:5173/
 
 Meer informatie te vinden in code\labflow-frontend\README.md
+
+#### 2.2.1 hosting
+Voor onze frontend te hosten hebben we gekozen voor Github Pages.  
+Documentatie: [tutorial hosting svelte app to github pages](https://www.okupter.com/blog/deploy-sveltekit-website-to-github-pages).  
