@@ -1,14 +1,15 @@
 <script>
-	import { isOpen, id } from "./store.js"
-	import { getContext } from "svelte"
-	const modalId = getContext("modalId")
+	import { isOpen, id } from './store.js';
+	import { getContext } from 'svelte';
+	const modalId = getContext('modalId');
 </script>
-<span on:click={() => $id = modalId}>
+
+<button on:click={() => ($id = modalId)}>
 	<slot />
-</span>
+</button>
 
 <style>
-	span:hover	 {
+	span:hover {
 		cursor: pointer;
 	}
 </style>
