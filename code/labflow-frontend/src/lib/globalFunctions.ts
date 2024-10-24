@@ -68,3 +68,18 @@ export function getCookie(name: string) {
     }
     return null;
 }
+
+// formateren van date
+export function formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB');
+}
+
+// set sex
+export function formatSex(sex: string): string {
+    if (sex == "M") {
+        return "Man";
+    } else {
+        return "Vrouw";
+    }
+}

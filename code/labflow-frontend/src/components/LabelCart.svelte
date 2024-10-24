@@ -1,4 +1,5 @@
 <script lang="ts">
+
 	export let labelName: string = 'Heparine';
 	export let color: string = 'bg-green-500';
 </script>
