@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Nav from '../../../components/nav.svelte';
 	// @ts-ignore
+	import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte';
+	// @ts-ignore
 	import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte';
 	// @ts-ignore
 	import FaSave from 'svelte-icons/fa/FaSave.svelte';

@@ -1,5 +1,7 @@
 package com.thomasmore.blc.labflow.controller;
 
+import com.thomasmore.blc.labflow.config.UniqueConstraintViolationException;
+import com.thomasmore.blc.labflow.entity.Test;
 import com.thomasmore.blc.labflow.entity.User;
 import com.thomasmore.blc.labflow.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value = "getusers", method = RequestMethod.GET)
+    @GetMapping(value = "getusers")
     public List<User> readUsers(){
         return userService.readUsers();
     }
@@ -29,5 +31,19 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user){
         return userService.verify(user);
+    }
+
+    @DeleteMapping("/deleteuser/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id){
+        return userService.delete(id);
+    }
+
+    @PutMapping("/updateuser/{id}")
+    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
+        try {
+            return userService.update(id, user);
+        } catch (Exception e) {
+            throw new UniqueConstraintViolationException(e.getMessage());
+        }
     }
 }

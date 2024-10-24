@@ -18,7 +18,7 @@
     border: 1px solid #888;
     width: 60%;
 }
-.close-button {
+/* .close-button {
     position: absolute;
     top: 0;
     right: 0.5rem;
@@ -35,4 +35,4 @@
 }
 .hidden {
     display: none;	
-}
+} */
