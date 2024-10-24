@@ -7,9 +7,3 @@
 <button on:click={() => ($id = modalId)}>
 	<slot />
 </button>
-
-<style>
-	span:hover {
-		cursor: pointer;
-	}
-</style>
