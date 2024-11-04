@@ -279,7 +279,7 @@
 				})
 			});
 			// doorgeven van aangemaakte staal's id naar volgend scherm
-			const data = await response.json();
+			console.log(nieuweStaalCode)
 			staalCodeStore.set(nieuweStaalCode);
 		} catch (error) {
 			console.error('staal kon niet worden aangemaakt: ', error);
@@ -759,7 +759,7 @@
 						<p class="truncate">{test?.naam || ''}</p>
 					</div>
 					<div class="col-span-2">
-						<p class="text-gray-400">Categorie</p>
+						<p class="text-gray-400">Test Type</p>
 						<p>{test?.testcategorie.naam || ''}</p>
 					</div>
 					<div class="col-span-2">

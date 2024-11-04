@@ -9,11 +9,11 @@
 	// @ts-ignore
 	import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte';
 	import { staalCodeStore } from '$lib/store';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	// neem de id
 	let sampleCode: string | undefined;
-	staalCodeStore.subscribe((value) => {
+	staalCodeStore.subscribe(value => {
 		sampleCode = value;
 		console.log('Dit is staalcode:' + sampleCode);
 	});
@@ -62,37 +62,39 @@
 		console.log('Unique Test Categories:', testCategories);
 	}
 
-	// load the pdf
-	let pdfSrc = '';
+	// fetch labels pdf
+	let pdfUrl = '';  // URL to display the PDF in the iframe
 
-	async function loadPdf() {
-		try {
-			const response = await fetch(`http://localhost:8080/api/pdf/generatelabel/${staalId}`, {
-				method: 'GET', // Change to POST if necessar
-				headers: {
-					'Content-Type': 'application/pdf' // Ensure correct content-type
-				}
-			});
+	async function fetchPdf() {
 
-			if (!response.ok) {
-				throw new Error('Failed to fetch the PDF');
+		if (!token) {
+			console.error("User is not authenticated");
+			goto('/login');
+		}
+
+		const response = await fetch(`http://localhost:8080/api/pdf/generatelabel/${staalId}`, {
+			method: 'GET',
+			headers: {
+				'Authorization': `Bearer ${token}`
 			}
+		});
 
-			// Convert response to blob
+		if (response.ok) {
 			const pdfBlob = await response.blob();
-
-			// Create a URL for the blob and set it as the iframe source
-			pdfSrc = URL.createObjectURL(pdfBlob);
-			console.log('PDF URL:', pdfSrc);
-		} catch (error) {
-			console.error('Error fetching PDF:', error);
+			pdfUrl = URL.createObjectURL(pdfBlob);  // Create a blob URL for the PDF
+		} else {
+			console.error("Failed to fetch PDF");
 		}
 	}
 
-
-	onMount(() => {
-		loadData();
+	onMount(async () => {
+		await loadData();
+		await fetchPdf();
 	});
+
+	onDestroy(() => {
+		if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+	})
 </script>
 
 <Nav />
@@ -171,11 +173,17 @@
 				<!-- pdf previewer -->
 				<div class="w-full h-4/5">
 					<iframe
-						src="http://localhost:8080/files/label_Maes_Victor.pdf"
+						src={pdfUrl}
 						title="pdf label preview"
 						width="100%"
 						class="h-full rounded-xl"
 					/>
+					<!--<iframe
+						title="pdf label preview"
+						src="https://www.orimi.com/pdf-test.pdf"
+						width="100%"
+						class="h-full rounded-xl"
+					/>-->
 				</div>
 				<!-- bedienings knoppen -->
 				<div class="w-full h-1/5 bg-slate-200 flex justify-between items-baseline">
