@@ -215,7 +215,22 @@
 		return ($id = null);
 	}
 
+	// helper functie om te checken of er een warning moet worden gegeven 'heb je zeker nagekeken of je de extra tests hebt toegevoegd?'
+	let isWarningAcknowledged = false; // Tracken of warning getoond is of niet
+
+	function checkWarning(geselecteerdeTestsArray: any[]) {
+		if (
+			geselecteerdeTestsArray.some((test) => test.test.testCode !== 'X') ||
+			geselecteerdeTestsArray.length === 0
+		) {
+			console.log(geselecteerdeTestsArray);
+			alert('Heb je nagekeken dat je geen notitie moet toevoegen?');
+			isWarningAcknowledged = true; // setten de warning als acknowledged (want hij is getoond)
+		}
+	}
+
 	let errorMessageStaal = '';
+
 	// POST: Aanmaken van een nieuwe staal
 	async function nieuweStaal() {
 		// Resetten van de errorvelden
@@ -257,8 +272,16 @@
 			test: { testCode: testCode }
 		}));
 
+		// toon warning als hij nog niet getoond is
+		if (!isWarningAcknowledged) {
+			checkWarning(geselecteerdeTestsArray);
+			isWarningAcknowledged = true; // Set de warning als al getoond is
+			errorMessageStaal = "";
+			return; // wachten voor volgende click
+		}
+
 		try {
-			const response = await fetch('http://localhost:8080/api/createstaal', {
+			await fetch('http://localhost:8080/api/createstaal', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -279,11 +302,11 @@
 				})
 			});
 			// doorgeven van aangemaakte staal's id naar volgend scherm
-			console.log(nieuweStaalCode)
 			staalCodeStore.set(nieuweStaalCode);
 		} catch (error) {
 			console.error('staal kon niet worden aangemaakt: ', error);
 		}
+		isWarningAcknowledged = false; // Reset de warning zodat de knop geklikt kan worden
 		return goto('/stalen/labels');
 	}
 
@@ -740,7 +763,13 @@
 
 			<!-- tabel met alle tests -->
 			{#each filteredTests as test, index}
-				<div class="grid grid-cols-12 gap-4 h-16 items-center px-3 border-b border-gray-300">
+				<div
+					class="grid grid-cols-12 gap-4 h-16 items-center px-3 border-b border-gray-300 {isNaN(
+						parseInt(test?.testCode)
+					)
+						? 'bg-blue-50'
+						: ''}"
+				>
 					<div class="col-span-1">
 						<!-- Checkbox for selecting tests -->
 						<input
@@ -759,12 +788,17 @@
 						<p class="truncate">{test?.naam || ''}</p>
 					</div>
 					<div class="col-span-2">
-						<p class="text-gray-400">Test Type</p>
-						<p>{test?.testcategorie.naam || ''}</p>
+						{#if !isNaN(parseInt(test?.testCode))}
+							<p class="text-gray-400">Categorie</p>
+							<p>{test?.testcategorie.naam || ''}</p>
+						{/if}
 					</div>
+
 					<div class="col-span-2">
-						<p class="text-gray-400">Eenheid</p>
-						<p class="truncate">{test?.eenheid.afkorting || ''}: {test?.eenheid.naam || ''}</p>
+						{#if !isNaN(parseInt(test?.testCode))}
+							<p class="text-gray-400">Eenheid</p>
+							<p class="truncate">{test?.eenheid.afkorting || ''}: {test?.eenheid.naam || ''}</p>
+						{/if}
 					</div>
 
 					<!-- Admin-only CRUD buttons -->
