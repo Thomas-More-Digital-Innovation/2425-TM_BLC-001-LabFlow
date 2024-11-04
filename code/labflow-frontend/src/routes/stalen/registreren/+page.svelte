@@ -303,7 +303,7 @@
                             <div class="h-6 px-4">
                                 <FaCloudDownloadAlt/>
                             </div>
-                            <p class="font-bold">Download</p>
+                            <p class="font-bold">Download Resultaten</p>
                         </button>
                     </form> 
                 </div>
