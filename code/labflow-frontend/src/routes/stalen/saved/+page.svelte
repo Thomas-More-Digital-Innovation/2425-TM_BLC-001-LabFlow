@@ -16,7 +16,7 @@
 		<FaSave />
 	</div>
 	<!-- text -->
-	<h1 class=" text-8xl mb-5 text-blue-500">Tijd om proeven te doen</h1>
+	<h1 class=" text-8xl mb-5 text-blue-500">Analyseer Je Stalen</h1>
 	<p class="text-2xl text-gray-600">
 		Je testen zijn geregistreerd. Je kan ze terugvinden op het beginscherm.
 	</p>
