@@ -31,7 +31,7 @@ public class PdfGeneratorService {
 
         // staal info
         Long staalCode = staal.getStaalCode();
-        String voornaam = staal.getPatientVoornaam();
+        String voornaam = staal.getPatientVoornaam(); 
         String achternaam = staal.getPatientAchternaam();
         Date geboortedatum = staal.getPatientGeboorteDatum();
         char geslacht = staal.getPatientGeslacht();
