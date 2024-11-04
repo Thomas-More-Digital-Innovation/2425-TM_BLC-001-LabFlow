@@ -279,7 +279,7 @@
 				})
 			});
 			// doorgeven van aangemaakte staal's id naar volgend scherm
-			const data = await response.json();
+			console.log(nieuweStaalCode)
 			staalCodeStore.set(nieuweStaalCode);
 		} catch (error) {
 			console.error('staal kon niet worden aangemaakt: ', error);

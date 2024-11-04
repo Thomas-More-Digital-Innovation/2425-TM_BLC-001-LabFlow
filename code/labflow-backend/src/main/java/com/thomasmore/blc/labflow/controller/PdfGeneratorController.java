@@ -13,11 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 @RestController
 @RequestMapping("/api/pdf")
 public class PdfGeneratorController {
@@ -41,7 +36,7 @@ public class PdfGeneratorController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "label.pdf");
+        headers.setContentDispositionFormData("inline", "label.pdf");
 
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
