@@ -14,6 +14,8 @@
     import IoIosClose from 'svelte-icons/io/IoIosClose.svelte'
     // @ts-ignore
     import IoMdText from 'svelte-icons/io/IoMdText.svelte'
+    // @ts-ignore
+    import FaCloudDownloadAlt from 'svelte-icons/fa/FaCloudDownloadAlt.svelte'
 
     import { staalCodeStore } from '$lib/store';
 	import { onMount } from "svelte";
@@ -278,22 +280,35 @@
         <!-- bottom section -->
          <div class="flex space-x-4 h-full">
             <!-- left section -->
-            <div class="bg-white w-1/3 h-[75vh] rounded-xl p-4">
-                <p class="text-blue-500">{testCategories.length} labels</p>
-                {#each testCategories as testcategorie}
-                    <button on:click={() => setCategory(testcategorie.id)} class="border border-gray-200 rounded-xl w-full flex justify-between items-center p-4 my-3 hover:bg-gray-100 hover:scale-[101%] transition cursor-pointer">
-                        <div class="flex justify-start items-center">
-                            <div class="px-1 py-6 rounded-full" style={`background-color: ${testcategorie.kleur || "#000"};`}></div>
-                            <p class="font-bold text-lg ml-3">{testcategorie?.naam || "loading..."}</p>
-                        </div>
-                        {#if checkAllDoneForCategory(testcategorie)}
-                            <div class={`p-3 rounded-full text-white h-12`} style="background-color: #23E22C;"><FaCheck /></div>
-                        {:else}
-                            <div class={`rounded-full text-white h-12`} style="background-color: #E3E3E3;"><IoIosClose /></div>
-                        {/if}
-                    </button>
-                {/each}
+            <div class="w-1/3 h-[75vh] flex flex-col space-y-4">
+                <div class="bg-white h-full rounded-xl p-4">
+                    <p class="text-blue-500">{testCategories.length} labels</p>
+                    {#each testCategories as testcategorie}
+                        <button on:click={() => setCategory(testcategorie.id)} class="border border-gray-200 rounded-xl w-full flex justify-between items-center p-4 my-3 hover:bg-gray-100 hover:scale-[101%] transition cursor-pointer">
+                            <div class="flex justify-start items-center">
+                                <div class="px-1 py-6 rounded-full" style={`background-color: ${testcategorie.kleur || "#000"};`}></div>
+                                <p class="font-bold text-lg ml-3">{testcategorie?.naam || "loading..."}</p>
+                            </div>
+                            {#if checkAllDoneForCategory(testcategorie)}
+                                <div class={`p-3 rounded-full text-white h-12`} style="background-color: #23E22C;"><FaCheck /></div>
+                            {:else}
+                                <div class={`rounded-full text-white h-12`} style="background-color: #E3E3E3;"><IoIosClose /></div>
+                            {/if}
+                        </button>
+                    {/each}
+                </div>
+                <div>
+                    <form method="get" action={`http://localhost:8080/api/pdf/generateresults/${staalId}`}>
+                        <button type="submit" class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-full flex  items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed" disabled={!allDone} >
+                            <div class="h-6 px-4">
+                                <FaCloudDownloadAlt/>
+                            </div>
+                            <p class="font-bold">Download</p>
+                        </button>
+                    </form> 
+                </div>
             </div>
+            
              <!-- right section -->
             <div class="w-2/3 flex flex-col justify-between space-y-4">
                 <!-- white box -->
