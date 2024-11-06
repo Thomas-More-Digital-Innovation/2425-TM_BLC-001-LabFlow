@@ -24,7 +24,7 @@ public class TestService {
 
     // read
     public List<Test> read() {
-        return testRepository.findAllByOrderByTestCodeAsc();
+        return testRepository.findAllSortedByTestCode();
     }
 
     // update

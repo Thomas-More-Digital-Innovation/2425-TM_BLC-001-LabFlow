@@ -272,11 +272,18 @@
 			test: { testCode: testCode }
 		}));
 
-		// toon warning als hij nog niet getoond is
+		// als er de test met code 'X' is geselecteerd, dan wordt de warning niet getoond
+		if (geselecteerdeTestsArray.some((test) => test.test.testCode === 'X')) {
+			console.log('contains X');
+			isWarningAcknowledged = true;
+		} else {
+			console.log('does not contain X');
+		}
+
 		if (!isWarningAcknowledged) {
 			checkWarning(geselecteerdeTestsArray);
 			isWarningAcknowledged = true; // Set de warning als al getoond is
-			errorMessageStaal = "";
+			errorMessageStaal = '';
 			return; // wachten voor volgende click
 		}
 
