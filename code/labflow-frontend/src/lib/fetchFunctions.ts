@@ -59,6 +59,7 @@ export async function fetchUsers() {
     if (token) {
         try {
             const users = await fetchAllWithoutPrefix(token, 'getusers');
+            console.log("users zijn gefetched: ", users);
             return users;
         } catch (error) {
             console.error("Users konden niet gefetched worden: ", error);

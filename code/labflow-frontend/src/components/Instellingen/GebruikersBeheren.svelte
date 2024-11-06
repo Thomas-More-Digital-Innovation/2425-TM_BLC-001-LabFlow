@@ -24,7 +24,7 @@
 		if (resultUsers) {
 			users = resultUsers.map((user: any) => ({
 				...user,
-				newWachtwoord: ''
+				newWachtwoord: undefined
 			}));
 		}
 		const resultRollen = await fetchRollen();
@@ -153,10 +153,11 @@
 		rol: false
 	};
 
-	async function updateGebruiker(id: string, newWachtwoord: string) {
+	async function updateGebruiker(id: string, newWachtwoord: string | null | undefined) {
 		console.log('updateGebruiker', id, newWachtwoord);
 		const user = users.find((u) => u.id === id);
 		if (!user) return;
+
 		let isValid = true;
 		errorVeldenGebruikerPUT = {
 			voornaam: false,
@@ -189,35 +190,61 @@
 			errorMessageGebruikerPUT = 'Vul alle verplichte velden in.';
 			return;
 		}
+
+		console.log('nieuw wachtwoord', newWachtwoord);
+		console.log('oud wachtwoord', user.wachtwoord);
+		console.log('email', user.email);
 		try {
-			await fetch(`http://localhost:8080/updateuser/${id}`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + token
-				},
-				body: JSON.stringify({
-					wachtwoord: newWachtwoord ? newWachtwoord : user.wachtwoord, // gebruik het nieuwe wachtwoord als het is ingevuld, anders het oude wachtwoord
-					email: user.email,
-					voorNaam: user.voorNaam,
-					achterNaam: user.achterNaam,
-					rol: {
-						id: user.rol.id
-					}
-				})
-			});
+			// If newWachtwoord is provided and not empty, update with new password
+			if (newWachtwoord && newWachtwoord.trim() !== '') {
+				await fetch(`http://localhost:8080/updateuser/${id}`, {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: 'Bearer ' + token
+					},
+					body: JSON.stringify({
+						wachtwoord: newWachtwoord,
+						email: user.email,
+						voorNaam: user.voorNaam,
+						achterNaam: user.achterNaam,
+						rol: {
+							id: user.rol.id
+						}
+					})
+				});
+			} else {
+				// If no new password, just update other fields with existing password
+				await fetch(`http://localhost:8080/updateuser/${id}`, {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: 'Bearer ' + token
+					},
+					body: JSON.stringify({
+						wachtwoord: user.wachtwoord,
+						email: user.email,
+						voorNaam: user.voorNaam,
+						achterNaam: user.achterNaam,
+						rol: {
+							id: user.rol.id
+						}
+					})
+				});
+			}
+
 			errorMessageGebruikerPUT = '';
-			newWachtwoord = '';
+			if (user) {
+				user.newWachtwoord = null;
+			}
 			const result = await fetchUsers();
 			if (result) {
 				users = result;
 			}
 			console.log(users);
-			return;
 		} catch (error) {
 			console.error('Gebruiker kon niet aangepast: ', error);
 		}
-		return;
 	}
 </script>
 
