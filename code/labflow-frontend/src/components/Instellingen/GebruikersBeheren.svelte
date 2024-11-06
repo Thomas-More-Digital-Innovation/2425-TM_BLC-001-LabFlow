@@ -154,7 +154,6 @@
 	};
 
 	async function updateGebruiker(id: string, newWachtwoord: string | null | undefined) {
-		console.log('updateGebruiker', id, newWachtwoord);
 		const user = users.find((u) => u.id === id);
 		if (!user) return;
 
@@ -166,6 +165,7 @@
 			wachtwoord: false,
 			rol: false
 		};
+
 		if (!user.voorNaam) {
 			errorVeldenGebruikerPUT.voornaam = true;
 			isValid = false;
@@ -178,10 +178,6 @@
 			errorVeldenGebruikerPUT.email = true;
 			isValid = false;
 		}
-		if (!user.wachtwoord) {
-			errorVeldenGebruikerPUT.wachtwoord = true;
-			isValid = false;
-		}
 		if (!user.rol) {
 			errorVeldenGebruikerPUT.rol = true;
 			isValid = false;
@@ -191,9 +187,6 @@
 			return;
 		}
 
-		console.log('nieuw wachtwoord', newWachtwoord);
-		console.log('oud wachtwoord', user.wachtwoord);
-		console.log('email', user.email);
 		try {
 			// If newWachtwoord is provided and not empty, update with new password
 			if (newWachtwoord && newWachtwoord.trim() !== '') {
@@ -213,16 +206,16 @@
 						}
 					})
 				});
+				console.log('user updated with password');
 			} else {
-				// If no new password, just update other fields with existing password
-				await fetch(`http://localhost:8080/updateuser/${id}`, {
+				// If no new password, update other fields without changing the password
+				await fetch(`http://localhost:8080/updateuserwithoutpassword/${id}`, {
 					method: 'PUT',
 					headers: {
 						'Content-Type': 'application/json',
 						Authorization: 'Bearer ' + token
 					},
 					body: JSON.stringify({
-						wachtwoord: user.wachtwoord,
 						email: user.email,
 						voorNaam: user.voorNaam,
 						achterNaam: user.achterNaam,
@@ -231,6 +224,7 @@
 						}
 					})
 				});
+				console.log('user updated without password');
 			}
 
 			errorMessageGebruikerPUT = '';
@@ -241,7 +235,6 @@
 			if (result) {
 				users = result;
 			}
-			console.log(users);
 		} catch (error) {
 			console.error('Gebruiker kon niet aangepast: ', error);
 		}
