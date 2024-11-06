@@ -64,12 +64,14 @@ public class DataLoader implements CommandLineRunner {
         Testcategorie heparineCat = new Testcategorie("Heparine", "#2DE57A");
         Testcategorie fluorideCat = new Testcategorie("Fluoride", "#8c8c8c");
         Testcategorie urineCat = new Testcategorie("Urine", "#ffcc40");
+        Testcategorie noCat = new Testcategorie("Geen Categorie", "#ffffff");
         testCategorieRepository.save(edtaCat);
         testCategorieRepository.save(citraatCat);
         testCategorieRepository.save(serumCat);
         testCategorieRepository.save(heparineCat);
         testCategorieRepository.save(fluorideCat);
         testCategorieRepository.save(urineCat);
+        testCategorieRepository.save(noCat);
 
 
         // Stalen, dit is voor development, geen echte waarden
@@ -151,6 +153,8 @@ public class DataLoader implements CommandLineRunner {
 
 
         // Aanmaken van tests met hun codes en opslaan
+        Test test1 = new Test("X", "Notitie", notAvailable, noCat);
+        testRepository.save(test1);
         Test test601 = new Test("601", "Hemoglobine", gramPerDeciliter, edtaCat);
         testRepository.save(test601);
         Test test602 = new Test("602", "Hematocriet", percentage, edtaCat);

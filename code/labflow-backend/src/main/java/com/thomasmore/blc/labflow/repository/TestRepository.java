@@ -16,4 +16,10 @@ public interface TestRepository extends JpaRepository<Test, Integer> {
     public Test findByTestCode(String testCode);
 
     public List<Test> findAllByOrderByTestCodeAsc();
+
+    // sorteer eerst X (notitie toevoegen) en dan nummers oplopend
+    @Query("SELECT t FROM Test t ORDER BY " +
+            "CASE WHEN t.testCode LIKE 'X%' THEN 0 ELSE 1 END ASC, " +
+            "CAST(SUBSTRING(t.testCode, CASE WHEN t.testCode LIKE 'X%' THEN 2 ELSE 1 END) AS INTEGER) ASC")
+    public List<Test> findAllSortedByTestCode();
 }
