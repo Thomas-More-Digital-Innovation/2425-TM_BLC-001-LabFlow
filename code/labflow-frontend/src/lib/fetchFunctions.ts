@@ -98,3 +98,33 @@ export async function fetchTests() {
         goto('/login');
     }
 }
+
+// fetchen van testcategorieën
+export async function fetchTestcategorieën() {
+    if (token) {
+        try {
+            const categorieën = await fetchAll(token, 'testcategorieen');
+            return categorieën;
+        } catch (error) {
+            console.error("Categorieën konden niet gefetched worden:", error);
+        }
+    } else {
+        console.error("JWT error: token missing of invalid");
+        goto('/login');
+    }
+}
+
+// fetchen van eenheden
+export async function fetchEenheden() {
+    if (token) {
+        try {
+            const eenheden = await fetchAll(token, 'readeenheid');
+            return eenheden;
+        } catch (error) {
+            console.error("Eenheden konden niet gefetched worden:", error);
+        }
+    } else {
+        console.error("JWT error: token missing of invalid");
+        goto('/login');
+    }
+}

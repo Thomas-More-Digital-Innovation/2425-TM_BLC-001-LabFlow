@@ -2,6 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { fetchTests } from '$lib/fetchFunctions';
+	import { fetchTestcategorieën } from '$lib/fetchFunctions';
+	import { fetchEenheden } from '$lib/fetchFunctions';
 	// @ts-ignore
 	import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte';
 	// @ts-ignore
@@ -14,8 +16,20 @@
 
 	let errorMessageTest = '';
 	let tests: any[] = [];
+	let testcategorieën: any[] = [];
+	let eenheden: any[] = [];
 
+	// volgorde is belangrijk, eerst eenheden en categorieën ophalen, daarna tests
 	onMount(async () => {
+		const fetchedEenheden = await fetchEenheden();
+		if (fetchedEenheden) {
+			eenheden = fetchedEenheden;
+		}
+		console.log(tests);
+		const fetchedTestcategorieën = await fetchTestcategorieën();
+		if (fetchedTestcategorieën) {
+			testcategorieën = fetchedTestcategorieën;
+		}
 		const fetchedTests = await fetchTests();
 		if (fetchedTests) {
 			tests = fetchedTests;
@@ -190,20 +204,26 @@
 							/>
 						</div>
 						<div class="col-span-2">
-							<input
-								type="text"
+							<select
 								on:blur={() => updateTest(test.id)}
-								bind:value={test.eenheid}
+								bind:value={test.testcategorie.id}
 								class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
-							/>
+							>
+								{#each testcategorieën as categorie}
+									<option value={categorie.id}>{categorie.naam}</option>
+								{/each}
+							</select>
 						</div>
 						<div class="col-span-2">
-							<input
-								type="text"
+							<select
 								on:blur={() => updateTest(test.id)}
-								bind:value={test.testcategorie}
+								bind:value={test.eenheid.id}
 								class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
-							/>
+							>
+								{#each eenheden as eenheid}
+									<option value={eenheid.id}>{eenheid.afkorting}: {eenheid.naam}</option>
+								{/each}
+							</select>
 						</div>
 						<div class="col-span-2">
 							<input

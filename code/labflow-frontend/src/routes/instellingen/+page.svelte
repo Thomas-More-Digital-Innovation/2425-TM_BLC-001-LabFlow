@@ -26,6 +26,16 @@
 	<div class="flex flex-col space-y-3 w-40 mt-[74px]">
 		<button
 			type="button"
+			on:click={() => (navElement = 'Gebruiker')}
+			class="p-3 text-center text-lg {navElement == 'Gebruiker'
+				? 'bg-blue-500'
+				: 'bg-blue-400'} flex flex-col items-center justify-center w-40 h-40 rounded-2xl text-white"
+		>
+			<div class="w-14 h-14 mb-5"><FaUserAlt /></div>
+			Gebruikers
+		</button>
+		<button
+			type="button"
 			on:click={() => (navElement = 'Categorie')}
 			class="p-3 text-center text-lg {navElement == 'Categorie'
 				? 'bg-blue-500'
@@ -64,16 +74,7 @@
 			<div class="w-14 h-14 mb-5"><GiHypodermicTest /></div>
 			Testen
 		</button>
-		<button
-			type="button"
-			on:click={() => (navElement = 'Gebruiker')}
-			class="p-3 text-center text-lg {navElement == 'Gebruiker'
-				? 'bg-blue-500'
-				: 'bg-blue-400'} flex flex-col items-center justify-center w-40 h-40 rounded-2xl text-white"
-		>
-			<div class="w-14 h-14 mb-5"><FaUserAlt /></div>
-			Gebruikers
-		</button>
+
 		<!-- spacing -->
 		<div class="mb-10"></div>
 	</div>
