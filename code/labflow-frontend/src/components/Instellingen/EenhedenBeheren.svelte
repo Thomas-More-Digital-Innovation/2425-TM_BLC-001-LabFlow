@@ -8,7 +8,7 @@
 
 <div class="flex flex-col w-full ml-5">
 	<div class="flex flex-row justify-between w-full h-14 mb-5">
-		<h1 class="font-bold text-3xl">Testen beheren</h1>
+		<h1 class="font-bold text-3xl">Eenheden beheren</h1>
 		<button
 			type="button"
 			on:click={async () => {
@@ -25,19 +25,13 @@
 		<div class="space-y-3">
 			<!-- Header -->
 			<div
-				class="grid grid-cols-5 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold space-x-3"
+				class="grid grid-cols-3 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold space-x-3"
 			>
 				<div class="col-span-1 text-left">
-					<p>Testcode</p>
+					<p>Afkorting</p>
 				</div>
 				<div class="col-span-1 text-left">
 					<p>Naam</p>
-				</div>
-				<div class="col-span-1 text-left">
-					<p>Categorie</p>
-				</div>
-				<div class="col-span-1 text-left">
-					<p>Eenheid</p>
 				</div>
 				<div class="col-span-1 text-right">
 					<p>Acties</p>
