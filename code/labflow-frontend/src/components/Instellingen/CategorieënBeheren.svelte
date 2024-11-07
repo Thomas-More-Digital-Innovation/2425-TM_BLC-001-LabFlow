@@ -151,7 +151,7 @@
 	}
 </script>
 
-<div class="flex flex-col w-full ml-5 mb-10">	
+<div class="flex flex-col w-full ml-5 mb-10">
 	<div class="flex flex-row justify-between w-full h-14 mb-5">
 		<h1 class="font-bold text-3xl">Categorieën beheren</h1>
 		<button
@@ -190,6 +190,7 @@
 						type="text"
 						id="nieuwecategorie"
 						bind:value={categorienaam}
+						placeholder="Naam van de categorie"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full {errorVeldenCategoriePOST.categorienaam
 							? 'border-2 border-red-500'
 							: ''}"

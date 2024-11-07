@@ -57,6 +57,7 @@
 		}
 	}
 
+	///// POST test /////
 	let testCode = '';
 	let naam = '';
 	let eenheid = '';
@@ -254,6 +255,7 @@
 						type="text"
 						id="testCode"
 						bind:value={testCode}
+						placeholder="Testcode"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenTestPOST.testCode ? 'border-2 border-red-500' : ''}"
 					/>
@@ -263,6 +265,7 @@
 						type="text"
 						id="patientAchternaam"
 						bind:value={naam}
+						placeholder="Naam van de test"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenTestPOST.naam ? 'border-2 border-red-500' : ''}"
 					/>
@@ -274,6 +277,8 @@
 							? 'border-2 border-red-500'
 							: ''}"
 					>
+						<option value="" disabled selected hidden>Categorie</option>
+
 						{#each testcategorieën as categorie}
 							<option value={categorie.id}>{categorie.naam}</option>
 						{/each}
@@ -282,10 +287,13 @@
 				<div class="col-span-2">
 					<select
 						bind:value={eenheid}
+						placeholder="Eenheid"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full {errorVeldenTestPOST.eenheid
 							? 'border-2 border-red-500'
 							: ''}"
 					>
+						<option value="" disabled selected hidden>Eenheid</option>
+
 						{#each eenheden as eenheid}
 							<option value={eenheid.id}>{eenheid.afkorting}: {eenheid.naam}</option>
 						{/each}

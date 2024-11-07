@@ -44,6 +44,60 @@
 		}
 	}
 
+	///// POST eenheid /////
+	let naam = '';
+	let afkorting = '';
+
+	let errorVeldenEenheidPOST = {
+		naam: false,
+		afkorting: false
+	};
+
+	let errorMessageTestPOST = '';
+	async function nieuweEenheid() {
+		// Resetten van de errorvelden
+		errorVeldenEenheidPOST = {
+			naam: false,
+			afkorting: false
+		};
+		let isValid = true;
+		if (!naam) {
+			errorVeldenEenheidPOST.naam = true;
+			isValid = false;
+		}
+		if (!afkorting) {
+			errorVeldenEenheidPOST.afkorting = true;
+			isValid = false;
+		}
+		if (!isValid) {
+			errorMessageTestPOST = 'Vul alle verplichte velden in.';
+			return;
+		}
+		try {
+			await fetch('http://localhost:8080/api/createeenheid', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + token
+				},
+				body: JSON.stringify({
+					naam: naam,
+					afkorting: afkorting
+				})
+			});
+			naam = '';
+			afkorting = '';
+			errorMessageTestPOST = '';
+			const result = await fetchEenheden();
+			if (result) {
+				eenheden = result.eenheden;
+			}
+		} catch (error) {
+			console.error('Eenheid kon niet worden aangemaakt: ', error);
+		}
+		return;
+	}
+
 	///// PUT eenheid /////
 	let errorVeldenEenheidPUT = {
 		naam: false,
@@ -117,10 +171,10 @@
 				class="grid grid-cols-7 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold space-x-3"
 			>
 				<div class="col-span-3 text-left">
-					<p>Afkorting</p>
+					<p>Naam</p>
 				</div>
 				<div class="col-span-3 text-left">
-					<p>Naam</p>
+					<p>Afkorting</p>
 				</div>
 				<div class="col-span-1 text-right">
 					<p>Acties</p>
@@ -131,6 +185,45 @@
 			{/if}
 		</div>
 
+		{#if errorMessageTestPOST}
+			<div class="text-red-500 mb-2">{errorMessageTestPOST}</div>
+		{/if}
+		<div
+			class="grid grid-cols-7 space-x-3 my-3 bg-white rounded-lg h-20 items-center px-3 shadow-md"
+		>
+			<div class="col-span-3">
+				<input
+					type="text"
+					id="naam"
+					bind:value={naam}
+					placeholder="Naam van de eenheid"
+					class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
+				{errorVeldenEenheidPOST.naam ? 'border-2 border-red-500' : ''}"
+				/>
+			</div>
+			<div class="col-span-3">
+				<input
+					type="text"
+					id="afkorting"
+					bind:value={afkorting}
+					placeholder="Afkorting van de eenheid"
+					class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
+					{errorVeldenEenheidPOST.afkorting ? 'border-2 border-red-500' : ''}"
+				/>
+			</div>
+
+			<!-- Add button -->
+			<div class="col-span-1 flex justify-end">
+				<button
+					type="button"
+					class="h-10 w-10 bg-green-500 p-2 rounded-lg text-white"
+					on:click={nieuweEenheid}
+					aria-label="Nieuwe categorie toevoegen"
+				>
+					<FaPlus />
+				</button>
+			</div>
+		</div>
 		<div class="space-y-3">
 			{#each eenheden as eenheid, index}
 				<div
@@ -141,7 +234,7 @@
 							type="text"
 							on:blur={() => updateEenheid(eenheid.id)}
 							id="eenheid-{eenheid?.id}"
-							bind:value={eenheid.afkorting}
+							bind:value={eenheid.naam}
 							class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
 						/>
 					</div>
@@ -150,7 +243,7 @@
 							type="text"
 							on:blur={() => updateEenheid(eenheid.id)}
 							id="eenheid-{eenheid?.id}"
-							bind:value={eenheid.naam}
+							bind:value={eenheid.afkorting}
 							class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
 						/>
 					</div>

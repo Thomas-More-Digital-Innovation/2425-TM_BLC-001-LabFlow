@@ -338,6 +338,7 @@
 						type="text"
 						id="StaalCode"
 						bind:value={StaalCode}
+						placeholder="Staalcode"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.staalcode ? 'border-2 border-red-500' : ''}"
 					/>
@@ -347,6 +348,7 @@
 						type="text"
 						id="patientAchternaam"
 						bind:value={patientAchternaam}
+						placeholder="Achternaam"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.naam ? 'border-2 border-red-500' : ''}"
 					/>
@@ -356,6 +358,7 @@
 						type="text"
 						id="patientVoornaam"
 						bind:value={patientVoornaam}
+						placeholder="Voornaam"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.voornaam ? 'border-2 border-red-500' : ''}"
 					/>
@@ -366,6 +369,8 @@
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.geslacht ? 'border-2 border-red-500' : ''}"
 					>
+						<option value="" disabled selected hidden>Geslacht</option>
+
 						<option value="V">Man</option>
 						<option value="M">Vrouw</option>
 					</select>
@@ -375,6 +380,7 @@
 						type="date"
 						id="patientGeboorteDatum"
 						bind:value={patientGeboorteDatum}
+						placeholder="Geboortedatum"
 						class="px-2 bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.geboortedatum ? 'border-2 border-red-500' : ''}"
 					/>
@@ -384,6 +390,7 @@
 						type="text"
 						id="laborantNaam"
 						bind:value={laborantNaam}
+						placeholder="Naam Laborant"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.laborantNaam ? 'border-2 border-red-500' : ''}"
 					/>
@@ -393,6 +400,7 @@
 						type="text"
 						id="laborantRnummer"
 						bind:value={laborantRnummer}
+						placeholder="Rnummer"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.laborantRnummer ? 'border-2 border-red-500' : ''}"
 					/>
