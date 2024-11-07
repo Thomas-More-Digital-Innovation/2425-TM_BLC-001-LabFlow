@@ -60,7 +60,6 @@
 
 	async function updateTest(id: string) {
 		const test = tests.find((t) => t.id === id);
-		console.log(test);
 		if (!test) return;
 
 		let isValid = true;
@@ -96,6 +95,7 @@
 			errorMessageStaalPUT = 'Vul alle verplichte velden in.';
 			return;
 		}
+		console.log(test);
 		try {
 			await fetch(`http://localhost:8080/api/updatetest/${id}`, {
 				method: 'PUT',
@@ -104,15 +104,15 @@
 					Authorization: 'Bearer ' + token
 				},
 				body: JSON.stringify({
-					testCode: test.staalCode,
-					naam: test.aanmaakDatum,
-					eenheid: test.laborantNaam,
+					testCode: test.testCode,
+					naam: test.naam,
+					eenheid: test.eenheid,
 					testcategorie: {
 						id: test.testcategorie.id
 					},
-					referentiewaardes: {
-						id: test.referentiewaardes.id
-					}
+					referentiewaardes: test.referentiewaardes.map((waarde: any) => ({
+						id: waarde.id
+					}))
 				})
 			});
 			errorMessageStaalPUT = '';
@@ -142,21 +142,21 @@
 		<div class="space-y-3">
 			<!-- Header -->
 			<div
-				class="grid grid-cols-6 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold space-x-3"
+				class="grid grid-cols-10 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold space-x-3"
 			>
 				<div class="col-span-1 text-left">
 					<p>Testcode</p>
 				</div>
-				<div class="col-span-1 text-left">
+				<div class="col-span-2 text-left">
 					<p>Naam</p>
 				</div>
-				<div class="col-span-1 text-left">
+				<div class="col-span-2 text-left">
 					<p>Categorie</p>
 				</div>
-				<div class="col-span-1 text-left">
+				<div class="col-span-2 text-left">
 					<p>Eenheid</p>
 				</div>
-				<div class="col-span-1 text-left">
+				<div class="col-span-2 text-left">
 					<p>Referentiewaardes</p>
 				</div>
 				<div class="col-span-1 text-right">
@@ -169,7 +169,7 @@
 			<div class="space-y-3">
 				{#each tests as test, index}
 					<div
-						class="grid grid-cols-6 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
+						class="grid grid-cols-10 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
 					>
 						<div class="col-span-1">
 							<input
@@ -180,7 +180,7 @@
 								class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
 							/>
 						</div>
-						<div class="col-span-1">
+						<div class="col-span-2">
 							<input
 								type="text"
 								on:blur={() => updateTest(test.id)}
@@ -189,7 +189,7 @@
 								class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
 							/>
 						</div>
-						<div class="col-span-1">
+						<div class="col-span-2">
 							<input
 								type="text"
 								on:blur={() => updateTest(test.id)}
@@ -197,7 +197,7 @@
 								class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
 							/>
 						</div>
-						<div class="col-span-1">
+						<div class="col-span-2">
 							<input
 								type="text"
 								on:blur={() => updateTest(test.id)}
@@ -205,7 +205,7 @@
 								class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
 							/>
 						</div>
-						<div class="col-span-1">
+						<div class="col-span-2">
 							<input
 								type="text"
 								on:blur={() => updateTest(test.id)}
