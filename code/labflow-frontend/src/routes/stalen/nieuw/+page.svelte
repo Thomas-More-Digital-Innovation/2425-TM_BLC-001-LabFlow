@@ -797,14 +797,19 @@
 					<div class="col-span-2">
 						{#if !isNaN(parseInt(test?.testCode))}
 							<p class="text-gray-400">Categorie</p>
-							<p>{test?.testcategorie.naam || ''}</p>
+							<p class="font-bold" style="color:{test?.testcategorie.kleur}">
+								{test?.testcategorie.naam || ''}
+							</p>
 						{/if}
 					</div>
 
 					<div class="col-span-2">
 						{#if !isNaN(parseInt(test?.testCode))}
 							<p class="text-gray-400">Eenheid</p>
-							<p class="truncate">{test?.eenheid.afkorting || ''}: {test?.eenheid.naam || ''}</p>
+							<p class="truncate">
+								{test?.eenheid.afkorting || ''}{#if test?.eenheid.naam !== 'not available'}: {test
+										?.eenheid.naam || ''}{/if}
+							</p>
 						{/if}
 					</div>
 
