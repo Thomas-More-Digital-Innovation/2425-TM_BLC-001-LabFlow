@@ -46,4 +46,15 @@ public class UserController {
             throw new UniqueConstraintViolationException(e.getMessage());
         }
     }
+
+    // update user without setting the password
+    @PutMapping("/updateuserwithoutpassword/{id}")
+    public ResponseEntity<User> updatewithoutpassword(@PathVariable Long id, @RequestBody User user) {
+        try {
+            return userService.updateWithoutPassword(id, user);
+        } catch (Exception e) {
+            throw new UniqueConstraintViolationException(e.getMessage());
+        }
+    }
+
 }
