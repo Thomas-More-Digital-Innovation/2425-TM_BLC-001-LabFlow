@@ -17,7 +17,7 @@
 	import EenhedenBeheren from '../../components/Instellingen/EenhedenBeheren.svelte';
 
 	// default staat nu op testen beheren
-	let navElement = 'Eenheid';
+	let navElement = 'Gebruiker';
 </script>
 
 <Nav />

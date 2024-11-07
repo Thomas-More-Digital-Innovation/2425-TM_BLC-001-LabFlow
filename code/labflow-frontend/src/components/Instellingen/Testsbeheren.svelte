@@ -129,7 +129,7 @@
 			errorMessageTestPOST = '';
 			const result = await fetchTests();
 			if (result) {
-				tests = result.stalen;
+				tests = result;
 			}
 		} catch (error) {
 			console.error('Test kon niet worden aangemaakt: ', error);

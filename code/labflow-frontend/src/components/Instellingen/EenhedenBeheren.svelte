@@ -26,21 +26,30 @@
 	});
 
 	///// DELETE eenheid /////
+	let deleteError = '';
 	async function deleteEenheid(id: string) {
 		console.log(id);
 		try {
-			await fetch(`http://localhost:8080/api/deleteeenheid/${id}`, {
+			const response = await fetch(`http://localhost:8080/api/deleteeenheid/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: 'Bearer ' + token
 				}
 			});
+
+			if (response.ok) {
+				deleteError = '';
+				const result = await fetchEenheden();
+				if (result) {
+					eenheden = result;
+				}
+			} else {
+				const errorMessage = await response.text();
+				deleteError =
+					'Eenheid kon niet worden verwijderd omdat deze gelinked is aan één of meerdere tests.';
+			}
 		} catch (error) {
 			console.error('Eenheid kon niet worden verwijderd: ', error);
-		}
-		const result = await fetchEenheden();
-		if (result) {
-			eenheden = result;
 		}
 	}
 
@@ -90,7 +99,7 @@
 			errorMessageTestPOST = '';
 			const result = await fetchEenheden();
 			if (result) {
-				eenheden = result.eenheden;
+				eenheden = result;
 			}
 		} catch (error) {
 			console.error('Eenheid kon niet worden aangemaakt: ', error);
@@ -166,6 +175,9 @@
 
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 		<div class="space-y-3">
+			{#if deleteError}
+				<div class="text-red-500 mb-2">{deleteError}</div>
+			{/if}
 			<!-- Header -->
 			<div
 				class="grid grid-cols-7 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold space-x-3"
