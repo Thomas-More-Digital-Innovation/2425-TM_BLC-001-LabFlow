@@ -128,3 +128,18 @@ export async function fetchEenheden() {
         goto('/login');
     }
 }
+
+// fetchen van referentiewaarden
+export async function fetchReferentiewaarden() {
+    if (token) {
+        try {
+            const referentiewaarden = await fetchAll(token, 'referentiewaarden');
+            return referentiewaarden;
+        } catch (error) {
+            console.error("Referentiewaarden konden niet gefetched worden:", error);
+        }
+    } else {
+        console.error("JWT error: token missing of invalid");
+        goto('/login');
+    }
+}
