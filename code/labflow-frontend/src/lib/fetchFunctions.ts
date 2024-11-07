@@ -83,3 +83,18 @@ export async function fetchRollen() {
         goto('/login');
     }
 }
+
+// fetchen van tests
+export async function fetchTests() {
+    if (token) {
+        try {
+            const tests = await fetchAll(token, 'tests');
+            return tests;
+        } catch (error) {
+            console.error("Tests konden niet gefetched worden:", error);
+        }
+    } else {
+        console.error("JWT error: token missing of invalid");
+        goto('/login');
+    }
+}
