@@ -49,7 +49,7 @@
 				: 'bg-blue-400'} flex flex-col items-center justify-center w-40 h-40 rounded-2xl text-white"
 		>
 			<div class="w-14 h-14 mb-5"><GiHypodermicTest /></div>
-			Tests beheren
+			Testen beheren
 		</button>
 		<button
 			type="button"
