@@ -28,7 +28,7 @@ jobs:
 
       - name: Run tests
         run: mvn clean -e -X test
-        working-directory: ./labflow-backend
+        working-directory: ./code/labflow-backend
 
   # build-and-push:
   #   needs: test
