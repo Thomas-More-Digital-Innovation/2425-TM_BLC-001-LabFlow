@@ -25,23 +25,33 @@
 	});
 
 	///// DELETE verwijderen van een categorie /////
+	let deleteError = '';
 	async function deleteCategorie(id: string) {
 		console.log(id);
 		try {
-			await fetch(`http://localhost:8080/api/testcategorie/${id}`, {
+			const response = await fetch(`http://localhost:8080/api/testcategorie/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: 'Bearer ' + token
 				}
 			});
+
+			if (response.ok) {
+				// If deletion is successful, reset error message and reload categories
+				deleteError = '';
+				const result = await loadTestCategorieën();
+				if (result) {
+					categorieën = result;
+				}
+			} else {
+				// If the server responds with an error (e.g., cannot delete because of linked tests)
+				const errorMessage = await response.text();
+				deleteError =
+					'Categorie kon niet worden verwijderd omdat deze gelinked is aan één of meerdere tests.';
+			}
 		} catch (error) {
 			console.error('Categorie kon niet worden verwijderd: ', error);
 		}
-		const result = await loadTestCategorieën();
-		if (result) {
-			categorieën = result;
-		}
-		return;
 	}
 
 	///// POST aanmaken van een categorie /////
@@ -151,7 +161,7 @@
 	}
 </script>
 
-<div class="flex flex-col w-full ml-5 mb-10">	
+<div class="flex flex-col w-full ml-5 mb-10">
 	<div class="flex flex-row justify-between w-full h-14 mb-5">
 		<h1 class="font-bold text-3xl">Categorieën beheren</h1>
 		<button
@@ -168,6 +178,7 @@
 
 	<div class="bg-slate-100 w-full h-full rounded-2xl p-5">
 		<div class="space-y-3">
+			<div class="text-red-500 mb-2">{deleteError}</div>
 			<!-- Header -->
 			<div class="grid grid-cols-12 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
 				<div class="col-span-4">
@@ -190,6 +201,7 @@
 						type="text"
 						id="nieuwecategorie"
 						bind:value={categorienaam}
+						placeholder="Naam van de categorie"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full {errorVeldenCategoriePOST.categorienaam
 							? 'border-2 border-red-500'
 							: ''}"

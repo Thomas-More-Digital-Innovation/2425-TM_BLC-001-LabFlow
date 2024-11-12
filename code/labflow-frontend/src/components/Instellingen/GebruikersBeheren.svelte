@@ -290,8 +290,9 @@
 				<div class="col-span-2">
 					<input
 						type="text"
-						id="nieuwecategorie"
+						id="nieuwegebruiker"
 						bind:value={voornaam}
+						placeholder="Voornaam gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenGebruikerPOST.voornaam ? 'border-2 border-red-500' : ''}"
 					/>
@@ -299,8 +300,9 @@
 				<div class="col-span-2">
 					<input
 						type="text"
-						id="nieuwecategorie"
+						id="nieuwegebruiker"
 						bind:value={achternaam}
+						placeholder="Achternaam gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenGebruikerPOST.achternaam ? 'border-2 border-red-500' : ''}"
 					/>
@@ -308,8 +310,9 @@
 				<div class="col-span-3">
 					<input
 						type="text"
-						id="nieuwecategorie"
+						id="nieuwegebruiker"
 						bind:value={email}
+						placeholder="Email gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenGebruikerPOST.email ? 'border-2 border-red-500' : ''}"
 					/>
@@ -317,8 +320,9 @@
 				<div class="col-span-2">
 					<input
 						type="password"
-						id="nieuwecategorie"
+						id="nieuwegebruiker"
 						bind:value={wachtwoord}
+						placeholder="Wachtwoord gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenGebruikerPOST.wachtwoord ? 'border-2 border-red-500' : ''}"
 					/>
