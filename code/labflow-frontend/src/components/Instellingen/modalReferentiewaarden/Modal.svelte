@@ -61,7 +61,7 @@
 			<button
 				autofocus
 				on:click={closeDialog}
-				class="w-10 h-10 p-2 mb-3 flex items-center justify-center bg-red-200 rounded-lg"
+				class="w-10 h-10 p-2 mb-3 flex items-center justify-center bg-red-400 rounded-lg"
 				><GoX /></button
 			>
 		</div>
