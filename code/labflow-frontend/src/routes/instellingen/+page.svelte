@@ -16,8 +16,8 @@
 	import TestsBeheren from '../../components/Instellingen/Testsbeheren.svelte';
 	import EenhedenBeheren from '../../components/Instellingen/EenhedenBeheren.svelte';
 
-	// default staat nu op testen beheren
-	let navElement = 'Gebruiker';
+	// default gerenderde component
+	let navElement = 'Test';
 </script>
 
 <Nav />
