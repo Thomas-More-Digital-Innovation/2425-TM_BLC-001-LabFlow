@@ -15,6 +15,8 @@
 	import FaPlus from 'svelte-icons/fa/FaPlus.svelte';
 	// @ts-ignore
 	import GoLink from 'svelte-icons/go/GoLink.svelte';
+	// @ts-ignore
+	import FaSave from 'svelte-icons/fa/FaSave.svelte';
 	import { getCookie } from '$lib/globalFunctions';
 	import Modal from './modalReferentiewaarden/Modal.svelte';
 
@@ -23,7 +25,6 @@
 
 	const token = getCookie('authToken') || '';
 
-	let errorMessageTest = '';
 	let tests: any[] = [];
 	let testcategorieën: any[] = [];
 	let eenheden: any[] = [];
@@ -82,8 +83,7 @@
 		testCode: false,
 		naam: false,
 		eenheid: false,
-		testcategorie: false,
-		referentiewaardesPOST: false
+		testcategorie: false
 	};
 
 	let errorMessageTestPOST = '';
@@ -93,8 +93,7 @@
 			testCode: false,
 			naam: false,
 			eenheid: false,
-			testcategorie: false,
-			referentiewaardesPOST: false
+			testcategorie: false
 		};
 		let isValid = true;
 		if (!testCode) {
@@ -142,7 +141,6 @@
 					referentiewaardes: referentiewaardesPOSTMapped
 				})
 			});
-			console.log(referentiewaardesPOSTMapped);
 			testCode = '';
 			naam = '';
 			eenheid = '';
@@ -159,15 +157,31 @@
 		return;
 	}
 
+	// helper functie openen juiste modal PUT
+	let selectedTestIdPUT: number = 0;
+	let showModalPUT = writable(false);
+
+	function setModalPUT(testId: number) {
+		selectedTestIdPUT = testId;
+		showModalPUT.set(true);
+	}
+
+	// helper functie sluiten juiste modal PUT
+	function closeModalPUT() {
+		// updaten van test
+		selectedTestIdPUT = 0;
+		showModalPUT.set(false);
+	}
+
 	///// PUT test /////
 	let errorVeldenTestPUT = {
 		testCode: false,
 		naam: false,
 		eenheid: false,
-		testcategorie: false,
-		referentiewaardes: false
+		testcategorie: false
 	};
 
+	let referentiewaardesPUT = writable([]);
 	let errorMessageStaalPUT = '';
 
 	async function updateTest(id: string) {
@@ -203,7 +217,11 @@
 			errorMessageStaalPUT = 'Vul alle verplichte velden in.';
 			return;
 		}
-		console.log(test);
+
+		const referentiewaardesPUTMapped = get(referentiewaardesPUT).map((value) => ({
+			waarde: value
+		}));
+		console.log(referentiewaardesPUTMapped);
 		try {
 			await fetch(`http://localhost:8080/api/updatetest/${id}`, {
 				method: 'PUT',
@@ -218,9 +236,7 @@
 					testcategorie: {
 						id: test.testcategorie.id
 					},
-					referentiewaardes: test.referentiewaardes.map((waarde: any) => ({
-						id: waarde.id
-					}))
+					referentiewaardes: referentiewaardesPUTMapped
 				})
 			});
 			errorMessageStaalPUT = '';
@@ -384,7 +400,6 @@
 						</div>
 						<div class="col-span-2">
 							<select
-								on:blur={() => updateTest(test.id)}
 								bind:value={test.eenheid.id}
 								class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
 							>
@@ -394,14 +409,30 @@
 							</select>
 						</div>
 						<button
-							type="button"
-							class="h-10 w-10 bg-green-500 p-2 rounded-lg text-white col-span-1"
+							on:click={() => setModalPUT(test.id)}
+							class="h-10 w-10 bg-green-500 p-2 rounded-lg text-white"><GoLink /></button
 						>
-							<GoLink />
-						</button>
+						{#if $showModalPUT && selectedTestIdPUT === test.id}
+							<Modal
+								bind:showModal={$showModalPUT}
+								on:close={() => {
+									closeModalPUT();
+								}}
+								{waarden}
+								bind:selectedValues={referentiewaardesPUT}
+							/>
+						{/if}
 
 						<!-- Acties -->
 						<div class="col-span-1 flex justify-end">
+							<button
+								type="button"
+								class="h-10 w-10 bg-green-500 p-2 rounded-lg text-white mr-2"
+								on:click={() => updateTest(test.id)}
+								aria-label="Save test"
+							>
+								<FaSave />
+							</button>
 							{#if test.confirmDelete}
 								<button
 									type="button"
