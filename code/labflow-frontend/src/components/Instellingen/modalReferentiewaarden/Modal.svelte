@@ -4,6 +4,10 @@
 	export let showModal = false;
 	import { writable } from 'svelte/store';
 	import MultiSelect from 'svelte-multiselect';
+	import { getCookie } from '$lib/globalFunctions';
+	import { fetchReferentiewaarden } from '$lib/fetchFunctions';
+	// @ts-ignore
+	import IoMdCheckmarkCircle from 'svelte-icons/io/IoMdCheckmarkCircle.svelte';
 
 	let dialog: HTMLDialogElement;
 
@@ -14,9 +18,34 @@
 		dialog.close();
 		showModal = false;
 	}
+	const token = getCookie('authToken') || '';
 
 	export let waarden: any[] = [];
 	export let selectedValues = writable([]);
+
+	let waarde = '';
+	async function nieuweReferentiewaarde() {
+		try {
+			await fetch('http://localhost:8080/api/createreferentiewaarde', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + token
+				},
+				body: JSON.stringify({
+					waarde: waarde
+				})
+			});
+			waarde = '';
+			const result = await fetchReferentiewaarden();
+			if (result) {
+				waarden = result;
+			}
+		} catch (error) {
+			console.error('Test kon niet worden aangemaakt: ', error);
+		}
+		return;
+	}
 </script>
 
 <dialog
@@ -45,6 +74,23 @@
 			bind:value={$selectedValues}
 			placeholder="Referentiewaarden"
 		/>
+		<p class="font-bold text-xl mt-16">Aanmaken referentiewaarde</p>
+		<div class="flex flex-row justify-between">
+			<input
+				type="text"
+				name="referentiewaarde"
+				id="referentiewaarde"
+				bind:value={waarde}
+				class="rounded-lg text-black bg-gray-200 h-12 w-80 mt-4"
+			/>
+			<button
+				on:click={nieuweReferentiewaarde}
+				type="button"
+				class="bg-green-500 rounded-lg text-black h-12 w-56 font-bold text-lg"
+			>
+				Opslaan
+			</button>
+		</div>
 	</div>
 </dialog>
 
