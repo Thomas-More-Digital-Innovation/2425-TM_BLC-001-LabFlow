@@ -39,7 +39,6 @@ public class JWTService {
     public String generateToken(User user) {
 
         // claims zijn extra gegevens die meegegeven kunnen worden met een JWT
-        // momenteel is deze leeg, maar kan gebruikt worden om extra info in token te stoppen
         Map<String, Object> claims = new HashMap<>();
 
         String rol = Objects.requireNonNull(userRepository.findByEmail(user.getEmail()).getRol()).getNaam();
