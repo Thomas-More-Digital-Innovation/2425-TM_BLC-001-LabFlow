@@ -29,7 +29,7 @@
 	let testcategorieën: any[] = [];
 	let eenheden: any[] = [];
 	let referentiewaardes: any[] = [];
-	let waarden: any[] = [];
+	let waarden: any[] = ['dummy']; // dummy zorgt ervoor dat bij het laden van de pagina de multiselect niet leeg is (geeft error in console)
 
 	// volgorde is belangrijk, eerst eenheden en categorieën ophalen, daarna tests
 	onMount(async () => {
@@ -49,7 +49,11 @@
 		// mappen van referentiewaarden overeenkomstig de waarden die in de multiselect moeten komen
 		if (fetchedReferentiewaardes) {
 			referentiewaardes = fetchedReferentiewaardes;
-			waarden = referentiewaardes.map((item) => item.waarde);
+			waarden = referentiewaardes.map((item) => ({
+				id: item.id,
+				label: item.waarde,
+				waarde: item.waarde
+			}));
 		}
 	});
 
@@ -218,9 +222,11 @@
 			return;
 		}
 
-		const referentiewaardesPUTMapped = get(referentiewaardesPUT).map((value) => ({
-			waarde: value
-		}));
+		const referentiewaardesPUTMapped = get(referentiewaardesPUT).map(
+			(value: { waarde: string }) => ({
+				waarde: value.waarde // waarde extraheren uit referentiewaardesPUT store en mappen naar een array van objecten
+			})
+		);
 		console.log(referentiewaardesPUTMapped);
 		try {
 			await fetch(`http://localhost:8080/api/updatetest/${id}`, {
@@ -230,18 +236,16 @@
 					Authorization: 'Bearer ' + token
 				},
 				body: JSON.stringify({
+					id: test.id,
 					testCode: test.testCode,
 					naam: test.naam,
-					eenheid: test.eenheid,
-					testcategorie: {
-						id: test.testcategorie.id
-					},
+					eenheid: { id: test.eenheid.id },
+					testcategorie: { id: test.testcategorie.id },
 					referentiewaardes: referentiewaardesPUTMapped
 				})
 			});
-			errorMessageStaalPUT = '';
 		} catch (error) {
-			console.error('Test kon niet worden aangepast: ', error);
+			console.error('Error during PUT request:', error);
 		}
 		return;
 	}

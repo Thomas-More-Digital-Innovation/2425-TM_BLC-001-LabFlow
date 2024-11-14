@@ -8,6 +8,7 @@
 	import { fetchReferentiewaarden } from '$lib/fetchFunctions';
 	// @ts-ignore
 	import IoMdCheckmarkCircle from 'svelte-icons/io/IoMdCheckmarkCircle.svelte';
+	import { error } from '@sveltejs/kit';
 
 	let dialog: HTMLDialogElement;
 
@@ -18,15 +19,23 @@
 		dialog.close();
 		showModal = false;
 	}
-	const token = getCookie('authToken') || '';
 
+	const token = getCookie('authToken') || '';
 	export let waarden: any[] = [];
 	export let selectedValues = writable([]);
+	console.log(waarden);
 
 	let waarde = '';
+	let errorWaarde = false;
+
 	async function nieuweReferentiewaarde() {
+		if (waarde.trim() === '') {
+			errorWaarde = true;
+			return;
+		}
+		errorWaarde = false;
 		try {
-			await fetch('http://localhost:8080/api/createreferentiewaarde', {
+			const response = await fetch('http://localhost:8080/api/createreferentiewaarde', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -36,15 +45,17 @@
 					waarde: waarde
 				})
 			});
-			waarde = '';
-			const result = await fetchReferentiewaarden();
-			if (result) {
-				waarden = result;
-			}
+
+			console.log(waarde);
+			waarden = waarden.concat({
+				id: waarden.length + 1,
+				waarde: waarde,
+				label: waarde
+			});
+			waarde = ''; // Reset waarde after successful submission
 		} catch (error) {
 			console.error('Test kon niet worden aangemaakt: ', error);
 		}
-		return;
 	}
 </script>
 
@@ -81,7 +92,9 @@
 				name="referentiewaarde"
 				id="referentiewaarde"
 				bind:value={waarde}
-				class="rounded-lg text-black bg-gray-200 h-12 w-80 mt-4"
+				class="rounded-lg text-black bg-gray-200 h-12 w-80 mt-4 {errorWaarde
+					? 'border-red-500 border-2'
+					: ''}"
 			/>
 			<button
 				on:click={nieuweReferentiewaarde}
@@ -91,6 +104,9 @@
 				Opslaan
 			</button>
 		</div>
+		{#if errorWaarde}
+			<p class="text-red-500 mt-2">Vul een waarde in.</p>
+		{/if}
 	</div>
 </dialog>
 

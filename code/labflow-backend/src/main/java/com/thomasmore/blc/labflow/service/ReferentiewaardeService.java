@@ -20,6 +20,14 @@ public class ReferentiewaardeService {
 
     // read
     public List<Referentiewaarde> read() {
+        // Verwijderen van alle referentiewaardes met geen gekoppelde test
+        List<Referentiewaarde> referentiewaardes = referentiewaardeRepository.findAll();
+        for (Referentiewaarde rf : referentiewaardes) {
+            if (rf.getTest() == null) {
+                referentiewaardeRepository.delete(rf);
+            }
+        }
+
         return referentiewaardeRepository.findAll();
     }
 
@@ -43,6 +51,11 @@ public class ReferentiewaardeService {
             return new ResponseEntity<>(referentiewaardeRepository.findAll().size(), org.springframework.http.HttpStatus.OK);
         }
         return new ResponseEntity<>(referentiewaardeRepository.findAll().size(), org.springframework.http.HttpStatus.NOT_FOUND);
+    }
+
+    // getbyid
+    public Referentiewaarde getreferentiewaarde(Long id) {
+        return referentiewaardeRepository.findById(id);
     }
 
 }
