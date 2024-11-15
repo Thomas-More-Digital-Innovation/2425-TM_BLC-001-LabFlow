@@ -3,6 +3,7 @@ package com.thomasmore.blc.labflow.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,8 @@ public class Test {
     @JoinColumn(name = "testcategorie_id", nullable = false)
     private Testcategorie testcategorie;
 
-    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Nullable
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<Referentiewaarde> referentiewaardes;
 

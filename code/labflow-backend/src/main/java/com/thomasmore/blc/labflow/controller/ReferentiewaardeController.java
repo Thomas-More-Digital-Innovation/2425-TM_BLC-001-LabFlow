@@ -17,8 +17,9 @@ public class ReferentiewaardeController {
 
     // create
     @PostMapping("/createreferentiewaarde")
-    public void create(@RequestBody Referentiewaarde referentiewaarde) {
+    public Referentiewaarde create(@RequestBody Referentiewaarde referentiewaarde) {
         referentiewaardeService.create(referentiewaarde);
+        return referentiewaardeService.getreferentiewaarde(referentiewaarde.getId());
     }
 
     // read

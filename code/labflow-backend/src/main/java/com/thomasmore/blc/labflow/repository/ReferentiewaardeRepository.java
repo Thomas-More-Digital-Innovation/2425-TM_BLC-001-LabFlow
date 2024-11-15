@@ -9,4 +9,7 @@ public interface ReferentiewaardeRepository extends JpaRepository<Referentiewaar
     public Referentiewaarde findById(Long id);
     public void delete(Referentiewaarde referentiewaarde);
 
+    void removeReferentiewaardeById(Long id);
+
+
 }
