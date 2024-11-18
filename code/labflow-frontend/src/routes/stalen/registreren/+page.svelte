@@ -39,7 +39,7 @@
     // update variables
     let updateValue: string = '';
     let updateNote: string = '';
-    let status: boolean;
+    let status: boolean = false;
     let allDone: boolean = false;
 
 
@@ -101,17 +101,17 @@
         try {
             let body;
 
-            if (!status) {
+            if (status != true) {
                 body = {
                     "result": updateValue,
                     "note": note,
-                    "failed": status
+                    "failed": tests.find(test => test.test.id == testId).failed
                 }
             } else {
                 body = {
                     "result": '',
                     "note": note,
-                    "failed": status
+                    "failed": tests.find(test => test.test.id == testId).failed
                 }
             }
 
@@ -147,7 +147,7 @@
             const body = {
                 "result": result,
                 "note": updateNote,
-                "failed": status
+                "failed": tests.find(test => test.test.id == testId).failed
             }
 
             const headers = {
@@ -168,12 +168,10 @@
             const data = await response.json();
             
             console.log("update succesvol: ", data);
-            loadData();
             return data;
             
         } catch (error) {
             console.error("update error: ", error);
-            loadData();
             throw error;
         }
     }
