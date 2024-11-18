@@ -39,7 +39,6 @@ public class JWTService {
     public String generateToken(User user) {
 
         // claims zijn extra gegevens die meegegeven kunnen worden met een JWT
-        // momenteel is deze leeg, maar kan gebruikt worden om extra info in token te stoppen
         Map<String, Object> claims = new HashMap<>();
 
         String rol = Objects.requireNonNull(userRepository.findByEmail(user.getEmail()).getRol()).getNaam();
@@ -53,7 +52,7 @@ public class JWTService {
                 .claims(claims)
                 .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // na 30 minuten vervalt de token
+                .expiration(new Date(System.currentTimeMillis() + 2 * 60 * 60 * 1000))  // na 2 uur vervalt de token
                 .signWith(getKey())
                 .compact();
     }

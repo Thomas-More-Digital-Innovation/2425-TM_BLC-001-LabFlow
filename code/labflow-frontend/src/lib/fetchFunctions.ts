@@ -19,7 +19,7 @@ export async function loadTestCategorieën() {
         }
     } else {
         console.error("jwt error");
-        goto('/login');
+        goto('/');
     }
 }
 
@@ -34,7 +34,7 @@ export async function loadEenheden() {
         }
     } else {
         console.error("jwt error");
-        goto('/login');
+        goto('/');
     }
 }
 
@@ -50,7 +50,7 @@ export async function fetchStalen() {
         }
     } else {
         console.error("JWT error: token missing of invalid");
-        goto('/login');
+        goto('/');
     }
 }
 
@@ -65,7 +65,7 @@ export async function fetchUsers() {
         }
     } else {
         console.error("JWT error: token missing of invalid");
-        goto('/login');
+        goto('/');
     }
 }
 
@@ -80,6 +80,66 @@ export async function fetchRollen() {
         }
     } else {
         console.error("JWT error: token missing of invalid");
-        goto('/login');
+        goto('/');
+    }
+}
+
+// fetchen van tests
+export async function fetchTests() {
+    if (token) {
+        try {
+            const tests = await fetchAll(token, 'tests');
+            return tests;
+        } catch (error) {
+            console.error("Tests konden niet gefetched worden:", error);
+        }
+    } else {
+        console.error("JWT error: token missing of invalid");
+        goto('/');
+    }
+}
+
+// fetchen van testcategorieën
+export async function fetchTestcategorieën() {
+    if (token) {
+        try {
+            const categorieën = await fetchAll(token, 'testcategorieen');
+            return categorieën;
+        } catch (error) {
+            console.error("Categorieën konden niet gefetched worden:", error);
+        }
+    } else {
+        console.error("JWT error: token missing of invalid");
+        goto('/');
+    }
+}
+
+// fetchen van eenheden
+export async function fetchEenheden() {
+    if (token) {
+        try {
+            const eenheden = await fetchAll(token, 'readeenheid');
+            return eenheden;
+        } catch (error) {
+            console.error("Eenheden konden niet gefetched worden:", error);
+        }
+    } else {
+        console.error("JWT error: token missing of invalid");
+        goto('/');
+    }
+}
+
+// fetchen van referentiewaarden
+export async function fetchReferentiewaarden() {
+    if (token) {
+        try {
+            const referentiewaarden = await fetchAll(token, 'referentiewaarden');
+            return referentiewaarden;
+        } catch (error) {
+            console.error("Referentiewaarden konden niet gefetched worden:", error);
+        }
+    } else {
+        console.error("JWT error: token missing of invalid");
+        goto('/');
     }
 }

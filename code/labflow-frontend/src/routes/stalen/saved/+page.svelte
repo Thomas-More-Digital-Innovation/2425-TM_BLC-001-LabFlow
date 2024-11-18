@@ -16,7 +16,7 @@
 		<FaSave />
 	</div>
 	<!-- text -->
-	<h1 class=" text-8xl mb-5 text-blue-500">Tijd om proeven te doen</h1>
+	<h1 class=" text-8xl mb-5 text-blue-500">Analyseer Je Stalen</h1>
 	<p class="text-2xl text-gray-600">
 		Je testen zijn geregistreerd. Je kan ze terugvinden op het beginscherm.
 	</p>
@@ -28,7 +28,7 @@
 			}}
 			class="bg-gray-400 text-lg rounded-lg p-3 w-56 text-white h-14 flex flex-row items-center justify-center"
 		>
-			Waarde Registreren
+			Waarden Registreren
 		</button>
 		<!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
 		<button

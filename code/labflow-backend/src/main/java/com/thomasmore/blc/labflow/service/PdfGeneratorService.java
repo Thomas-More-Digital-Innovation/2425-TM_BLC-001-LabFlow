@@ -43,6 +43,7 @@ public class PdfGeneratorService {
         // filter categories
         Set<Testcategorie> testcategorieSet = staal.getRegisteredTests().stream().map(StaalTest::getTest)
                 .map(Test::getTestcategorie)
+                .filter(testcategorie -> testcategorie.getId() != 7)
                 .collect(Collectors.toSet());
 
         // start label
@@ -145,12 +146,61 @@ public class PdfGeneratorService {
         List<Test> testList = registeredTests.stream()
                 .map(StaalTest::getTest)
                 .sorted(Comparator.comparing(test -> test.getTestcategorie().getNaam()))
+                .filter(test -> test.getTestcategorie().getId() != 7)
                 .toList();
+
+        // Get 'notitie' test
+        Test notitie = registeredTests.stream()
+                .map(StaalTest::getTest)
+                .filter(test -> test.getTestcategorie().getId() == 7)
+                .findFirst()
+                .orElse(null);
 
         // Loop through test categories and add information
         PdfPTable dataTable = new PdfPTable(6);
         dataTable.setWidthPercentage(100);
         dataTable.setWidths(new int[]{1, 3, 1, 1, 3, 2}); // Adjust column widths
+
+        // Add 'notitie' test
+        if (notitie != null) {
+            // header columns - removing borders
+            PdfPCell testCodeHeader = new PdfPCell(new Phrase(notitie.getTestCode(), bodyFont));
+            testCodeHeader.setBorder(Rectangle.NO_BORDER);
+            dataTable.addCell(testCodeHeader);
+
+            PdfPCell nameHeader = new PdfPCell(new Phrase(notitie.getNaam(), bodyFont));
+            nameHeader.setBorder(Rectangle.NO_BORDER);
+            dataTable.addCell(nameHeader);
+
+            String result = notitie.getStalen().stream()
+                    .filter(staalTest -> staalTest.getStaal().getStaalCode() == staalCode)
+                    .map(StaalTest::getResult)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse("Geen notitie");
+
+            if (result.equals("Geen notitie")) {
+                PdfPCell resultHeader = new PdfPCell(new Phrase("Geen notitie", bodyFont));
+                resultHeader.setBorder(Rectangle.NO_BORDER);
+                dataTable.addCell(resultHeader);
+            } else {
+                PdfPCell resultHeader = new PdfPCell(new Phrase(result, bodyFont));
+                resultHeader.setBorder(Rectangle.NO_BORDER);
+                dataTable.addCell(resultHeader);
+            }
+
+            PdfPCell unitHeader = new PdfPCell(new Phrase(""));
+            unitHeader.setBorder(Rectangle.NO_BORDER);
+            dataTable.addCell(unitHeader);
+
+            PdfPCell referenceHeader = new PdfPCell(new Phrase("", bodyFont));
+            referenceHeader.setBorder(Rectangle.NO_BORDER);
+            dataTable.addCell(referenceHeader);
+
+            PdfPCell categoryHeader = new PdfPCell(new Phrase("", bodyFont));
+            categoryHeader.setBorder(Rectangle.NO_BORDER);
+            dataTable.addCell(categoryHeader);
+        }
 
         for (Test test : testList) {
             // header columns - removing borders

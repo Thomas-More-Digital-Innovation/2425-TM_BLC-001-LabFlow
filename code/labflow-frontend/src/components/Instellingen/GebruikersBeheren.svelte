@@ -24,7 +24,7 @@
 		if (resultUsers) {
 			users = resultUsers.map((user: any) => ({
 				...user,
-				newWachtwoord: ''
+				newWachtwoord: undefined
 			}));
 		}
 		const resultRollen = await fetchRollen();
@@ -153,10 +153,10 @@
 		rol: false
 	};
 
-	async function updateGebruiker(id: string, newWachtwoord: string) {
-		console.log('updateGebruiker', id, newWachtwoord);
+	async function updateGebruiker(id: string, newWachtwoord: string | null | undefined) {
 		const user = users.find((u) => u.id === id);
 		if (!user) return;
+
 		let isValid = true;
 		errorVeldenGebruikerPUT = {
 			voornaam: false,
@@ -165,6 +165,7 @@
 			wachtwoord: false,
 			rol: false
 		};
+
 		if (!user.voorNaam) {
 			errorVeldenGebruikerPUT.voornaam = true;
 			isValid = false;
@@ -177,10 +178,6 @@
 			errorVeldenGebruikerPUT.email = true;
 			isValid = false;
 		}
-		if (!user.wachtwoord) {
-			errorVeldenGebruikerPUT.wachtwoord = true;
-			isValid = false;
-		}
 		if (!user.rol) {
 			errorVeldenGebruikerPUT.rol = true;
 			isValid = false;
@@ -189,35 +186,58 @@
 			errorMessageGebruikerPUT = 'Vul alle verplichte velden in.';
 			return;
 		}
+
 		try {
-			await fetch(`http://localhost:8080/updateuser/${id}`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + token
-				},
-				body: JSON.stringify({
-					wachtwoord: newWachtwoord ? newWachtwoord : user.wachtwoord, // gebruik het nieuwe wachtwoord als het is ingevuld, anders het oude wachtwoord
-					email: user.email,
-					voorNaam: user.voorNaam,
-					achterNaam: user.achterNaam,
-					rol: {
-						id: user.rol.id
-					}
-				})
-			});
+			// If newWachtwoord is provided and not empty, update with new password
+			if (newWachtwoord && newWachtwoord.trim() !== '') {
+				await fetch(`http://localhost:8080/updateuser/${id}`, {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: 'Bearer ' + token
+					},
+					body: JSON.stringify({
+						wachtwoord: newWachtwoord,
+						email: user.email,
+						voorNaam: user.voorNaam,
+						achterNaam: user.achterNaam,
+						rol: {
+							id: user.rol.id
+						}
+					})
+				});
+				console.log('user updated with password');
+			} else {
+				// If no new password, update other fields without changing the password
+				await fetch(`http://localhost:8080/updateuserwithoutpassword/${id}`, {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: 'Bearer ' + token
+					},
+					body: JSON.stringify({
+						email: user.email,
+						voorNaam: user.voorNaam,
+						achterNaam: user.achterNaam,
+						rol: {
+							id: user.rol.id
+						}
+					})
+				});
+				console.log('user updated without password');
+			}
+
 			errorMessageGebruikerPUT = '';
-			newWachtwoord = '';
+			if (user) {
+				user.newWachtwoord = null;
+			}
 			const result = await fetchUsers();
 			if (result) {
 				users = result;
 			}
-			console.log(users);
-			return;
 		} catch (error) {
 			console.error('Gebruiker kon niet aangepast: ', error);
 		}
-		return;
 	}
 </script>
 
@@ -270,8 +290,9 @@
 				<div class="col-span-2">
 					<input
 						type="text"
-						id="nieuwecategorie"
+						id="nieuwegebruiker"
 						bind:value={voornaam}
+						placeholder="Voornaam gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenGebruikerPOST.voornaam ? 'border-2 border-red-500' : ''}"
 					/>
@@ -279,8 +300,9 @@
 				<div class="col-span-2">
 					<input
 						type="text"
-						id="nieuwecategorie"
+						id="nieuwegebruiker"
 						bind:value={achternaam}
+						placeholder="Achternaam gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenGebruikerPOST.achternaam ? 'border-2 border-red-500' : ''}"
 					/>
@@ -288,8 +310,9 @@
 				<div class="col-span-3">
 					<input
 						type="text"
-						id="nieuwecategorie"
+						id="nieuwegebruiker"
 						bind:value={email}
+						placeholder="Email gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenGebruikerPOST.email ? 'border-2 border-red-500' : ''}"
 					/>
@@ -297,8 +320,9 @@
 				<div class="col-span-2">
 					<input
 						type="password"
-						id="nieuwecategorie"
+						id="nieuwegebruiker"
 						bind:value={wachtwoord}
+						placeholder="Wachtwoord gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenGebruikerPOST.wachtwoord ? 'border-2 border-red-500' : ''}"
 					/>

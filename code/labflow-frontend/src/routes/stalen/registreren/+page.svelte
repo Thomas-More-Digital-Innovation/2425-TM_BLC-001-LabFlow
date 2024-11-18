@@ -14,6 +14,8 @@
     import IoIosClose from 'svelte-icons/io/IoIosClose.svelte'
     // @ts-ignore
     import IoMdText from 'svelte-icons/io/IoMdText.svelte'
+    // @ts-ignore
+    import FaCloudDownloadAlt from 'svelte-icons/fa/FaCloudDownloadAlt.svelte'
 
     import { staalCodeStore } from '$lib/store';
 	import { onMount } from "svelte";
@@ -99,17 +101,17 @@
         try {
             let body;
 
-            if (!status) {
+            if (status != true) {
                 body = {
                     "result": updateValue,
                     "note": note,
-                    "failed": status
+                    "failed": tests.find(test => test.test.id == testId).failed
                 }
             } else {
                 body = {
                     "result": '',
                     "note": note,
-                    "failed": status
+                    "failed": tests.find(test => test.test.id == testId).failed
                 }
             }
 
@@ -145,7 +147,7 @@
             const body = {
                 "result": result,
                 "note": updateNote,
-                "failed": status
+                "failed": tests.find(test => test.test.id == testId).failed
             }
 
             const headers = {
@@ -164,6 +166,7 @@
             }
 
             const data = await response.json();
+            
             console.log("update succesvol: ", data);
             return data;
             
@@ -278,22 +281,39 @@
         <!-- bottom section -->
          <div class="flex space-x-4 h-full">
             <!-- left section -->
-            <div class="bg-white w-1/3 h-[75vh] rounded-xl p-4">
-                <p class="text-blue-500">{testCategories.length} labels</p>
-                {#each testCategories as testcategorie}
-                    <button on:click={() => setCategory(testcategorie.id)} class="border border-gray-200 rounded-xl w-full flex justify-between items-center p-4 my-3 hover:bg-gray-100 hover:scale-[101%] transition cursor-pointer">
-                        <div class="flex justify-start items-center">
-                            <div class="px-1 py-6 rounded-full" style={`background-color: ${testcategorie.kleur || "#000"};`}></div>
-                            <p class="font-bold text-lg ml-3">{testcategorie?.naam || "loading..."}</p>
-                        </div>
-                        {#if checkAllDoneForCategory(testcategorie)}
-                            <div class={`p-3 rounded-full text-white h-12`} style="background-color: #23E22C;"><FaCheck /></div>
-                        {:else}
-                            <div class={`rounded-full text-white h-12`} style="background-color: #E3E3E3;"><IoIosClose /></div>
-                        {/if}
-                    </button>
-                {/each}
+            <div class="w-1/3 h-[75vh] flex flex-col space-y-4">
+                <div class="bg-white h-full rounded-xl p-4">
+                    <p class="text-blue-500">{testCategories.length} labels</p>
+                    {#each testCategories as testcategorie}
+                        <button on:click={() => setCategory(testcategorie.id)} class="border border-gray-200 rounded-xl w-full flex justify-between items-center p-4 my-3 hover:bg-gray-100 hover:scale-[101%] transition cursor-pointer">
+                            <div class="flex justify-start items-center">
+                                <div class="px-1 py-6 rounded-full" style={`background-color: ${testcategorie.kleur || "#000"};`}></div>
+                                {#if testcategorie?.id == 7}
+                                    <p class="font-bold text-lg ml-3">{testcategorie ? "Notitie" : "loading..."}</p>
+                                {:else}
+                                    <p class="font-bold text-lg ml-3">{testcategorie?.naam || "loading..."}</p>
+                                {/if}
+                            </div>
+                            {#if checkAllDoneForCategory(testcategorie)}
+                                <div class={`p-3 rounded-full text-white h-12`} style="background-color: #23E22C;"><FaCheck /></div>
+                            {:else}
+                                <div class={`rounded-full text-white h-12`} style="background-color: #E3E3E3;"><IoIosClose /></div>
+                            {/if}
+                        </button>
+                    {/each}
+                </div>
+                <div>
+                    <form method="get" action={`http://localhost:8080/api/pdf/generateresults/${staalId}`}>
+                        <button type="submit" class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-full flex  items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed" disabled={!allDone} >
+                            <div class="h-6 px-4">
+                                <FaCloudDownloadAlt/>
+                            </div>
+                            <p class="font-bold">Download Resultaten</p>
+                        </button>
+                    </form> 
+                </div>
             </div>
+            
              <!-- right section -->
             <div class="w-2/3 flex flex-col justify-between space-y-4">
                 <!-- white box -->
@@ -303,13 +323,59 @@
                         <!-- left -->
                         <div class="flex justify-start items-center">
                             <div class={`p-8 rounded-full text-white`} style={`background-color: ${selectedCategory?.kleur || "#000"};`}></div>
-                            <h2 class="ml-8 font-bold text-lg">{selectedCategory?.naam}</h2>
+                            {#if selectedCategory?.id == 7}
+                                <h2 class="ml-8 font-bold text-lg">{selectedCategory ? "Notitie" : "loading..."}</h2>
+                            {:else}
+                                <h2 class="ml-8 font-bold text-lg">{selectedCategory?.naam || "loading..."}</h2>
+                            {/if}
                         </div>
                     </div>
                     <!-- List-->
                      <div class="h-5/6 mx-6">
                         {#each tests.filter(test => test.test.testcategorie.id == selectedCategory.id) as test}
-                            <div class="w-full bg-white border border-gray-200 rounded-xl my-4 p-4">
+                            {#if selectedCategory?.id == 7}
+                                <div class="w-full bg-white border border-gray-200 rounded-xl my-4 p-4">
+                                    <div class="grid grid-cols-[1fr_3fr_auto_1fr] items-center">
+                                        <!-- Test Section -->
+                                        <div class="flex flex-col items-start col-span-2">
+                                            <span class="text-sm text-gray-500">Test</span>
+                                            <span class="text-xl font-semibold">{test.test.naam.length > 20 ? test.test.naam.slice(0, 20) + '...' : test.test.naam}</span>
+                                        </div>
+
+                                        <!-- Value Section -->
+                                        <div class="flex flex-col items-start">
+                                            <span class="text-sm text-gray-500">Waarde</span>
+                                            <input 
+                                                on:blur={() => updateResult(test.result, test.test.id, test.note)}
+                                                bind:value={test.result}
+                                                type="text"
+                                                class="bg-gray-200 h-10 w-full rounded-lg border border-gray-400 px-1 disabled:border-0 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                                placeholder={test.result}
+                                                disabled={test.failed}
+                                            />
+                                        </div>
+
+                                        <!-- Note Section -->
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-sm text-gray-500">Nota</span>
+                                            <button on:click={() => toggleNoteInput(test.test.id)} class="text-white bg-blue-500 h-12 p-3 rounded-lg">
+                                                <IoMdText />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {#if openNoteId == test.test.id}
+                                    <div>
+                                        <div transition:slide class="mt-4 p-4">
+                                            <span class="text-sm text-gray-500">Nota</span>
+                                            <input type="text" on:blur={() => updateNoteValue(test.note, test.test.id, test.result)} bind:value={test.note}
+                                                class="w-full h-20 p-2 rounded-lg border bg-gray-200 border-gray-400 resize-none"
+                                                placeholder="Voeg een nota toe..." />
+                                        </div>
+                                    </div>
+                                {/if}
+                            </div>
+                            {:else}
+                                <div class="w-full bg-white border border-gray-200 rounded-xl my-4 p-4">
                                 <div class="grid grid-cols-[1fr_3fr_auto_auto_2fr_1fr_1fr] items-center">
                                     <!-- Code Section -->
                                     <div class="flex flex-col items-start">
@@ -372,6 +438,7 @@
                                 </div>
                             {/if}
                             </div>
+                            {/if}
                         {/each}
                     </div>
                 </div>
@@ -379,4 +446,3 @@
          </div>
     </div>
 </main>
-

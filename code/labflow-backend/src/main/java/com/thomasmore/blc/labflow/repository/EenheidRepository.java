@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface EenheidRepository extends JpaRepository<Eenheid, Integer> {
     public Eenheid findById(Long id);
+
     public List<Eenheid> findAllByOrderByNaam();
 }

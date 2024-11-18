@@ -7,7 +7,7 @@
 	// @ts-ignore
 	import FaTrashAlt from 'svelte-icons/fa/FaTrashAlt.svelte';
 	// @ts-ignore
-	import FaPlus from 'svelte-icons/fa/FaPlus.svelte';
+	// import FaPlus from 'svelte-icons/fa/FaPlus.svelte';
 	import { onMount } from 'svelte';
 	import { fetchStalen } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
@@ -77,99 +77,99 @@
 		laborantRnummer: false
 	};
 
-	let errorMessageStaalPOST = '';
-	async function nieuweStaal() {
-		// Resetten van de errorvelden
-		errorVeldenStaalPOST = {
-			staalcode: false,
-			naam: false,
-			voornaam: false,
-			geslacht: false,
-			geboortedatum: false,
-			laborantNaam: false,
-			laborantRnummer: false
-		};
-		let isValid = true;
-		laborantRnummer = laborantRnummer.toUpperCase();
-		const regex = /^R\d{7}$/;
-		if (!StaalCode) {
-			errorVeldenStaalPOST.staalcode = true;
-			isValid = false;
-		}
-		if (!patientAchternaam) {
-			errorVeldenStaalPOST.naam = true;
-			isValid = false;
-		}
-		if (!patientVoornaam) {
-			errorVeldenStaalPOST.voornaam = true;
-			isValid = false;
-		}
-		if (!patientGeslacht) {
-			errorVeldenStaalPOST.geslacht = true;
-			isValid = false;
-		}
-		if (!patientGeboorteDatum) {
-			errorVeldenStaalPOST.geboortedatum = true;
-			isValid = false;
-		}
-		if (!laborantNaam) {
-			errorVeldenStaalPOST.laborantNaam = true;
-			isValid = false;
-		}
-		if (!laborantRnummer) {
-			errorVeldenStaalPOST.laborantRnummer = true;
-			isValid = false;
-		}
-		if (!laborantRnummer || !regex.test(laborantRnummer)) {
-			errorVeldenStaalPOST.laborantRnummer = true;
-			errorMessageStaalPOST = 'RNummer moet beginnen met een R en gevolgd worden door 7 cijfers.';
-			return;
-		}
-		if (laborantNaam && laborantRnummer && regex.test(laborantRnummer)) {
-			isValid = true;
-		}
-		if (!isValid) {
-			errorMessageStaalPOST = 'Vul alle verplichte velden in.';
-			return;
-		}
-		try {
-			const response = await fetch('http://localhost:8080/api/createstaal', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + token
-				},
-				body: JSON.stringify({
-					staalCode: StaalCode,
-					patientAchternaam: patientAchternaam,
-					patientVoornaam: patientVoornaam,
-					patientGeslacht: patientGeslacht,
-					patientGeboorteDatum: patientGeboorteDatum,
-					laborantNaam: laborantNaam,
-					laborantRnummer: laborantRnummer,
-					user: {
-						id: userId
-					}
-				})
-			});
-			StaalCode = '';
-			patientAchternaam = '';
-			patientVoornaam = '';
-			patientGeslacht = '';
-			patientGeboorteDatum = '';
-			laborantNaam = '';
-			laborantRnummer = '';
-			errorMessageStaalPOST = '';
-			const result = await fetchStalen();
-			if (result) {
-				stalen = result.stalen;
-				filteredStalen = result.filteredStalen;
-			}
-		} catch (error) {
-			console.error('Staal kon niet worden aangemaakt: ', error);
-		}
-		return;
-	}
+	// let errorMessageStaalPOST = '';
+	// async function nieuweStaal() {
+	// 	// Resetten van de errorvelden
+	// 	errorVeldenStaalPOST = {
+	// 		staalcode: false,
+	// 		naam: false,
+	// 		voornaam: false,
+	// 		geslacht: false,
+	// 		geboortedatum: false,
+	// 		laborantNaam: false,
+	// 		laborantRnummer: false
+	// 	};
+	// 	let isValid = true;
+	// 	laborantRnummer = laborantRnummer.toUpperCase();
+	// 	const regex = /^R\d{7}$/;
+	// 	if (!StaalCode) {
+	// 		errorVeldenStaalPOST.staalcode = true;
+	// 		isValid = false;
+	// 	}
+	// 	if (!patientAchternaam) {
+	// 		errorVeldenStaalPOST.naam = true;
+	// 		isValid = false;
+	// 	}
+	// 	if (!patientVoornaam) {
+	// 		errorVeldenStaalPOST.voornaam = true;
+	// 		isValid = false;
+	// 	}
+	// 	if (!patientGeslacht) {
+	// 		errorVeldenStaalPOST.geslacht = true;
+	// 		isValid = false;
+	// 	}
+	// 	if (!patientGeboorteDatum) {
+	// 		errorVeldenStaalPOST.geboortedatum = true;
+	// 		isValid = false;
+	// 	}
+	// 	if (!laborantNaam) {
+	// 		errorVeldenStaalPOST.laborantNaam = true;
+	// 		isValid = false;
+	// 	}
+	// 	if (!laborantRnummer) {
+	// 		errorVeldenStaalPOST.laborantRnummer = true;
+	// 		isValid = false;
+	// 	}
+	// 	if (!laborantRnummer || !regex.test(laborantRnummer)) {
+	// 		errorVeldenStaalPOST.laborantRnummer = true;
+	// 		errorMessageStaalPOST = 'RNummer moet beginnen met een R en gevolgd worden door 7 cijfers.';
+	// 		return;
+	// 	}
+	// 	if (laborantNaam && laborantRnummer && regex.test(laborantRnummer)) {
+	// 		isValid = true;
+	// 	}
+	// 	if (!isValid) {
+	// 		errorMessageStaalPOST = 'Vul alle verplichte velden in.';
+	// 		return;
+	// 	}
+	// 	try {
+	// 		const response = await fetch('http://localhost:8080/api/createstaal', {
+	// 			method: 'POST',
+	// 			headers: {
+	// 				'Content-Type': 'application/json',
+	// 				Authorization: 'Bearer ' + token
+	// 			},
+	// 			body: JSON.stringify({
+	// 				staalCode: StaalCode,
+	// 				patientAchternaam: patientAchternaam,
+	// 				patientVoornaam: patientVoornaam,
+	// 				patientGeslacht: patientGeslacht,
+	// 				patientGeboorteDatum: patientGeboorteDatum,
+	// 				laborantNaam: laborantNaam,
+	// 				laborantRnummer: laborantRnummer,
+	// 				user: {
+	// 					id: userId
+	// 				}
+	// 			})
+	// 		});
+	// 		StaalCode = '';
+	// 		patientAchternaam = '';
+	// 		patientVoornaam = '';
+	// 		patientGeslacht = '';
+	// 		patientGeboorteDatum = '';
+	// 		laborantNaam = '';
+	// 		laborantRnummer = '';
+	// 		errorMessageStaalPOST = '';
+	// 		const result = await fetchStalen();
+	// 		if (result) {
+	// 			stalen = result.stalen;
+	// 			filteredStalen = result.filteredStalen;
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('Staal kon niet worden aangemaakt: ', error);
+	// 	}
+	// 	return;
+	// }
 
 	///// PUT Staal aanpassen /////
 	let errorVeldenStaalPUT = {
@@ -268,7 +268,7 @@
 
 <div class="flex flex-col w-full ml-5">
 	<div class="flex flex-row justify-between w-full h-14 mb-5">
-		<h1 class="font-bold text-3xl">Tests beheren</h1>
+		<h1 class="font-bold text-3xl">Stalen beheren</h1>
 		<button
 			type="button"
 			on:click={async () => {
@@ -326,7 +326,7 @@
 					<p>Acties</p>
 				</div>
 			</div>
-			{#if errorMessageStaalPOST}
+			<!-- {#if errorMessageStaalPOST}
 				<div class="text-red-500 mb-2">{errorMessageStaalPOST}</div>
 			{/if}
 			<div class="grid grid-cols-9 space-x-3 bg-white rounded-lg h-20 items-center px-3 shadow-md">
@@ -338,6 +338,7 @@
 						type="text"
 						id="StaalCode"
 						bind:value={StaalCode}
+						placeholder="Staalcode"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.staalcode ? 'border-2 border-red-500' : ''}"
 					/>
@@ -347,6 +348,7 @@
 						type="text"
 						id="patientAchternaam"
 						bind:value={patientAchternaam}
+						placeholder="Achternaam"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.naam ? 'border-2 border-red-500' : ''}"
 					/>
@@ -356,6 +358,7 @@
 						type="text"
 						id="patientVoornaam"
 						bind:value={patientVoornaam}
+						placeholder="Voornaam"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.voornaam ? 'border-2 border-red-500' : ''}"
 					/>
@@ -366,6 +369,8 @@
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.geslacht ? 'border-2 border-red-500' : ''}"
 					>
+						<option value="" disabled selected hidden>Geslacht</option>
+
 						<option value="V">Man</option>
 						<option value="M">Vrouw</option>
 					</select>
@@ -375,6 +380,7 @@
 						type="date"
 						id="patientGeboorteDatum"
 						bind:value={patientGeboorteDatum}
+						placeholder="Geboortedatum"
 						class="px-2 bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.geboortedatum ? 'border-2 border-red-500' : ''}"
 					/>
@@ -384,6 +390,7 @@
 						type="text"
 						id="laborantNaam"
 						bind:value={laborantNaam}
+						placeholder="Naam Laborant"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.laborantNaam ? 'border-2 border-red-500' : ''}"
 					/>
@@ -393,12 +400,12 @@
 						type="text"
 						id="laborantRnummer"
 						bind:value={laborantRnummer}
+						placeholder="Rnummer"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenStaalPOST.laborantRnummer ? 'border-2 border-red-500' : ''}"
 					/>
 				</div>
 
-				<!-- Acties -->
 				<div class="col-span-1 flex justify-end">
 					<button
 						type="button"
@@ -409,7 +416,7 @@
 						<FaPlus />
 					</button>
 				</div>
-			</div>
+			</div> -->
 			{#if errorMessageStaalPUT}
 				<div class="text-red-500 mb-2">{errorMessageStaalPUT}</div>
 			{/if}

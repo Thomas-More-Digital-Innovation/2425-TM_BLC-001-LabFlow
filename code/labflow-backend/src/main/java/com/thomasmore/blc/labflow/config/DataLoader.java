@@ -48,9 +48,9 @@ public class DataLoader implements CommandLineRunner {
         // aanmaken users
         User user0 = new User("$2a$04$ektFZZojdSsChLH.dgNxheysvpUmHt0i0FmXmtMldHKMCvJB2Rtti",
                 "adminlabflow@digitalinnovation.be", "Admin", "DI", rol_admin);
-        User user1 = new User("$2a$04$FUfXpuDw5R0OvrSDA6r.GOPKu8EpcAM7y0Ad2bx4iXeeg7qaIXTb6",
+        User user1 = new User("$2a$04$u0OuSIi6P2uOx3n2hCwlKeJuU0S1D5BsG.IGVyCDllxQRGlH52LMe",
                 "nathanneve@test.be", "Nathan", "Neve", rol_admin);
-        User user2 = new User("$2a$04$FUfXpuDw5R0OvrSDA6r.GOPKu8EpcAM7y0Ad2bx4iXeeg7qaIXTb6",
+        User user2 = new User("$2a$04$u0OuSIi6P2uOx3n2hCwlKeJuU0S1D5BsG.IGVyCDllxQRGlH52LMe",
                 "césarvanleuffelen@test.be", "César", "van Leuffelen", rol_student);
         userRepository.save(user0);
         userRepository.save(user1);
@@ -64,12 +64,14 @@ public class DataLoader implements CommandLineRunner {
         Testcategorie heparineCat = new Testcategorie("Heparine", "#2DE57A");
         Testcategorie fluorideCat = new Testcategorie("Fluoride", "#8c8c8c");
         Testcategorie urineCat = new Testcategorie("Urine", "#ffcc40");
+        Testcategorie noCat = new Testcategorie("Geen Categorie", "#ffffff");
         testCategorieRepository.save(edtaCat);
         testCategorieRepository.save(citraatCat);
         testCategorieRepository.save(serumCat);
         testCategorieRepository.save(heparineCat);
         testCategorieRepository.save(fluorideCat);
         testCategorieRepository.save(urineCat);
+        testCategorieRepository.save(noCat);
 
 
         // Stalen, dit is voor development, geen echte waarden
@@ -151,6 +153,8 @@ public class DataLoader implements CommandLineRunner {
 
 
         // Aanmaken van tests met hun codes en opslaan
+        Test test1 = new Test("X", "Notitie", notAvailable, noCat);
+        testRepository.save(test1);
         Test test601 = new Test("601", "Hemoglobine", gramPerDeciliter, edtaCat);
         testRepository.save(test601);
         Test test602 = new Test("602", "Hematocriet", percentage, edtaCat);

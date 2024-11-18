@@ -85,4 +85,18 @@ public class UserService {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    // update without password
+    public ResponseEntity<User> updateWithoutPassword(Long id, User user) {
+        User updateUser = userRepository.findById(id);
+        if (updateUser != null) {
+            updateUser.setEmail(user.getEmail());
+            updateUser.setRol(user.getRol());
+            updateUser.setVoorNaam(user.getVoorNaam());
+            updateUser.setAchterNaam(user.getAchterNaam());
+            userRepository.save(updateUser);
+            return new ResponseEntity<>(updateUser, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }

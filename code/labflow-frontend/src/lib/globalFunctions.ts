@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import type { DecodedToken } from "$lib/types";
+import { goto } from "$app/navigation";
 
 
 // helper functie om de jwt token te decoden
@@ -57,17 +58,24 @@ export async function fetchAllWithoutPrefix(token: string, subject: string) {
 
 // https://stackoverflow.com/questions/10730362/get-cookie-by-name 
 export function getCookie(name: string) {
-    if (typeof document === 'undefined') {
+    if (typeof document === "undefined") {
+        console.warn("getCookie called in a non-browser environment.");
         return null;
     }
+
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
+
     if (parts.length === 2) {
         const part = parts.pop();
         if (part) return part.split(';').shift();
     }
+
+    // Als er geen cookie is, ga naar de login pagina (dit zorgt voor een refresh goto('/') niet)
+    window.location.href = '/';
     return null;
 }
+
 
 // formateren van date
 export function formatDate(dateString: string): string {
