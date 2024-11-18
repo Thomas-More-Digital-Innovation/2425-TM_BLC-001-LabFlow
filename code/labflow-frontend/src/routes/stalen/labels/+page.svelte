@@ -52,7 +52,7 @@
 
 		registeredTests.forEach((testItem) => {
 			const category = testItem.test.testcategorie;
-			if (!categoryMap.has(category.id)) {
+			if (category.id !== 7 && !categoryMap.has(category.id)) {
 				categoryMap.set(category.id, category);
 			}
 		});

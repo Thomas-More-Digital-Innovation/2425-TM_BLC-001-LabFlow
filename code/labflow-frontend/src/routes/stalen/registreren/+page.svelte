@@ -39,7 +39,7 @@
     // update variables
     let updateValue: string = '';
     let updateNote: string = '';
-    let status: boolean = false;
+    let status: boolean;
     let allDone: boolean = false;
 
 
@@ -166,11 +166,14 @@
             }
 
             const data = await response.json();
+            
             console.log("update succesvol: ", data);
+            loadData();
             return data;
             
         } catch (error) {
             console.error("update error: ", error);
+            loadData();
             throw error;
         }
     }
@@ -287,7 +290,11 @@
                         <button on:click={() => setCategory(testcategorie.id)} class="border border-gray-200 rounded-xl w-full flex justify-between items-center p-4 my-3 hover:bg-gray-100 hover:scale-[101%] transition cursor-pointer">
                             <div class="flex justify-start items-center">
                                 <div class="px-1 py-6 rounded-full" style={`background-color: ${testcategorie.kleur || "#000"};`}></div>
-                                <p class="font-bold text-lg ml-3">{testcategorie?.naam || "loading..."}</p>
+                                {#if testcategorie?.id == 7}
+                                    <p class="font-bold text-lg ml-3">{testcategorie ? "Notitie" : "loading..."}</p>
+                                {:else}
+                                    <p class="font-bold text-lg ml-3">{testcategorie?.naam || "loading..."}</p>
+                                {/if}
                             </div>
                             {#if checkAllDoneForCategory(testcategorie)}
                                 <div class={`p-3 rounded-full text-white h-12`} style="background-color: #23E22C;"><FaCheck /></div>
@@ -318,13 +325,59 @@
                         <!-- left -->
                         <div class="flex justify-start items-center">
                             <div class={`p-8 rounded-full text-white`} style={`background-color: ${selectedCategory?.kleur || "#000"};`}></div>
-                            <h2 class="ml-8 font-bold text-lg">{selectedCategory?.naam}</h2>
+                            {#if selectedCategory?.id == 7}
+                                <h2 class="ml-8 font-bold text-lg">{selectedCategory ? "Notitie" : "loading..."}</h2>
+                            {:else}
+                                <h2 class="ml-8 font-bold text-lg">{selectedCategory?.naam || "loading..."}</h2>
+                            {/if}
                         </div>
                     </div>
                     <!-- List-->
                      <div class="h-5/6 mx-6">
                         {#each tests.filter(test => test.test.testcategorie.id == selectedCategory.id) as test}
-                            <div class="w-full bg-white border border-gray-200 rounded-xl my-4 p-4">
+                            {#if selectedCategory?.id == 7}
+                                <div class="w-full bg-white border border-gray-200 rounded-xl my-4 p-4">
+                                    <div class="grid grid-cols-[1fr_3fr_auto_1fr] items-center">
+                                        <!-- Test Section -->
+                                        <div class="flex flex-col items-start col-span-2">
+                                            <span class="text-sm text-gray-500">Test</span>
+                                            <span class="text-xl font-semibold">{test.test.naam.length > 20 ? test.test.naam.slice(0, 20) + '...' : test.test.naam}</span>
+                                        </div>
+
+                                        <!-- Value Section -->
+                                        <div class="flex flex-col items-start">
+                                            <span class="text-sm text-gray-500">Waarde</span>
+                                            <input 
+                                                on:blur={() => updateResult(test.result, test.test.id, test.note)}
+                                                bind:value={test.result}
+                                                type="text"
+                                                class="bg-gray-200 h-10 w-full rounded-lg border border-gray-400 px-1 disabled:border-0 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                                placeholder={test.result}
+                                                disabled={test.failed}
+                                            />
+                                        </div>
+
+                                        <!-- Note Section -->
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-sm text-gray-500">Nota</span>
+                                            <button on:click={() => toggleNoteInput(test.test.id)} class="text-white bg-blue-500 h-12 p-3 rounded-lg">
+                                                <IoMdText />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {#if openNoteId == test.test.id}
+                                    <div>
+                                        <div transition:slide class="mt-4 p-4">
+                                            <span class="text-sm text-gray-500">Nota</span>
+                                            <input type="text" on:blur={() => updateNoteValue(test.note, test.test.id, test.result)} bind:value={test.note}
+                                                class="w-full h-20 p-2 rounded-lg border bg-gray-200 border-gray-400 resize-none"
+                                                placeholder="Voeg een nota toe..." />
+                                        </div>
+                                    </div>
+                                {/if}
+                            </div>
+                            {:else}
+                                <div class="w-full bg-white border border-gray-200 rounded-xl my-4 p-4">
                                 <div class="grid grid-cols-[1fr_3fr_auto_auto_2fr_1fr_1fr] items-center">
                                     <!-- Code Section -->
                                     <div class="flex flex-col items-start">
@@ -387,6 +440,7 @@
                                 </div>
                             {/if}
                             </div>
+                            {/if}
                         {/each}
                     </div>
                 </div>
@@ -394,4 +448,3 @@
          </div>
     </div>
 </main>
-
