@@ -52,7 +52,7 @@ public class JWTService {
                 .claims(claims)
                 .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // na 30 minuten vervalt de token
+                .expiration(new Date(System.currentTimeMillis() + 2 * 60 * 60 * 1000))  // na 2 uur vervalt de token
                 .signWith(getKey())
                 .compact();
     }

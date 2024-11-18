@@ -16,6 +16,7 @@ public class Referentiewaarde {
     @ManyToOne
     @JoinColumn(name = "test_id", nullable = true)
     @JsonBackReference
+    @Nullable
     private Test test;
 
     // Lege constructor
