@@ -28,7 +28,7 @@
 			}}
 			class="bg-gray-400 text-lg rounded-lg p-3 w-56 text-white h-14 flex flex-row items-center justify-center"
 		>
-			Waarde Registreren
+			Waarden Registreren
 		</button>
 		<!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
 		<button
