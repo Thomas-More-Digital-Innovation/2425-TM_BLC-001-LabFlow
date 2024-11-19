@@ -34,6 +34,7 @@
 			stalen = result.stalen;
 			filteredStalen = result.filteredStalen;
 		}
+		console.log(stalen[0].patientGeboorteDatum);
 	});
 
 	///// DELETE staal /////

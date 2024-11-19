@@ -75,16 +75,16 @@ public class DataLoader implements CommandLineRunner {
 
 
         // Stalen, dit is voor development, geen echte waarden
-        Staal staal1 = new Staal(2024000001L, "César", "Van Leuffelen", java.sql.Date.valueOf("2004-07-29"), 'M', "Nathan Neve", "R1234567", user1);
-        Staal staal2 = new Staal(2024000002L, "Lucas", "Peeters", java.sql.Date.valueOf("1985-07-21"), 'M', "Sofie", "R1234567", user2);
-        Staal staal3 = new Staal(2024000003L, "Mila", "Vermeulen", java.sql.Date.valueOf("1993-02-11"), 'V', "Bart", "R1234567", user1);
-        Staal staal4 = new Staal(2024000004L, "Liam", "Claes", java.sql.Date.valueOf("1992-11-30"), 'M', "Lies", "R1234567", user2);
-        Staal staal5 = new Staal(2024000005L, "Olivia", "Dubois", java.sql.Date.valueOf("2000-01-08"), 'V', "An", "R1234567", user1);
-        Staal staal6 = new Staal(2024000006L, "Noah", "De Smet", java.sql.Date.valueOf("1987-03-16"), 'M', "Koen", "R1234567", user2);
-        Staal staal7 = new Staal(2024000007L, "Marie", "De Vries", java.sql.Date.valueOf("1991-09-25"), 'V', "Katrien", "R1234567", user1);
-        Staal staal8 = new Staal(2024000008L, "Arthur", "Van Damme", java.sql.Date.valueOf("1988-12-19"), 'M', "Jan", "R1234567", user2);
-        Staal staal9 = new Staal(2024000009L, "Charlotte", "Jacobs", java.sql.Date.valueOf("1995-04-03"), 'V', "Eva", "R1234567", user1);
-        Staal staal10 = new Staal(2024000010L, "Victor", "Maes", java.sql.Date.valueOf("1990-06-10"), 'M', "Lotte", "R1234567", user2);
+        Staal staal1 = new Staal(2024000001L, "César", "Van Leuffelen", java.time.LocalDate.parse("2004-07-29"), 'M', "Nathan Neve", "R1234567", user1);
+        Staal staal2 = new Staal(2024000002L, "Lucas", "Peeters", java.time.LocalDate.parse("1985-07-21"), 'M', "Sofie", "R1234567", user2);
+        Staal staal3 = new Staal(2024000003L, "Mila", "Vermeulen", java.time.LocalDate.parse("1993-02-11"), 'V', "Bart", "R1234567", user1);
+        Staal staal4 = new Staal(2024000004L, "Liam", "Claes", java.time.LocalDate.parse("1992-11-30"), 'M', "Lies", "R1234567", user2);
+        Staal staal5 = new Staal(2024000005L, "Olivia", "Dubois", java.time.LocalDate.parse("2000-01-08"), 'V', "An", "R1234567", user1);
+        Staal staal6 = new Staal(2024000006L, "Noah", "De Smet", java.time.LocalDate.parse("1987-03-16"), 'M', "Koen", "R1234567", user2);
+        Staal staal7 = new Staal(2024000007L, "Marie", "De Vries", java.time.LocalDate.parse("1991-09-25"), 'V', "Katrien", "R1234567", user1);
+        Staal staal8 = new Staal(2024000008L, "Arthur", "Van Damme", java.time.LocalDate.parse("1988-12-19"), 'M', "Jan", "R1234567", user2);
+        Staal staal9 = new Staal(2024000009L, "Charlotte", "Jacobs", java.time.LocalDate.parse("1995-04-03"), 'V', "Eva", "R1234567", user1);
+        Staal staal10 = new Staal(2024000010L, "Victor", "Maes", java.time.LocalDate.parse("1990-06-10"), 'M', "Lotte", "R1234567", user2);
 
         staalRepository.save(staal1);
         staalRepository.save(staal2);
