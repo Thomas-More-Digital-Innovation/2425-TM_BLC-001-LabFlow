@@ -18,7 +18,7 @@ Tijdens deze sprint is er aan volgende componenten gewerkt:
 
 ## User test
 
-**We gaan 3 senario's laten testen door de klant:**
+**We gaan 2 senario's laten testen door de klant:**
 
 - **nieuwe test aanmaken**: we gaan hun een nieuwe test laten aanmaken.
 - **normale flow**: we gaan de hele flow testen van testen registreren, labels bekijken tot waarde registeren doorlopen. In deze flow zullen ze de nieuwe test moeten aanvinken.
@@ -28,11 +28,11 @@ Tijdens deze sprint is er aan volgende componenten gewerkt:
 - we mogen niet helpen zolang er geen vraag naar is
 - opmerkingen worden onderaan dit document genoteerd
 - bij het een error, start de flow opnieuw
-- testen woorden uitgevoerd op macbook met een muis
+- testen worden uitgevoerd op macbook met een muis
 
 ## Vragen
 
-**Wanneer je een nieuwe staal aanmaakt in de istellingen moet je dan in een keer testen kunnen toekennen of is het de bedoeling dat je dan naar het dashboard gaat en daar overloopt**
+**Wanneer je een nieuwe staal aanmaakt in de intellingen moet je dan in een keer testen kunnen toekennen of is het de bedoeling dat je dan naar het dashboard gaat en daar overloopt**
 
 - antwoord
 
