@@ -35,6 +35,7 @@
 	let testCategories: any[] = [];
 	let selectedCategory: any = {};
 	const token = getCookie('authToken') || '';
+	let downloaded: boolean = false;
 
 	// update variables
 	let updateValue: string = '';
@@ -281,6 +282,9 @@
 
 			// Clean up the Blob URL
 			window.URL.revokeObjectURL(url);
+
+			// set download variable to true
+			downloaded = true;
 		} catch (error) {
 			console.error('Error while downloading PDF:', error);
 		}
@@ -334,7 +338,11 @@
 				<!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
 				<button
 					on:click={() => {
-						goto('/stalen/done');
+						if (downloaded) {
+							goto('/stalen/done');
+						} else {
+							alert('Download eerst de resultaten');
+						}
 					}}
 					class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed"
 					disabled={!allDone}
