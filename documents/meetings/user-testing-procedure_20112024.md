@@ -32,7 +32,7 @@ Tijdens deze sprint is er aan volgende componenten gewerkt:
 
 ## Vragen
 
-**Wanneer je een nieuwe staal aanmaakt in de intellingen moet je dan in een keer testen kunnen toekennen of is het de bedoeling dat je dan naar het dashboard gaat en daar overloopt**
+**Wanneer je een nieuwe staal aanmaakt in de instellingen moet je dan in een keer testen kunnen toekennen of is het de bedoeling dat je dan naar het dashboard gaat en daar overloopt**
 
 - antwoord
 
