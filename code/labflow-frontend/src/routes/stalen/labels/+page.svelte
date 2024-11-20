@@ -13,7 +13,7 @@
 
 	// neem de id
 	let sampleCode: string | undefined;
-	staalCodeStore.subscribe(value => {
+	staalCodeStore.subscribe((value) => {
 		sampleCode = value;
 		console.log('Dit is staalcode:' + sampleCode);
 	});
@@ -63,27 +63,26 @@
 	}
 
 	// fetch labels pdf
-	let pdfUrl = '';  // URL to display the PDF in the iframe
+	let pdfUrl = ''; // URL to display the PDF in the iframe
 
 	async function fetchPdf() {
-
 		if (!token) {
-			console.error("User is not authenticated");
+			console.error('User is not authenticated');
 			goto('/login');
 		}
 
 		const response = await fetch(`http://localhost:8080/api/pdf/generatelabel/${staalId}`, {
 			method: 'GET',
 			headers: {
-				'Authorization': `Bearer ${token}`
+				Authorization: `Bearer ${token}`
 			}
 		});
 
 		if (response.ok) {
 			const pdfBlob = await response.blob();
-			pdfUrl = URL.createObjectURL(pdfBlob);  // Create a blob URL for the PDF
+			pdfUrl = URL.createObjectURL(pdfBlob); // Create a blob URL for the PDF
 		} else {
-			console.error("Failed to fetch PDF");
+			console.error('Failed to fetch PDF');
 		}
 	}
 
@@ -94,7 +93,7 @@
 
 	onDestroy(() => {
 		if (pdfUrl) URL.revokeObjectURL(pdfUrl);
-	})
+	});
 </script>
 
 <Nav />
@@ -172,12 +171,7 @@
 			<div class="w-2/3 flex flex-col justify-between space-y-4">
 				<!-- pdf previewer -->
 				<div class="w-full h-4/5">
-					<iframe
-						src={pdfUrl}
-						title="pdf label preview"
-						width="100%"
-						class="h-full rounded-xl"
-					/>
+					<iframe src={pdfUrl} title="pdf label preview" width="100%" class="h-full rounded-xl" />
 					<!--<iframe
 						title="pdf label preview"
 						src="https://www.orimi.com/pdf-test.pdf"
@@ -201,7 +195,6 @@
 							<p>hoeveelheid</p>
 							<input
 								type="number"
-
 								bind:value={hoeveelheid}
 								class="rounded-lg text-xl p-3 h-20 w-11/12 bg-white border border-gray-400"
 							/>

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,12 +35,12 @@ public class PdfGeneratorService {
         Long staalCode = staal.getStaalCode();
         String voornaam = staal.getPatientVoornaam();
         String achternaam = staal.getPatientAchternaam();
-        Date geboortedatum = staal.getPatientGeboorteDatum();
+        LocalDate geboortedatum = staal.getPatientGeboorteDatum();
         char geslacht = staal.getPatientGeslacht();
 
         // date formatter
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        String formattedDate = formatter.format(geboortedatum);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String formattedDate = geboortedatum.format(formatter);
 
         // filter categories
         Set<Testcategorie> testcategorieSet = staal.getRegisteredTests().stream().map(StaalTest::getTest)
@@ -92,11 +94,14 @@ public class PdfGeneratorService {
         Long staalCode = staal.getStaalCode();
         String voornaam = staal.getPatientVoornaam();
         String achternaam = staal.getPatientAchternaam();
-        Date geboortedatum = staal.getPatientGeboorteDatum();
+        LocalDate geboortedatum = staal.getPatientGeboorteDatum();
         char geslacht = staal.getPatientGeslacht();
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        String formattedDate = formatter.format(geboortedatum);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String formattedDate = geboortedatum.format(formatter);
+        // huidige datum
+        String formattedCurrentDate = LocalDate.now().format(formatter);
+
 
         // Create table for header section
         PdfPTable headerTable = new PdfPTable(2);
@@ -117,7 +122,7 @@ public class PdfGeneratorService {
         PdfPCell rightCell = new PdfPCell();
         rightCell.setBorder(Rectangle.NO_BORDER);
         rightCell.addElement(new Paragraph("Testcode: " + staalCode, bodyFont));
-        rightCell.addElement(new Paragraph("Datum: " + formatter.format(new Date()), bodyFont));  // Current date
+        rightCell.addElement(new Paragraph("Datum: " + formattedCurrentDate, bodyFont));  // Current date
         headerTable.addCell(rightCell);
 
         document.add(headerTable);
