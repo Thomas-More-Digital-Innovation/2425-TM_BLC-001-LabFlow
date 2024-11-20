@@ -137,7 +137,7 @@
 			registeredTests: false
 		};
 		let isValid = true;
-		const regex = /^R\d{7}$/;
+		const regex = /^[RU]\d{7}$/;
 
 		if (!staal.staalCode) {
 			editStaalError.staalCode = true;

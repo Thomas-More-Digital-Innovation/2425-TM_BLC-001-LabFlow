@@ -115,7 +115,7 @@
 		let isValid = false;
 		laborantRnummer = laborantRnummer.toUpperCase();
 		// regex voor R-nummer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes
-		const regex = /^R\d{7}$/;
+		const regex = /^[RU]\d{7}$/;
 
 		if (!laborantNaam) {
 			errrorVeldenStaal.laborantNaam = true;

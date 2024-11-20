@@ -177,6 +177,15 @@
 	</div>
 
 	<div class="bg-slate-100 w-full h-full rounded-2xl p-5">
+		<div class="flex space-x-5 mb-5">
+			<input
+				type="text"
+				id="searchCode"
+				name="searchCode"
+				placeholder="zoeken op code"
+				class="w-2/5 h-12 rounded-lg text-black pl-3"
+			/>
+		</div>
 		<div class="space-y-3">
 			<div class="text-red-500 mb-2">{deleteError}</div>
 			<!-- Header -->
