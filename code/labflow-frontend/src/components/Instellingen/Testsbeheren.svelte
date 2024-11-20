@@ -134,8 +134,6 @@
 			})
 		);
 
-		console.log(referentiewaardesPOSTMapped);
-
 		try {
 			await fetch('http://localhost:8080/api/createtest', {
 				method: 'POST',
