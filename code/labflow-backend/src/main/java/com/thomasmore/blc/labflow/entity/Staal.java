@@ -3,6 +3,7 @@ package com.thomasmore.blc.labflow.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -18,7 +19,7 @@ public class Staal {
 
     private String patientAchternaam;
 
-    private Date patientGeboorteDatum;
+    private LocalDate patientGeboorteDatum;
 
     private char patientGeslacht;
 
@@ -43,7 +44,7 @@ public class Staal {
     }
 
     // constructor voor het registreren van een staal zonder tests
-    public Staal(Long staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum,
+    public Staal(Long staalCode, String patientVoornaam, String patientAchternaam, LocalDate patientGeboorteDatum,
                  char patientGeslacht, String laborantNaam, String laborantRnummer, User user) {
         this.staalCode = staalCode;
         this.patientVoornaam = patientVoornaam;
@@ -57,7 +58,7 @@ public class Staal {
     }
 
     // constructor voor het registreren van een staal met tests
-    public Staal(Long staalCode, String patientVoornaam, String patientAchternaam, Date patientGeboorteDatum,
+    public Staal(Long staalCode, String patientVoornaam, String patientAchternaam, LocalDate patientGeboorteDatum,
                  char patientGeslacht, String laborantNaam, String laborantRnummer, User user,
                  List<StaalTest> registeredTests) {
         this.staalCode = staalCode;
@@ -105,11 +106,11 @@ public class Staal {
         this.patientAchternaam = patientAchternaam;
     }
 
-    public Date getPatientGeboorteDatum() {
+    public LocalDate getPatientGeboorteDatum() {
         return patientGeboorteDatum;
     }
 
-    public void setPatientGeboorteDatum(Date patientGeboorteDatum) {
+    public void setPatientGeboorteDatum(LocalDate patientGeboorteDatum) {
         this.patientGeboorteDatum = patientGeboorteDatum;
     }
 

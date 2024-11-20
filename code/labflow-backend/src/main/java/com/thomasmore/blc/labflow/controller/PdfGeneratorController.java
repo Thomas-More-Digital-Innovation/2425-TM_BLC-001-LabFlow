@@ -5,6 +5,7 @@ import com.thomasmore.blc.labflow.entity.Staal;
 import com.thomasmore.blc.labflow.service.PdfGeneratorService;
 import com.thomasmore.blc.labflow.service.StaalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,9 +55,11 @@ public class PdfGeneratorController {
             return ResponseEntity.internalServerError().build();
         }
 
+        String filename = "resultaten_" + staal.getPatientAchternaam() + "_" + staal.getPatientVoornaam() + ".pdf";
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "results_"+ staal.getPatientAchternaam() + "_" + staal.getPatientVoornaam() +".pdf");
+        headers.add("X-Filename", filename);  // Custom header
 
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }

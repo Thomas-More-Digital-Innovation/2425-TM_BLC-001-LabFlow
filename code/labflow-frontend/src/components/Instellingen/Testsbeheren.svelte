@@ -122,9 +122,17 @@
 		}
 
 		// Mappen van de referentiewaardes naar een array van objecten (get de geselecteerde waarden uit de store en map ze)
-		const referentiewaardesPOSTMapped = get(referentiewaardesPOST).map((value) => ({
-			waarde: value
-		}));
+		interface Referentiewaarde {
+			id: number;
+			label: string;
+			waarde: string;
+		}
+
+		const referentiewaardesPOSTMapped = get(referentiewaardesPOST).map(
+			(value: Referentiewaarde) => ({
+				waarde: value.waarde // Alleen waarde is nodig voor onze POST
+			})
+		);
 
 		try {
 			await fetch('http://localhost:8080/api/createtest', {
