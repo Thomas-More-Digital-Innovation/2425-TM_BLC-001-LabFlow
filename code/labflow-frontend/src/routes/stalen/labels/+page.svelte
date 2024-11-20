@@ -8,6 +8,8 @@
 	import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte';
 	// @ts-ignore
 	import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte';
+	// @ts-ignore
+	import FaCloudDownloadAlt from 'svelte-icons/fa/FaCloudDownloadAlt.svelte'
 	import { staalCodeStore } from '$lib/store';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -20,7 +22,7 @@
 
 	let tests: any[] = [];
 	let staal: any = {};
-	let staalId: String = '';
+	let staalId: string = '';
 	let testCategories: any[] = [];
 	const token = getCookie('authToken') || '';
 
@@ -83,6 +85,51 @@
 			pdfUrl = URL.createObjectURL(pdfBlob); // Create a blob URL for the PDF
 		} else {
 			console.error('Failed to fetch PDF');
+		}
+	}
+
+	// pdf labels downloaden
+	async function getPdf(staalId: string) {
+		try {
+			const response = await fetch(`http://localhost:8080/api/pdf/generatelabel/${staalId}`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			});
+
+			if (!response.ok) {
+				console.error('Failed to fetch PDF:', response.statusText);
+				return;
+			}
+
+			// Extract the filename from the Content-Disposition header
+			const disposition = response.headers.get('X-Filename');
+			let filename = `Labels_${staal?.patientAchternaam}_${staal?.patientVoornaam}`; // Default als de header er niet is van de backend
+
+			if (disposition && disposition.includes('filename=')) {
+				const match = disposition.match(/filename="(.+?)"/);
+				if (match && match[1]) {
+					filename = match[1];
+				}
+			}
+
+			// Convert response to Blob and download it
+			const blob = await response.blob();
+			const url = window.URL.createObjectURL(blob);
+
+			// Create a download link
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = filename; // Use the extracted filename
+			document.body.appendChild(a);
+			a.click();
+			a.remove();
+
+			// Clean up the Blob URL
+			window.URL.revokeObjectURL(url);
+		} catch (error) {
+			console.error('Error while downloading PDF:', error);
 		}
 	}
 
@@ -171,13 +218,7 @@
 			<div class="w-2/3 flex flex-col justify-between space-y-4">
 				<!-- pdf previewer -->
 				<div class="w-full h-4/5">
-					<iframe src={pdfUrl} title="pdf label preview" width="100%" class="h-full rounded-xl" />
-					<!--<iframe
-						title="pdf label preview"
-						src="https://www.orimi.com/pdf-test.pdf"
-						width="100%"
-						class="h-full rounded-xl"
-					/>-->
+					<iframe src={pdfUrl + "#toolbar=0"} title="pdf label preview" width="100%" class="h-full rounded-xl" />
 				</div>
 				<!-- bedienings knoppen -->
 				<div class="w-full h-1/5 bg-slate-200 flex justify-between items-baseline">
@@ -187,6 +228,15 @@
 							class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-full flex flex-row items-center justify-center"
 						>
 							afdrukken
+						</button>
+					</div>
+					<div class="w-1/4 mt-auto">
+						<button on:click={() => getPdf(staalId)}
+							class="bg-gray-400 text-xl rounded-lg ml-4 p-3 text-white w-20 h-20 flex flex-row items-center justify-center"
+						>
+							<div class="h-5">
+								<FaCloudDownloadAlt/>
+							</div>
 						</button>
 					</div>
 					<!-- right selects -->
