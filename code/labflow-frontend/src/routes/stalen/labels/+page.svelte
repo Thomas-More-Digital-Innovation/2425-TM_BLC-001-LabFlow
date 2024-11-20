@@ -87,6 +87,7 @@
 	}
 
 	onMount(async () => {
+		console.log(sampleCode);
 		await loadData();
 		await fetchPdf();
 	});
