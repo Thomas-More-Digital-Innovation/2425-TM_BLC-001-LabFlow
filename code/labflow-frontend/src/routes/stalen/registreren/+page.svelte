@@ -258,7 +258,7 @@
 
 			// Extract the filename from the Content-Disposition header
 			const disposition = response.headers.get('X-Filename');
-			let filename = `Resultaten_${staal?.patientAchternaam}_${staal?.patientAchternaam}`; // Default als de header er niet is van de backend
+			let filename = `Resultaten_${staal?.patientAchternaam}_${staal?.patientVoornaam}`; // Default als de header er niet is van de backend
 
 			if (disposition && disposition.includes('filename=')) {
 				const match = disposition.match(/filename="(.+?)"/);
