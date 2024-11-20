@@ -431,7 +431,7 @@
 
 										<!-- Value Section -->
 										<div class="flex flex-col items-start">
-											<span class="text-sm text-gray-500">Waarde</span>
+											<span class="text-sm text-gray-500">Titel</span>
 											<input
 												on:blur={() => updateResult(test.result, test.test.id, test.note)}
 												bind:value={test.result}
