@@ -15,14 +15,24 @@
 
 	const token = getCookie('authToken') || '';
 
+	let searchCode = '';
 	let categorieën: any[] = [];
+	let filteredCategories: any[] = [];
 
 	onMount(async () => {
 		const result = await loadTestCategorieën();
 		if (result) {
 			categorieën = result;
+			filteredCategories = categorieën;
 		}
 	});
+
+	function filterCategorien() {
+		filteredCategories = categorieën.filter((categorie) => {
+			const codeMatch = categorie.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
+			return codeMatch;
+		});
+	}
 
 	///// DELETE verwijderen van een categorie /////
 	let deleteError = '';
@@ -182,7 +192,9 @@
 				type="text"
 				id="searchCode"
 				name="searchCode"
-				placeholder="zoeken op code"
+				placeholder="zoeken op categorienaam"
+				bind:value={searchCode}
+				on:input={filterCategorien}
 				class="w-2/5 h-12 rounded-lg text-black pl-3"
 			/>
 		</div>
@@ -246,7 +258,7 @@
 				<div class="text-red-500 mb-2">{errorMessageCategoriePUT}</div>
 			{/if}
 
-			{#each categorieën as categorie, index}
+			{#each filteredCategories as categorie, index}
 				<div class="grid grid-cols-12 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
 					<!-- Naam -->
 					<div class="col-span-4">

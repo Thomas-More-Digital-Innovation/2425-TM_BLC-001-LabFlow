@@ -217,9 +217,9 @@
 	<div class="flex flex-col space-y-5">
 		<a
 			href="/stalen/nieuw"
-			class="bg-blue-400 flex flex-col items-center justify-center w-72 h-72 rounded-2xl"
+			class="bg-blue-400 flex flex-col items-center justify-center w-56 h-56 rounded-2xl"
 		>
-			<div class="w-40 h-40 text-white flex items-center justify-center">
+			<div class="w-28 h-28 text-white flex items-center justify-center">
 				<GoPlus />
 			</div>
 			<p class="text-white text-2xl text-center mt-2">Nieuwe staal</p>
@@ -227,9 +227,9 @@
 
 		<a
 			href={rol === 'admin' ? '/instellingen' : '#'}
-			class="{bgColor} flex flex-col items-center justify-center w-72 h-72 rounded-2xl {pointerEvent}"
+			class="{bgColor} flex flex-col items-center justify-center w-56 h-56 rounded-2xl {pointerEvent}"
 		>
-			<div class="w-40 h-40 text-white flex items-center justify-center">
+			<div class="w-28 h-28 text-white flex items-center justify-center">
 				<IoMdSettings />
 			</div>
 			<p class="text-white text-2xl text-center mt-2">Instellingen</p>

@@ -235,7 +235,6 @@
 				waarde: value.waarde // waarde extraheren uit referentiewaardesPUT store en mappen naar een array van objecten
 			})
 		);
-		console.log(referentiewaardesPUTMapped);
 		try {
 			await fetch(`http://localhost:8080/api/updatetest/${id}`, {
 				method: 'PUT',
