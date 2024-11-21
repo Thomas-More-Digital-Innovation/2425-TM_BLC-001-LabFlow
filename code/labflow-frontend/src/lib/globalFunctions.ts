@@ -1,6 +1,5 @@
 import { jwtDecode } from "jwt-decode";
 import type { DecodedToken } from "$lib/types";
-import { goto } from "$app/navigation";
 
 
 // helper functie om de jwt token te decoden
