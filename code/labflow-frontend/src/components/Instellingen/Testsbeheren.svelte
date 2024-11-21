@@ -26,10 +26,12 @@
 	const token = getCookie('authToken') || '';
 
 	let tests: any[] = [];
+	let testsSorted: any[] = [];
+	let searchCode = '';
 	let testcategorieën: any[] = [];
 	let eenheden: any[] = [];
 	let referentiewaardes: any[] = [];
-	let waarden: any[] = ['dummy']; // dummy zorgt ervoor dat bij het laden van de pagina de multiselect niet leeg is (geeft error in console)
+	let waarden: any[] = ['dummy']; // dummy zorgt ervoor dat bij het laden van de pagina de multiselect niet leeg is (geeft anders error in console)
 
 	// volgorde is belangrijk, eerst eenheden en categorieën ophalen, daarna tests
 	onMount(async () => {
@@ -43,7 +45,7 @@
 		}
 		const fetchedTests = await fetchTests();
 		if (fetchedTests) {
-			tests = fetchedTests;
+			[tests, testsSorted] = [fetchedTests, fetchedTests];
 		}
 		const fetchedReferentiewaardes = await fetchReferentiewaarden();
 		// mappen van referentiewaarden overeenkomstig de waarden die in de multiselect moeten komen
@@ -56,6 +58,18 @@
 			}));
 		}
 	});
+
+	function filterTests() {
+		testsSorted = tests.filter((test) => {
+			const codeMatch =
+				test.naam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.testCode.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.testcategorie.naam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.eenheid.afkorting.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.eenheid.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
+			return codeMatch;
+		});
+	}
 
 	///// DELETE test /////
 	async function deleteTest(id: string) {
@@ -72,7 +86,7 @@
 		}
 		const result = await fetchTests();
 		if (result) {
-			tests = result;
+			[tests, testsSorted] = [result, result];
 		}
 	}
 
@@ -161,7 +175,7 @@
 			errorMessageTestPOST = '';
 			const result = await fetchTests();
 			if (result) {
-				tests = result;
+				[tests, testsSorted] = [result, result];
 			}
 		} catch (error) {
 			console.error('Test kon niet worden aangemaakt: ', error);
@@ -274,6 +288,17 @@
 	</div>
 
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
+		<div class="flex space-x-5 mb-5">
+			<input
+				type="text"
+				id="searchCode"
+				name="searchCode"
+				placeholder="zoeken"
+				bind:value={searchCode}
+				on:input={filterTests}
+				class="w-2/5 h-12 rounded-lg text-black pl-3"
+			/>
+		</div>
 		<div class="space-y-3">
 			<!-- Header -->
 			<div
@@ -376,7 +401,7 @@
 				</div>
 			</div>
 			<div class="space-y-3">
-				{#each tests as test, index}
+				{#each testsSorted as test, index}
 					<div
 						class="grid grid-cols-9 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
 					>

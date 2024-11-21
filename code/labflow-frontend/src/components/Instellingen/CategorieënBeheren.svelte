@@ -51,7 +51,7 @@
 				deleteError = '';
 				const result = await loadTestCategorieën();
 				if (result) {
-					categorieën = result;
+					[categorieën, filteredCategories] = [result, result];
 				}
 			} else {
 				// If the server responds with an error (e.g., cannot delete because of linked tests)
@@ -118,7 +118,7 @@
 		}
 		const result = await loadTestCategorieën();
 		if (result) {
-			categorieën = result;
+			[categorieën, filteredCategories] = [result, result];
 		}
 		return;
 	}
@@ -192,7 +192,7 @@
 				type="text"
 				id="searchCode"
 				name="searchCode"
-				placeholder="zoeken op categorienaam"
+				placeholder="zoeken"
 				bind:value={searchCode}
 				on:input={filterCategorien}
 				class="w-2/5 h-12 rounded-lg text-black pl-3"

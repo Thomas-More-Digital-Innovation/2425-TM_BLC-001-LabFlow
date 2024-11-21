@@ -22,14 +22,15 @@
 	onMount(async () => {
 		const fetchedEenheden = await fetchEenheden();
 		if (fetchedEenheden) {
-			eenheden = fetchedEenheden;
-			eenhedenSorted = eenheden;
+			[eenheden, eenhedenSorted] = [fetchedEenheden, fetchedEenheden];
 		}
 	});
 
 	function filterEenheden() {
 		eenhedenSorted = eenheden.filter((eenheid) => {
-			const codeMatch = eenheid.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
+			const codeMatch =
+				eenheid.naam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				eenheid.afkorting.toString().toLowerCase().includes(searchCode.toLowerCase());
 			return codeMatch;
 		});
 	}
@@ -50,7 +51,7 @@
 				deleteError = '';
 				const result = await fetchEenheden();
 				if (result) {
-					eenheden = result;
+					[eenheden, eenhedenSorted] = [result, result];
 				}
 			} else {
 				deleteError =
@@ -107,8 +108,7 @@
 			errorMessageTestPOST = '';
 			const result = await fetchEenheden();
 			if (result) {
-				eenheden = result;
-				eenhedenSorted = result;
+				[eenheden, eenhedenSorted] = [result, result];
 			}
 		} catch (error) {
 			console.error('Eenheid kon niet worden aangemaakt: ', error);
@@ -188,7 +188,7 @@
 				type="text"
 				id="searchCode"
 				name="searchCode"
-				placeholder="zoeken op naam"
+				placeholder="zoeken"
 				bind:value={searchCode}
 				on:input={filterEenheden}
 				class="w-2/5 h-12 rounded-lg text-black pl-3"

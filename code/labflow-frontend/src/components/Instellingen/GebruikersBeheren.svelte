@@ -66,7 +66,7 @@
 				});
 				const result = await fetchUsers();
 				if (result) {
-					users = result;
+					[users, usersSorted] = [result, result];
 				}
 			} catch (error) {
 				console.error('Gebruiker kon niet worden verwijderd: ', error);
@@ -152,7 +152,7 @@
 		}
 		const result = await fetchUsers();
 		if (result) {
-			users = result;
+			[users, usersSorted] = [result, result];
 		}
 		return;
 	}
@@ -248,7 +248,7 @@
 			}
 			const result = await fetchUsers();
 			if (result) {
-				users = result;
+				[users, usersSorted] = [result, result];
 			}
 		} catch (error) {
 			console.error('Gebruiker kon niet aangepast: ', error);
@@ -278,7 +278,7 @@
 					type="text"
 					id="searchCode"
 					name="searchCode"
-					placeholder="zoeken op naam, email of rol"
+					placeholder="zoeken"
 					bind:value={searchCode}
 					on:input={filterUsers}
 					class="w-2/5 h-12 rounded-lg text-black pl-3"
