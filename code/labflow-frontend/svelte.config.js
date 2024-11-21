@@ -4,7 +4,13 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 // Update the config for PostCSS
 const config = {
   prerender: {
-    handleMissingId: 'ignore', // Ignore missing IDs, geeft een cloudflare error
+    handleHttpError: ({ path, referrer, message }) => {
+      // ignore deliberate link to shiny 404 page
+      // https://svelte.dev/docs/kit/configuration#prerender
+      if (path === '/not-found' && referrer === '/blog/how-we-built-our-404-page') {
+        return;
+      }
+    },
   },
   preprocess: vitePreprocess({
     postcss: true // Enables PostCSS processing, which is required for TailwindCSS
