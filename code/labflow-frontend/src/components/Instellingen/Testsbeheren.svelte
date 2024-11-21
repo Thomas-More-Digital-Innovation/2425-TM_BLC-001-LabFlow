@@ -23,7 +23,7 @@
 	import { writable, get } from 'svelte/store';
 	let showModal = writable(false);
 
-	const token = getCookie('authToken') || '';
+	let token: string = '';
 
 	let tests: any[] = [];
 	let testcategorieën: any[] = [];
@@ -33,6 +33,7 @@
 
 	// volgorde is belangrijk, eerst eenheden en categorieën ophalen, daarna tests
 	onMount(async () => {
+		token = getCookie('authToken') || '';
 		const fetchedEenheden = await fetchEenheden();
 		if (fetchedEenheden) {
 			eenheden = fetchedEenheden;

@@ -9,7 +9,7 @@
 	// @ts-ignore
 	import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte';
 	// @ts-ignore
-	import FaCloudDownloadAlt from 'svelte-icons/fa/FaCloudDownloadAlt.svelte'
+	import FaCloudDownloadAlt from 'svelte-icons/fa/FaCloudDownloadAlt.svelte';
 	import { staalCodeStore } from '$lib/store';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -24,7 +24,7 @@
 	let staal: any = {};
 	let staalId: string = '';
 	let testCategories: any[] = [];
-	const token = getCookie('authToken') || '';
+	let token: string = getCookie('authToken') || '';
 
 	// printen
 	let hoeveelheid: number = 1;
@@ -134,6 +134,7 @@
 	}
 
 	onMount(async () => {
+		token = getCookie('authToken') || '';
 		await loadData();
 		await fetchPdf();
 	});
@@ -218,7 +219,12 @@
 			<div class="w-2/3 flex flex-col justify-between space-y-4">
 				<!-- pdf previewer -->
 				<div class="w-full h-4/5">
-					<iframe src={pdfUrl + "#toolbar=0"} title="pdf label preview" width="100%" class="h-full rounded-xl" />
+					<iframe
+						src={pdfUrl + '#toolbar=0'}
+						title="pdf label preview"
+						width="100%"
+						class="h-full rounded-xl"
+					/>
 				</div>
 				<!-- bedienings knoppen -->
 				<div class="w-full h-1/5 bg-slate-200 flex justify-between items-baseline">
@@ -231,11 +237,12 @@
 						</button>
 					</div>
 					<div class="w-1/4 mt-auto">
-						<button on:click={() => getPdf(staalId)}
+						<button
+							on:click={() => getPdf(staalId)}
 							class="bg-gray-400 text-xl rounded-lg ml-4 p-3 text-white w-20 h-20 flex flex-row items-center justify-center"
 						>
 							<div class="h-5">
-								<FaCloudDownloadAlt/>
+								<FaCloudDownloadAlt />
 							</div>
 						</button>
 					</div>

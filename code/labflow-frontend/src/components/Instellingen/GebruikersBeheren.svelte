@@ -13,13 +13,14 @@
 	import { getCookie } from '$lib/globalFunctions';
 	import { fetchRollen } from '$lib/fetchFunctions';
 	import { getUserId } from '$lib/globalFunctions';
-	const token = getCookie('authToken') || '';
+	let token: string = '';
 
 	let users: any[] = [];
 	let rollen: any[] = [];
 	const userId = getUserId();
 
 	onMount(async () => {
+		token = getCookie('authToken') || '';
 		const resultUsers = await fetchUsers();
 		if (resultUsers) {
 			users = resultUsers.map((user: any) => ({

@@ -39,7 +39,7 @@
 	let filteredStalen: any[] = [];
 	let searchCode = '';
 	let searchDate = '';
-	const token = getCookie('authToken') || '';
+	let token: string = '';
 
 	let editStaalError = {
 		staalCode: false,
@@ -69,6 +69,7 @@
 	}
 
 	onMount(async () => {
+		token = getCookie('authToken') || '';
 		const result = await fetchStalen();
 		if (result) {
 			stalen = result.stalen;

@@ -12,12 +12,13 @@
 	import FaPlus from 'svelte-icons/fa/FaPlus.svelte';
 	import { getCookie } from '$lib/globalFunctions';
 
-	const token = getCookie('authToken') || '';
+	let token: string = '';
 
 	let errorMessageEenheid = '';
 	let eenheden: any[] = [];
 
 	onMount(async () => {
+		token = getCookie('authToken') || '';
 		const fetchedEenheden = await fetchEenheden();
 		if (fetchedEenheden) {
 			eenheden = fetchedEenheden;

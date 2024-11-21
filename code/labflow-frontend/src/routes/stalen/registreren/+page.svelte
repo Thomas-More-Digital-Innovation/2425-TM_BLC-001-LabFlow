@@ -34,7 +34,7 @@
 	let staalId: string = '';
 	let testCategories: any[] = [];
 	let selectedCategory: any = {};
-	const token = getCookie('authToken') || '';
+	let token: string = '';
 	let downloaded: boolean = false;
 
 	// update variables
@@ -239,6 +239,7 @@
 	}
 
 	onMount(() => {
+		token = getCookie('authToken') || '';
 		loadData().then(() => checkAllTestsDone());
 	});
 
