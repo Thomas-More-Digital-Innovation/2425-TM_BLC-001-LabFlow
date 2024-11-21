@@ -39,7 +39,7 @@
 	let tests: any[] = [];
 	let filteredTests: any[] = [];
 	let searchCode = '';
-	const token = getCookie('authToken') || '';
+	let token: string = '';
 
 	// nieuwe staalcode
 	let nieuweStaalCode = '';
@@ -108,6 +108,7 @@
 	}
 
 	onMount(() => {
+		token = getCookie('authToken') || '';
 		loadTests();
 	});
 

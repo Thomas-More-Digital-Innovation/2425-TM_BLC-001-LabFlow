@@ -31,7 +31,8 @@
 	let staalId: string = '';
 	let testCategories: any[] = [];
 	let selectedCategory: any = {};
-	const token = getCookie('authToken') || '';
+	let token: string = '';
+	let downloaded: boolean = false;
 
 	// update variables
 	let updateValue: string = '';
@@ -235,9 +236,11 @@
 	}
 
 	onMount(() => {
+		token = getCookie('authToken') || '';
 		staalCodeStore.subscribe((value) => {
 			sampleCode = value;
 		});
+
 		loadData().then(() => checkAllTestsDone());
 	});
 
@@ -281,6 +284,9 @@
 
 			// Clean up the Blob URL
 			window.URL.revokeObjectURL(url);
+
+			// set download variable to true
+			downloaded = true;
 		} catch (error) {
 			console.error('Error while downloading PDF:', error);
 		}
@@ -334,7 +340,11 @@
 				<!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
 				<button
 					on:click={() => {
-						goto('/stalen/done');
+						if (downloaded) {
+							goto('/stalen/done');
+						} else {
+							alert('Download eerst de resultaten');
+						}
 					}}
 					class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed"
 					disabled={!allDone}
@@ -431,7 +441,7 @@
 
 										<!-- Value Section -->
 										<div class="flex flex-col items-start">
-											<span class="text-sm text-gray-500">Waarde</span>
+											<span class="text-sm text-gray-500">Titel</span>
 											<input
 												on:blur={() => updateResult(test.result, test.test.id, test.note)}
 												bind:value={test.result}
