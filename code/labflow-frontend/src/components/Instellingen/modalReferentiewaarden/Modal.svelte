@@ -5,10 +5,6 @@
 	import { writable } from 'svelte/store';
 	import MultiSelect from 'svelte-multiselect';
 	import { getCookie } from '$lib/globalFunctions';
-	import { fetchReferentiewaarden } from '$lib/fetchFunctions';
-	// @ts-ignore
-	import IoMdCheckmarkCircle from 'svelte-icons/io/IoMdCheckmarkCircle.svelte';
-	import { error } from '@sveltejs/kit';
 
 	let dialog: HTMLDialogElement;
 
