@@ -16,22 +16,37 @@
 	const token = getCookie('authToken') || '';
 
 	let users: any[] = [];
+	let usersSorted: any[] = [];
+	let searchCode = '';
 	let rollen: any[] = [];
 	const userId = getUserId();
 
 	onMount(async () => {
 		const resultUsers = await fetchUsers();
 		if (resultUsers) {
-			users = resultUsers.map((user: any) => ({
-				...user,
-				newWachtwoord: undefined
-			}));
+			[users, usersSorted] = [resultUsers, resultUsers].map((userList: any[]) =>
+				userList.map((user: any) => ({
+					...user,
+					newWachtwoord: undefined
+				}))
+			);
 		}
 		const resultRollen = await fetchRollen();
 		if (resultRollen) {
 			rollen = resultRollen;
 		}
+		console.log(usersSorted);
 	});
+
+	function filterUsers() {
+		usersSorted = users.filter((user) => {
+			const codeMatch =
+				user.fullName.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				user.email.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				user.rol.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
+			return codeMatch;
+		});
+	}
 
 	///// DELETE verwijderen van een gebruiker /////
 	let errorMessageGebruikerDELETE = '';
@@ -258,6 +273,17 @@
 
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 		<div class="space-y-3">
+			<div class="flex space-x-5 mb-5">
+				<input
+					type="text"
+					id="searchCode"
+					name="searchCode"
+					placeholder="zoeken op naam, email of rol"
+					bind:value={searchCode}
+					on:input={filterUsers}
+					class="w-2/5 h-12 rounded-lg text-black pl-3"
+				/>
+			</div>
 			<!-- Header -->
 			<div class="grid grid-cols-12 gap-4 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
 				<div class="col-span-2">
@@ -357,7 +383,7 @@
 				<div class="text-red-500 mb-2">{errorMessageGebruikerPUT}</div>
 			{/if}
 			<div class="space-y-3">
-				{#each users as user, index}
+				{#each usersSorted as user, index}
 					<div
 						class="grid grid-cols-12 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
 					>

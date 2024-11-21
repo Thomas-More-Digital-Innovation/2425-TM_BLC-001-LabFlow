@@ -188,7 +188,7 @@
 				type="text"
 				id="searchCode"
 				name="searchCode"
-				placeholder="zoeken op categorienaam"
+				placeholder="zoeken op naam"
 				bind:value={searchCode}
 				on:input={filterEenheden}
 				class="w-2/5 h-12 rounded-lg text-black pl-3"
