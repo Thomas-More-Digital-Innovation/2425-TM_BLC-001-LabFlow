@@ -13,13 +13,13 @@
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import { getCookie } from '../../lib/globalFunctions';
 
-	const token = getCookie('authToken') || '';
-
 	let searchCode = '';
+	let token: string = '';
 	let categorieën: any[] = [];
 	let filteredCategories: any[] = [];
 
 	onMount(async () => {
+		token = getCookie('authToken') || '';
 		const result = await loadTestCategorieën();
 		if (result) {
 			categorieën = result;

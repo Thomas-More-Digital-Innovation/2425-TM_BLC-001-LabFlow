@@ -13,8 +13,7 @@
 	import { getCookie } from '$lib/globalFunctions';
 	import { getUserId } from '$lib/globalFunctions';
 
-	const token = getCookie('authToken') || '';
-
+	let token: string = '';
 	let searchCode = '';
 
 	// functie voor het filteren op basis van staalcode
@@ -22,6 +21,7 @@
 	let stalen: any[] = [];
 
 	onMount(async () => {
+		token = getCookie('authToken') || '';
 		const result = await fetchStalen();
 		if (result) {
 			[stalen, filteredStalen] = [result.stalen, result.filteredStalen];
