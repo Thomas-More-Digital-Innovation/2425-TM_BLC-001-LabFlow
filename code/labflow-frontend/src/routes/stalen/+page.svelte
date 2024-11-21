@@ -79,8 +79,14 @@
 	// Function om te filteren op staalcode en datum
 	function filterStalen() {
 		filteredStalen = stalen.filter((staal) => {
-			const codeMatch = staal.staalCode.toString().toLowerCase().includes(searchCode.toLowerCase());
-
+			const codeMatch =
+				staal.staalCode.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.patientAchternaam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.patientVoornaam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.patientGeboorteDatum.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.laborantNaam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.laborantRnummer.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.aanmaakDatum.toString().toLowerCase().includes(searchCode.toLowerCase());
 			// Converteren searchdate en aanmaakdatum naar een datumobject
 			const searchDateObject = new Date(searchDate);
 			const aanmaakDatumObject = new Date(staal.aanmaakDatum);
@@ -237,31 +243,44 @@
 	</div>
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 		<!-- filteren op code en datum -->
-		<div class="flex space-x-5 mb-5">
-			<!-- https://learn.svelte.dev/tutorial/text-inputs -->
+		<div class="flex mb-5 items-center space-x-5">
+			<!-- Search Code Input -->
 			<input
 				type="text"
 				id="searchCode"
 				name="searchCode"
-				placeholder="zoeken op code"
+				placeholder="zoeken"
 				bind:value={searchCode}
 				on:input={filterStalen}
-				class="w-2/5 h-12 rounded-lg text-black pl-3"
+				class="w-1/3 h-14 rounded-lg text-black pl-3 flex-grow"
 			/>
-			<input
-				type="date"
-				id="searchDate"
-				name="searchDate"
-				bind:value={searchDate}
-				on:input={filterStalen}
-				class="w-2/5 h-12 rounded-lg text-black px-3"
-			/>
-			<!-- verwijder filters -->
+
+			<!-- Label and Date Input -->
+			<div class="flex items-center w-1/3">
+				<label
+					for="searchDate"
+					class="text-white bg-gray-400 h-14 flex items-center rounded-l-xl px-3"
+				>
+					Filter op aanmaakdatum
+				</label>
+				<input
+					type="date"
+					id="searchDate"
+					name="searchDate"
+					bind:value={searchDate}
+					on:input={filterStalen}
+					class="flex-grow h-14 rounded-r-lg text-black px-3"
+				/>
+			</div>
+
+			<!-- Delete Filters Button -->
 			<button
-				class="bg-blue-600 rounded-lg p-3 text-white h-12 w-1/5"
+				class="bg-blue-600 rounded-lg p-3 text-white h-14 w-1/6"
 				type="button"
-				on:click={deleteFilters}>Verwijder filters</button
+				on:click={deleteFilters}
 			>
+				Verwijder filters
+			</button>
 		</div>
 
 		<div class="space-y-3">
