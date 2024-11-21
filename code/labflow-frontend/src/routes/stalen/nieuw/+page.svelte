@@ -309,7 +309,7 @@
 					registeredTests: geselecteerdeTestsArray
 				})
 			});
-			// doorgeven van aangemaakte staal's id naar volgend scherm
+			// doorgeven van aangemaakte staalcode naar volgend scherm
 			staalCodeStore.set(nieuweStaalCode);
 		} catch (error) {
 			console.error('staal kon niet worden aangemaakt: ', error);

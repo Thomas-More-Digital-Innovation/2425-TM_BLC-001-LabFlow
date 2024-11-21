@@ -23,9 +23,6 @@
 
 	// neem de id
 	let sampleCode: string | undefined;
-	staalCodeStore.subscribe((value) => {
-		sampleCode = value;
-	});
 
 	let tests: any[] = [];
 	let openNoteId: string | null = null;
@@ -240,6 +237,10 @@
 
 	onMount(() => {
 		token = getCookie('authToken') || '';
+		staalCodeStore.subscribe((value) => {
+			sampleCode = value;
+		});
+
 		loadData().then(() => checkAllTestsDone());
 	});
 
