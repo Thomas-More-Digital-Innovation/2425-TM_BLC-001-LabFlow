@@ -15,15 +15,24 @@
 	const token = getCookie('authToken') || '';
 
 	let errorMessageEenheid = '';
+	let searchCode = '';
 	let eenheden: any[] = [];
+	let eenhedenSorted: any[] = [];
 
 	onMount(async () => {
 		const fetchedEenheden = await fetchEenheden();
 		if (fetchedEenheden) {
 			eenheden = fetchedEenheden;
+			eenhedenSorted = eenheden;
 		}
-		console.log(eenheden);
 	});
+
+	function filterEenheden() {
+		eenhedenSorted = eenheden.filter((eenheid) => {
+			const codeMatch = eenheid.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
+			return codeMatch;
+		});
+	}
 
 	///// DELETE eenheid /////
 	let deleteError = '';
@@ -44,7 +53,6 @@
 					eenheden = result;
 				}
 			} else {
-				const errorMessage = await response.text();
 				deleteError =
 					'Eenheid kon niet worden verwijderd omdat deze gelinked is aan één of meerdere tests.';
 			}
@@ -100,6 +108,7 @@
 			const result = await fetchEenheden();
 			if (result) {
 				eenheden = result;
+				eenhedenSorted = result;
 			}
 		} catch (error) {
 			console.error('Eenheid kon niet worden aangemaakt: ', error);
@@ -174,6 +183,18 @@
 	</div>
 
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
+		<div class="flex space-x-5 mb-5">
+			<input
+				type="text"
+				id="searchCode"
+				name="searchCode"
+				placeholder="zoeken op categorienaam"
+				bind:value={searchCode}
+				on:input={filterEenheden}
+				class="w-2/5 h-12 rounded-lg text-black pl-3"
+			/>
+		</div>
+
 		<div class="space-y-3">
 			{#if deleteError}
 				<div class="text-red-500 mb-2">{deleteError}</div>
@@ -237,7 +258,7 @@
 			</div>
 		</div>
 		<div class="space-y-3">
-			{#each eenheden as eenheid, index}
+			{#each eenhedenSorted as eenheid, index}
 				<div
 					class="grid grid-cols-7 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
 				>
