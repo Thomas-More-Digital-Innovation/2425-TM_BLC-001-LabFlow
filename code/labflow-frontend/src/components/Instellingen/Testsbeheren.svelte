@@ -463,7 +463,7 @@
 						<div class="col-span-1 flex justify-end">
 							<button
 								type="button"
-								class="h-10 w-10 bg-green-500 p-2 rounded-lg text-white mr-2"
+								class="h-10 w-10 p-2 rounded-lg text-white mr-2 bg-green-500 hover:bg-green-700 transition duration-500"
 								on:click={() => updateTest(test.id)}
 								aria-label="Save test"
 							>
