@@ -308,41 +308,46 @@
 
 		<div class="space-y-3">
 			{#each stalenSorted as staal, index}
-				<button
-					type="button"
-					class="grid {rol !== 'admin'
-						? 'grid-cols-7'
-						: 'grid-cols-8'} gap-4 bg-white rounded-lg h-16 items-center px-3 w-full"
-					on:click={() => setStore(staal.staalCode)}
-				>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Code</p>
-						<p>{staal?.staalCode || ''}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Aanmaakdatum</p>
-						<p>{new Date(staal?.aanmaakDatum).toLocaleDateString() || ''}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Naam</p>
-						<p>{staal?.patientAchternaam || ''}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Voornaam</p>
-						<p>{staal?.patientVoornaam || ''}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Geslacht</p>
-						<p>{staal?.patientGeslacht === 'V' ? 'Vrouw' : 'Man'}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Geboortedatum</p>
-						<p>{new Date(staal?.patientGeboorteDatum).toLocaleDateString() || ''}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400 font-bold">Laborant</p>
-						<p>{staal?.laborantNaam || ''}</p>
-					</div>
+				<div class="flex items-center justify-between">
+					<button
+						type="button"
+						class="grid {rol !== 'admin'
+							? 'grid-cols-7'
+							: 'grid-cols-7'} gap-4 bg-white rounded-lg h-16 items-center px-3 {rol != 'admin'
+							? 'w-full'
+							: 'w-11/12'}"
+						on:click={() => setStore(staal.staalCode)}
+					>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Code</p>
+							<p>{staal?.staalCode || ''}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Aanmaakdatum</p>
+							<p>{new Date(staal?.aanmaakDatum).toLocaleDateString() || ''}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Naam</p>
+							<p>{staal?.patientAchternaam || ''}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Voornaam</p>
+							<p>{staal?.patientVoornaam || ''}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Geslacht</p>
+							<p>{staal?.patientGeslacht === 'V' ? 'Vrouw' : 'Man'}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Geboortedatum</p>
+							<p>{new Date(staal?.patientGeboorteDatum).toLocaleDateString() || ''}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400 font-bold">Laborant</p>
+							<p>{staal?.laborantNaam || ''}</p>
+						</div>
+					</button>
+
 					{#if rol === 'admin'}
 						<div class="col-span-1 flex justify-end space-x-2">
 							<!-- Admin-only CRUD buttons -->
@@ -508,7 +513,7 @@
 							{/if}
 						</div>
 					{/if}
-				</button>
+				</div>
 			{/each}
 		</div>
 	</div>
