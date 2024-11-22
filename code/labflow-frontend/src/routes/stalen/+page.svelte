@@ -22,6 +22,8 @@
 	import Modal from '../../components/Modal/Modal.svelte';
 	import Trigger from '../../components/Modal/Trigger.svelte';
 	import Content from '../../components/Modal/Content.svelte';
+	import { staalCodeStore } from '$lib/store';
+	import { goto } from '$app/navigation';
 
 	let openModalTestId: number | null = null;
 
@@ -112,6 +114,12 @@
 		searchCode = '';
 		searchDate = '';
 		filterStalen();
+	}
+
+	// set store
+	function setStore(staalCode: string) {
+		staalCodeStore.set(staalCode);
+		goto('stalen/nieuw');
 	}
 
 	// delete staal
@@ -228,6 +236,7 @@
 <div class="px-8 flex flex-row space-x-5">
 	<div class="flex flex-col space-y-5">
 		<a
+			on:click={() => setStore('')}
 			href="/stalen/nieuw"
 			class="bg-blue-400 flex flex-col items-center justify-center w-56 h-56 rounded-2xl"
 		>
@@ -299,10 +308,12 @@
 
 		<div class="space-y-3">
 			{#each stalenSorted as staal, index}
-				<div
+				<button
+					type="button"
 					class="grid {rol !== 'admin'
 						? 'grid-cols-7'
-						: 'grid-cols-8'} gap-4 bg-white rounded-lg h-16 items-center px-3"
+						: 'grid-cols-8'} gap-4 bg-white rounded-lg h-16 items-center px-3 w-full"
+					on:click={() => setStore(staal.staalCode)}
 				>
 					<div class="flex flex-col justify-center">
 						<p class="text-gray-400">Code</p>
@@ -497,7 +508,7 @@
 							{/if}
 						</div>
 					{/if}
-				</div>
+				</button>
 			{/each}
 		</div>
 	</div>

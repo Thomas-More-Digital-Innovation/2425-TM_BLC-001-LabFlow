@@ -54,6 +54,21 @@ export async function fetchStalen() {
     }
 }
 
+// fetchen van stalen
+export async function fetchStaal_StaalCode(staalCode: string) {
+    if (token) {
+        try {
+            const staal = await fetchAll(token, `staal/${staalCode}`);
+            return staal;
+        } catch (error) {
+            console.error("Staal kon niet gefetched worden:", error);
+        }
+    } else {
+        console.error("JWT error: token missing of invalid");
+        goto('/');
+    }
+}
+
 // fetchen van users
 export async function fetchUsers() {
     if (token) {

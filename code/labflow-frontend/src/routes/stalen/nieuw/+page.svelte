@@ -31,6 +31,9 @@
 	// https://svelte-awesome-color-picker.vercel.app/
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import { loadTestCategorieën, loadEenheden } from '$lib/fetchFunctions';
+	import { fetchStaal_StaalCode } from '$lib/fetchFunctions';
+	import Staal from '../../../components/Staal.svelte';
+	import { slide } from 'svelte/transition';
 
 	// voor het inladen van crud voor admins
 	const rol = getRol();
@@ -42,7 +45,7 @@
 	let token: string = '';
 
 	// nieuwe staalcode
-	let nieuweStaalCode = '';
+	let nieuweStaalCode: string = '';
 	let naam = '';
 	let voornaam = '';
 	let geslacht = '';
@@ -88,29 +91,67 @@
 	// geselecteerde tests
 	let geselecteerdeTests: any[] = [];
 
+	onMount(() => {
+		token = getCookie('authToken') || '';
+		loadTests();
+	});
+
+	// neem de id
+	let sampleCode: string | undefined;
+	staalCodeStore.subscribe((value) => {
+		sampleCode = value;
+		console.log('Dit is staalcode:' + sampleCode);
+		if (sampleCode) {
+			console.log('we gaan binden');
+			// nieuweStaalCode = sampleCode;
+			// naam = '';
+			// voornaam = '';
+			// geslacht = '';
+			// geboortedatum = '';
+		}
+	});
+
 	let loading = true;
+	let staalId: string = '';
 	// fetchen van tests op "tests"
 	// verkrijgen nieuwe staalcode op "/api/newStaalCode"
+	// als we in de session storage een staalcode hebben, binden we deze zijn waarden aan de variabelen
 	async function loadTests() {
-		if (token != null) {
+		if (token != null && sampleCode == '') {
 			try {
 				tests = await fetchAll(token, 'tests');
-				testsSorted = tests; // zonder filter worden alle tests ingeladen
-				nieuweStaalCode = await fetchAll(token, 'newStaalCode'); // fetchen van nieuwe staalcode
-				loading = false; // zorgt ervoor dat de modal pas opent wanneer de data is ingeladen
+				testsSorted = tests;
+				nieuweStaalCode = await fetchAll(token, 'newStaalCode');
+				loading = false;
+			} catch (error) {
+				console.error('testen kon niet gefetched worden:', error);
+			}
+		} else if (token != null && sampleCode != '') {
+			console.log(`dit is de testcode die we gaan aanpassen: ${sampleCode}`);
+			try {
+				tests = await fetchAll(token, 'tests');
+				const test = sampleCode ? await fetchStaal_StaalCode(sampleCode) : null;
+				testsSorted = tests;
+				// binden van de bestaande staalwaarden aan de variabelen
+				nieuweStaalCode = test.staalCode;
+				naam = test.patientAchternaam;
+				voornaam = test.patientVoornaam;
+				geslacht = test.patientGeslacht;
+				geboortedatum = test.patientGeboorteDatum;
+				laborantNaam = test.laborantNaam;
+				laborantRnummer = test.laborantRnummer;
+				geselecteerdeTests = test.registeredTests.map((test: any) => test.test.testCode);
+				// setten van de id die we aan het aanpassen zijn
+				staalId = test.id;
+				loading = false;
 			} catch (error) {
 				console.error('testen kon niet gefetched worden:', error);
 			}
 		} else {
 			console.error('jwt error');
-			goto('/login');
+			goto('/');
 		}
 	}
-
-	onMount(() => {
-		token = getCookie('authToken') || '';
-		loadTests();
-	});
 
 	function setLaborant() {
 		let isValid = false;
@@ -320,6 +361,110 @@
 		}
 		isWarningAcknowledged = false; // Reset de warning zodat de knop geklikt kan worden
 		return goto('/stalen/labels');
+	}
+
+	// PUT: Aanpassen van een bestaande staal
+	async function staalAanpassen() {
+		// Resetten van de errorvelden
+		errrorVeldenStaal = {
+			naam: false,
+			voornaam: false,
+			geslacht: false,
+			geboortedatum: false,
+			laborantNaam: true,
+			laborantRnummer: true
+		};
+
+		// Validatie van de input
+		let isValid = true;
+
+		if (!naam) {
+			errrorVeldenStaal.naam = true;
+			isValid = false;
+		}
+		if (!voornaam) {
+			errrorVeldenStaal.voornaam = true;
+			isValid = false;
+		}
+		if (!geboortedatum) {
+			errrorVeldenStaal.geboortedatum = true;
+			isValid = false;
+		}
+		if (!geslacht) {
+			errrorVeldenStaal.geslacht = true;
+			isValid = false;
+		}
+		// errorMessageStaal tonen indien niet alle velden zijn ingevuld
+		if (!isValid) {
+			errorMessageStaal = 'Vul alle verplichte velden in.';
+			return;
+		}
+
+		const geselecteerdeTestsArray = Array.from(geselecteerdeTests).map((testCode) => ({
+			test: { testCode: testCode }
+		}));
+
+		// als er de test met code 'X' is geselecteerd, dan wordt de warning niet getoond
+		if (geselecteerdeTestsArray.some((test) => test.test.testCode === 'X')) {
+			console.log('contains X');
+			isWarningAcknowledged = true;
+		} else {
+			console.log('does not contain X');
+		}
+
+		if (!isWarningAcknowledged) {
+			checkWarning(geselecteerdeTestsArray);
+			isWarningAcknowledged = true; // Set de warning als al getoond is
+			errorMessageStaal = '';
+			return; // wachten voor volgende click
+		}
+		console.log(nieuweStaalCode);
+		console.log(naam);
+		console.log(voornaam);
+		console.log(geslacht);
+		console.log(geboortedatum);
+		console.log(laborantNaam);
+		console.log(laborantRnummer);
+		console.log(userId);
+		console.log(geselecteerdeTestsArray);
+		try {
+			await fetch(`http://localhost:8080/api/updatestaal/${staalId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + token
+				},
+				body: JSON.stringify({
+					staalCode: nieuweStaalCode,
+					patientAchternaam: naam,
+					patientVoornaam: voornaam,
+					patientGeslacht: geslacht,
+					patientGeboorteDatum: geboortedatum,
+					laborantNaam: laborantNaam,
+					laborantRnummer: laborantRnummer,
+					user: {
+						id: 2
+					},
+					registeredTests: geselecteerdeTestsArray
+				})
+			});
+			// doorgeven van aangemaakte staalcode naar volgend scherm
+			staalCodeStore.set(nieuweStaalCode);
+			console.log('staal aangepast');
+		} catch (error) {
+			console.error('staal kon niet worden aangemaakt: ', error);
+		}
+		isWarningAcknowledged = false; // Reset de warning zodat de knop geklikt kan worden
+		return goto('/stalen/labels');
+	}
+
+	// post or put functie, afhankelijk van of er al een staalcode is in de session storage
+	function postOrPut() {
+		if (sampleCode === '') {
+			nieuweStaal();
+		} else {
+			staalAanpassen();
+		}
 	}
 
 	let errorMessageCategorie = '';
@@ -575,7 +720,7 @@
 				</button>
 				<!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
 				<button
-					on:click={nieuweStaal}
+					on:click={postOrPut}
 					class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center"
 				>
 					Volgende
