@@ -72,7 +72,6 @@ public class PdfGeneratorService {
     }
 
     public byte[] generateResultsPdf(Staal staal) throws DocumentException {
-
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
