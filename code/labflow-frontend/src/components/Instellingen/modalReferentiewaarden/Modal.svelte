@@ -19,7 +19,6 @@
 	const token = getCookie('authToken') || '';
 	export let waarden: any[] = [];
 	export let selectedValues = writable([]);
-	console.log(waarden);
 
 	let waarde = '';
 	let errorWaarde = false;

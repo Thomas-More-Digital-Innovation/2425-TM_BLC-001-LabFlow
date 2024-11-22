@@ -20,21 +20,28 @@
 	let filteredStalen: any[] = [];
 	let stalen: any[] = [];
 
-	function filterStalenMetCode() {
-		filteredStalen = stalen.filter((staal) => {
-			const codeMatch = staal.staalCode.toString().toLowerCase().includes(searchCode.toLowerCase());
-			return codeMatch;
-		});
-	}
-
 	onMount(async () => {
 		token = getCookie('authToken') || '';
 		const result = await fetchStalen();
 		if (result) {
-			stalen = result.stalen;
-			filteredStalen = result.filteredStalen;
+			[stalen, filteredStalen] = [result.stalen, result.filteredStalen];
 		}
+		console.log(filteredStalen);
 	});
+
+	function filterStalenMetCode() {
+		filteredStalen = stalen.filter((staal) => {
+			const codeMatch =
+				staal.staalCode.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.patientAchternaam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.patientVoornaam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.patientGeboorteDatum.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.laborantNaam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.laborantRnummer.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				staal.aanmaakDatum.toString().toLowerCase().includes(searchCode.toLowerCase());
+			return codeMatch;
+		});
+	}
 
 	///// DELETE staal /////
 	async function deleteStaal(id: string) {
@@ -51,8 +58,7 @@
 		}
 		const result = await fetchStalen();
 		if (result) {
-			stalen = result.stalen;
-			filteredStalen = result.filteredStalen;
+			[stalen, filteredStalen] = [result.stalen, result.stalen];
 		}
 		return;
 	}
@@ -162,8 +168,7 @@
 	// 		errorMessageStaalPOST = '';
 	// 		const result = await fetchStalen();
 	// 		if (result) {
-	// 			stalen = result.stalen;
-	// 			filteredStalen = result.filteredStalen;
+	//		    [stalen, filteredStalen] = [result.stalen, result.stalen];
 	// 		}
 	// 	} catch (error) {
 	// 		console.error('Staal kon niet worden aangemaakt: ', error);
@@ -192,7 +197,7 @@
 		let isValid = true;
 		staal.laborantRnummer = staal.laborantRnummer.toUpperCase();
 		// regex voor R-nummer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes
-		const regex = /^R\d{7}$/;
+		const regex = /^[RU]\d{7}$/;
 		const errorVeldenStaalPUT = {
 			staalcode: false,
 			naam: false,
@@ -287,7 +292,7 @@
 				type="text"
 				id="searchCode"
 				name="searchCode"
-				placeholder="zoeken op code"
+				placeholder="zoeken"
 				bind:value={searchCode}
 				on:input={filterStalenMetCode}
 				class="w-2/5 h-12 rounded-lg text-black pl-3"

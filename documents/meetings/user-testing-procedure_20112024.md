@@ -18,7 +18,7 @@ Tijdens deze sprint is er aan volgende componenten gewerkt:
 
 ## User test
 
-**We gaan 3 senario's laten testen door de klant:**
+**We gaan 2 senario's laten testen door de klant:**
 
 - **nieuwe test aanmaken**: we gaan hun een nieuwe test laten aanmaken.
 - **normale flow**: we gaan de hele flow testen van testen registreren, labels bekijken tot waarde registeren doorlopen. In deze flow zullen ze de nieuwe test moeten aanvinken.
@@ -28,20 +28,36 @@ Tijdens deze sprint is er aan volgende componenten gewerkt:
 - we mogen niet helpen zolang er geen vraag naar is
 - opmerkingen worden onderaan dit document genoteerd
 - bij het een error, start de flow opnieuw
-- testen woorden uitgevoerd op macbook met een muis
+- testen worden uitgevoerd op macbook met een muis
 
 ## Vragen
 
-**Wanneer je een nieuwe staal aanmaakt in de istellingen moet je dan in een keer testen kunnen toekennen of is het de bedoeling dat je dan naar het dashboard gaat en daar overloopt**
+**Wanneer je een nieuwe staal aanmaakt in de instellingen moet je dan in een keer testen kunnen toekennen of is het de bedoeling dat je dan naar het dashboard gaat en daar overloopt**
 
-- antwoord
+- bij aanmaken is niet nodig, enkel aanpassen en verwijderen.
 
 **Wanneer je in het dashboard op een staal dubbel klikt, is het dan de bedoeling dat je ook testen kunt weghalen of willen jullie enkel nog waarden registreren**
 
-- antwoord
+- testen registreren is niet de bedoeling als student, enkel voor docenten.
 
 **Moeten de notities die bij de tests zijn opgeschreven enkel zichtbaar zijn in de software of ook op de pdf?**
 
-- antwoord
+- antwoord: Nota's toevoegen voor de pdf.
 
 ## Notities bij user testing
+Invullen gegevens: Waarde bij notitie is niet duidelijk genoeg. Waarde mag vervangen worden door titel.
+
+donderdag 12 om 10u voor volgende afspraak! LABO (locatie) wordt nog bezorgd!
+
+afdruk knop in Iframe weghalen!!
+
+eventueel vragen om referentie waarden toe te voegen als het nog niet gedaan is
+visuele feedback voor wanneer het is opgeslagen
+
+U-nummer toevoegen!!
+
+search op naam (nice to have)
+
+notitie is nog niet duidelijk
+
+downloaden van pdf met een alert verduidelijken

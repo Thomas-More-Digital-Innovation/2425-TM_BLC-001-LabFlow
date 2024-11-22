@@ -13,16 +13,26 @@
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import { getCookie } from '../../lib/globalFunctions';
 
+	let searchCode = '';
 	let token: string = '';
 	let categorieën: any[] = [];
+	let filteredCategories: any[] = [];
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
 		const result = await loadTestCategorieën();
 		if (result) {
 			categorieën = result;
+			filteredCategories = categorieën;
 		}
 	});
+
+	function filterCategorien() {
+		filteredCategories = categorieën.filter((categorie) => {
+			const codeMatch = categorie.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
+			return codeMatch;
+		});
+	}
 
 	///// DELETE verwijderen van een categorie /////
 	let deleteError = '';
@@ -41,7 +51,7 @@
 				deleteError = '';
 				const result = await loadTestCategorieën();
 				if (result) {
-					categorieën = result;
+					[categorieën, filteredCategories] = [result, result];
 				}
 			} else {
 				// If the server responds with an error (e.g., cannot delete because of linked tests)
@@ -108,7 +118,7 @@
 		}
 		const result = await loadTestCategorieën();
 		if (result) {
-			categorieën = result;
+			[categorieën, filteredCategories] = [result, result];
 		}
 		return;
 	}
@@ -177,6 +187,17 @@
 	</div>
 
 	<div class="bg-slate-100 w-full h-full rounded-2xl p-5">
+		<div class="flex space-x-5 mb-5">
+			<input
+				type="text"
+				id="searchCode"
+				name="searchCode"
+				placeholder="zoeken"
+				bind:value={searchCode}
+				on:input={filterCategorien}
+				class="w-2/5 h-12 rounded-lg text-black pl-3"
+			/>
+		</div>
 		<div class="space-y-3">
 			<div class="text-red-500 mb-2">{deleteError}</div>
 			<!-- Header -->
@@ -237,7 +258,7 @@
 				<div class="text-red-500 mb-2">{errorMessageCategoriePUT}</div>
 			{/if}
 
-			{#each categorieën as categorie, index}
+			{#each filteredCategories as categorie, index}
 				<div class="grid grid-cols-12 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
 					<!-- Naam -->
 					<div class="col-span-4">
