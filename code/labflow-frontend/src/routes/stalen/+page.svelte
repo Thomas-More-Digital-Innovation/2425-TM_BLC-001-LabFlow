@@ -36,7 +36,7 @@
 
 	// fetchen van stalen
 	let stalen: any[] = [];
-	let filteredStalen: any[] = [];
+	let stalenSorted: any[] = [];
 	let searchCode = '';
 	let searchDate = '';
 	let token: string = '';
@@ -73,13 +73,13 @@
 		const result = await fetchStalen();
 		if (result) {
 			stalen = result.stalen;
-			filteredStalen = result.filteredStalen;
+			stalenSorted = result.stalen;
 		}
 	});
 
 	// Function om te filteren op staalcode en datum
 	function filterStalen() {
-		filteredStalen = stalen.filter((staal) => {
+		stalenSorted = stalen.filter((staal) => {
 			const codeMatch =
 				staal.staalCode.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
 				staal.patientAchternaam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
@@ -101,6 +101,11 @@
 
 			return codeMatch && dateMatch;
 		});
+	}
+
+	function verwijderZoek() {
+		searchCode = '';
+		stalenSorted = stalen;
 	}
 
 	function deleteFilters() {
@@ -125,7 +130,7 @@
 		const result = await fetchStalen();
 		if (result) {
 			stalen = result.stalen;
-			filteredStalen = result.filteredStalen;
+			stalenSorted = result.stalen;
 		}
 	}
 
@@ -246,15 +251,23 @@
 		<!-- filteren op code en datum -->
 		<div class="flex mb-5 items-center space-x-5">
 			<!-- Search Code Input -->
-			<input
-				type="text"
-				id="searchCode"
-				name="searchCode"
-				placeholder="zoeken"
-				bind:value={searchCode}
-				on:input={filterStalen}
-				class="w-1/3 h-14 rounded-lg text-black pl-3 flex-grow"
-			/>
+			<div class="flex items-center flex-grow">
+				<input
+					type="text"
+					id="searchCode"
+					name="searchCode"
+					placeholder="zoeken"
+					bind:value={searchCode}
+					on:input={filterStalen}
+					class="h-14 rounded-l-lg text-black pl-3 flex-grow"
+				/>
+				<button
+					on:click={verwijderZoek}
+					class="w-12 h-14 p-4 flex items-center justify-center bg-red-200 rounded-r-lg"
+				>
+					<GoX />
+				</button>
+			</div>
 
 			<!-- Label and Date Input -->
 			<div class="flex items-center w-1/3">
@@ -285,7 +298,7 @@
 		</div>
 
 		<div class="space-y-3">
-			{#each filteredStalen as staal, index}
+			{#each stalenSorted as staal, index}
 				<div
 					class="grid {rol !== 'admin'
 						? 'grid-cols-7'
@@ -470,7 +483,7 @@
 										<button
 											type="button"
 											on:click={() => {
-												filteredStalen.forEach((s, i) => {
+												stalenSorted.forEach((s, i) => {
 													if (i !== index) s.confirmDelete = false;
 												});
 												staal.confirmDelete = true;

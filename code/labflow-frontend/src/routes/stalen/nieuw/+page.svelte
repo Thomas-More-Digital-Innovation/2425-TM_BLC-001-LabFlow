@@ -37,7 +37,7 @@
 	let userId = getUserId();
 
 	let tests: any[] = [];
-	let filteredTests: any[] = [];
+	let testsSorted: any[] = [];
 	let searchCode = '';
 	let token: string = '';
 
@@ -95,7 +95,7 @@
 		if (token != null) {
 			try {
 				tests = await fetchAll(token, 'tests');
-				filteredTests = tests; // zonder filter worden alle tests ingeladen
+				testsSorted = tests; // zonder filter worden alle tests ingeladen
 				nieuweStaalCode = await fetchAll(token, 'newStaalCode'); // fetchen van nieuwe staalcode
 				loading = false; // zorgt ervoor dat de modal pas opent wanneer de data is ingeladen
 			} catch (error) {
@@ -136,9 +136,13 @@
 
 	// zoeken op basis van code
 	function filterTests() {
-		filteredTests = tests.filter((test) => {
-			const codeMatch = test.testCode.toString().toLowerCase().includes(searchCode.toLowerCase());
-			console.log(geselecteerdeTests);
+		testsSorted = tests.filter((test) => {
+			const codeMatch =
+				test.naam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.testCode.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.testcategorie.naam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.eenheid.afkorting.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.eenheid.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
 			return codeMatch;
 		});
 	}
@@ -146,7 +150,7 @@
 	// verwijderen van zoekparameter, terug alle tests tonen
 	function verwijderZoek() {
 		searchCode = '';
-		filteredTests = tests;
+		testsSorted = tests;
 	}
 
 	// verwijderen van geselecteerde testen
@@ -212,7 +216,7 @@
 			console.error('test kon niet worden aangemaakt: ', error);
 		}
 		tests = await fetchAll(token, 'tests'); // tests refreshen, triggert een refresh
-		filteredTests = tests;
+		testsSorted = tests;
 		return ($id = null);
 	}
 
@@ -595,7 +599,7 @@
 					/>
 					<button
 						on:click={verwijderZoek}
-						class="w-12 h-12 p-3 flex items-center justify-center bg-red-200 rounded-r-lg"
+						class="w-12 h-12 p-4 flex items-center justify-center bg-red-200 rounded-r-lg"
 					>
 						<GoX />
 					</button>
@@ -770,7 +774,7 @@
 			</div>
 
 			<!-- tabel met alle tests -->
-			{#each filteredTests as test, index}
+			{#each testsSorted as test, index}
 				<div
 					class="grid grid-cols-12 gap-4 h-16 items-center px-3 border-b border-gray-300 {isNaN(
 						parseInt(test?.testCode)
@@ -931,7 +935,7 @@
 								<button
 									type="button"
 									on:click={() => {
-										filteredTests.forEach((t, i) => {
+										testsSorted.forEach((t, i) => {
 											if (i !== index) t.confirmDelete = false;
 										});
 										test.confirmDelete = true;
