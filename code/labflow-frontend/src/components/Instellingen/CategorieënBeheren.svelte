@@ -16,22 +16,27 @@
 	let searchCode = '';
 	let token: string = '';
 	let categorieën: any[] = [];
-	let filteredCategories: any[] = [];
+	let categorieënSorted: any[] = [];
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
 		const result = await loadTestCategorieën();
 		if (result) {
 			categorieën = result;
-			filteredCategories = categorieën;
+			categorieënSorted = categorieën;
 		}
 	});
 
 	function filterCategorien() {
-		filteredCategories = categorieën.filter((categorie) => {
+		categorieënSorted = categorieën.filter((categorie) => {
 			const codeMatch = categorie.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
 			return codeMatch;
 		});
+	}
+
+	function verwijderZoek() {
+		searchCode = '';
+		categorieënSorted = categorieën;
 	}
 
 	///// DELETE verwijderen van een categorie /////
@@ -51,7 +56,7 @@
 				deleteError = '';
 				const result = await loadTestCategorieën();
 				if (result) {
-					[categorieën, filteredCategories] = [result, result];
+					[categorieën, categorieënSorted] = [result, result];
 				}
 			} else {
 				// If the server responds with an error (e.g., cannot delete because of linked tests)
@@ -118,7 +123,7 @@
 		}
 		const result = await loadTestCategorieën();
 		if (result) {
-			[categorieën, filteredCategories] = [result, result];
+			[categorieën, categorieënSorted] = [result, result];
 		}
 		return;
 	}
@@ -187,7 +192,7 @@
 	</div>
 
 	<div class="bg-slate-100 w-full h-full rounded-2xl p-5">
-		<div class="flex space-x-5 mb-5">
+		<div class="flex mb-5 w-full">
 			<input
 				type="text"
 				id="searchCode"
@@ -195,8 +200,14 @@
 				placeholder="zoeken"
 				bind:value={searchCode}
 				on:input={filterCategorien}
-				class="w-2/5 h-12 rounded-lg text-black pl-3"
+				class="w-2/5 h-12 rounded-l-lg text-black pl-3"
 			/>
+			<button
+				on:click={verwijderZoek}
+				class="w-12 h-12 p-4 flex items-center justify-center bg-red-200 rounded-r-lg"
+			>
+				<GoX />
+			</button>
 		</div>
 		<div class="space-y-3">
 			<div class="text-red-500 mb-2">{deleteError}</div>
@@ -258,7 +269,7 @@
 				<div class="text-red-500 mb-2">{errorMessageCategoriePUT}</div>
 			{/if}
 
-			{#each filteredCategories as categorie, index}
+			{#each categorieënSorted as categorie, index}
 				<div class="grid grid-cols-12 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
 					<!-- Naam -->
 					<div class="col-span-4">

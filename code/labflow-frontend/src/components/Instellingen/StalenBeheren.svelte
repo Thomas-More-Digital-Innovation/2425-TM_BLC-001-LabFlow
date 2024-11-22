@@ -17,20 +17,20 @@
 	let searchCode = '';
 
 	// functie voor het filteren op basis van staalcode
-	let filteredStalen: any[] = [];
+	let stalenSorted: any[] = [];
 	let stalen: any[] = [];
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
 		const result = await fetchStalen();
 		if (result) {
-			[stalen, filteredStalen] = [result.stalen, result.filteredStalen];
+			[stalen, stalenSorted] = [result.stalen, result.stalen];
 		}
-		console.log(filteredStalen);
+		console.log(stalenSorted);
 	});
 
 	function filterStalenMetCode() {
-		filteredStalen = stalen.filter((staal) => {
+		stalenSorted = stalen.filter((staal) => {
 			const codeMatch =
 				staal.staalCode.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
 				staal.patientAchternaam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
@@ -41,6 +41,11 @@
 				staal.aanmaakDatum.toString().toLowerCase().includes(searchCode.toLowerCase());
 			return codeMatch;
 		});
+	}
+
+	function verwijderZoek() {
+		searchCode = '';
+		stalenSorted = stalen;
 	}
 
 	///// DELETE staal /////
@@ -58,7 +63,7 @@
 		}
 		const result = await fetchStalen();
 		if (result) {
-			[stalen, filteredStalen] = [result.stalen, result.stalen];
+			[stalen, stalenSorted] = [result.stalen, result.stalen];
 		}
 		return;
 	}
@@ -168,7 +173,7 @@
 	// 		errorMessageStaalPOST = '';
 	// 		const result = await fetchStalen();
 	// 		if (result) {
-	//		    [stalen, filteredStalen] = [result.stalen, result.stalen];
+	//		    [stalen, stalenSorted] = [result.stalen, result.stalen];
 	// 		}
 	// 	} catch (error) {
 	// 		console.error('Staal kon niet worden aangemaakt: ', error);
@@ -287,7 +292,7 @@
 	</div>
 
 	<div class="bg-slate-100 w-full h-full rounded-2xl p-5">
-		<div class="flex space-x-5 mb-5">
+		<div class="flex mb-5 w-full">
 			<input
 				type="text"
 				id="searchCode"
@@ -295,8 +300,14 @@
 				placeholder="zoeken"
 				bind:value={searchCode}
 				on:input={filterStalenMetCode}
-				class="w-2/5 h-12 rounded-lg text-black pl-3"
+				class="w-2/5 h-12 rounded-l-lg text-black pl-3"
 			/>
+			<button
+				on:click={verwijderZoek}
+				class="w-12 h-12 p-4 flex items-center justify-center bg-red-200 rounded-r-lg"
+			>
+				<GoX />
+			</button>
 		</div>
 		<div class="space-y-3">
 			<!-- Header -->
@@ -426,7 +437,7 @@
 				<div class="text-red-500 mb-2">{errorMessageStaalPUT}</div>
 			{/if}
 			<div class="space-y-3">
-				{#each filteredStalen as staal, index}
+				{#each stalenSorted as staal, index}
 					<div
 						class="grid grid-cols-9 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
 					>
@@ -509,7 +520,7 @@
 								<button
 									type="button"
 									on:click={() => {
-										filteredStalen.forEach((c, i) => {
+										stalenSorted.forEach((c, i) => {
 											if (i !== index) c.confirmDelete = false;
 										});
 										staal.confirmDelete = true;
