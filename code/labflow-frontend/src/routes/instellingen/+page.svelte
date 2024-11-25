@@ -26,6 +26,16 @@
 	<div class="flex flex-col space-y-3 w-32 mt-[74px]">
 		<button
 			type="button"
+			on:click={() => (navElement = 'Test')}
+			class="p-2 text-center text-md {navElement == 'Test'
+				? 'bg-blue-500'
+				: 'bg-blue-400'} flex flex-col items-center justify-center w-32 h-32 rounded-2xl text-white"
+		>
+			<div class="w-12 h-12 mb-3"><GiHypodermicTest /></div>
+			Testen
+		</button>
+		<button
+			type="button"
 			on:click={() => (navElement = 'Gebruiker')}
 			class="p-2 text-center text-md {navElement == 'Gebruiker'
 				? 'bg-blue-500'
@@ -63,16 +73,6 @@
 		>
 			<div class="w-12 h-12 mb-3"><FaWrench /></div>
 			Eenheden
-		</button>
-		<button
-			type="button"
-			on:click={() => (navElement = 'Test')}
-			class="p-2 text-center text-md {navElement == 'Test'
-				? 'bg-blue-500'
-				: 'bg-blue-400'} flex flex-col items-center justify-center w-32 h-32 rounded-2xl text-white"
-		>
-			<div class="w-12 h-12 mb-3"><GiHypodermicTest /></div>
-			Testen
 		</button>
 
 		<!-- spacing -->
