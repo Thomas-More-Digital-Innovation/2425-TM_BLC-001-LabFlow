@@ -3,7 +3,6 @@
 	import LabelCart from './../../../components/LabelCart.svelte';
 	import { goto } from '$app/navigation';
 	import { getCookie, fetchAll, formatDate, formatSex } from '$lib/globalFunctions';
-	import { getRol } from '$lib/globalFunctions';
 	// @ts-ignore
 	import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte';
 	// @ts-ignore

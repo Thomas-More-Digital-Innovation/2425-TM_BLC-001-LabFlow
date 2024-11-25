@@ -244,6 +244,22 @@
 		loadData().then(() => checkAllTestsDone());
 	});
 
+	// aanpassen status van staal naar DONE
+	async function setStatusStaal() {
+		let sampleCode: string | undefined;
+		staalCodeStore.subscribe((value) => {
+			sampleCode = value;
+			console.log('Dit is staalcode:' + sampleCode);
+		});
+
+		await fetch(`http://localhost:8080/api/updatestaalstatus/DONE/${sampleCode}`, {
+			method: 'PATCH',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+	}
+
 	// pdf downloaden
 	async function getPdf(staalId: string) {
 		try {
