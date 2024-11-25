@@ -326,7 +326,7 @@
 							? 'grid-cols-7'
 							: 'grid-cols-7'} gap-4 bg-white rounded-lg h-16 items-center px-3
 							{rol != 'admin' ? 'w-full' : 'w-11/12'}
-							{staal.status != 'CREATED' ? '' : 'pointer-events-none'}
+							{staal.status === 'CREATED' && rol !== 'admin' ? 'pointer-events-none' : ''}
 							{staal.status == 'DONE' ? 'bg-green-50' : ''}
 							{staal.status == 'REGISTERED' ? 'bg-blue-100' : ''}"
 						on:click={() => {
