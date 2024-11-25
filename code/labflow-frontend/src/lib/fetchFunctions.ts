@@ -158,3 +158,15 @@ export async function fetchReferentiewaarden() {
         goto('/');
     }
 }
+
+// fetchen van statussen
+export async function fetchStatussen() {
+    if (token) {
+        try {
+            const statussen = await fetchAll(token, 'getstatus');
+            return statussen;
+        } catch (error) {
+            console.error("Statussen konden niet gefetched worden:", error);
+        }
+    }
+}

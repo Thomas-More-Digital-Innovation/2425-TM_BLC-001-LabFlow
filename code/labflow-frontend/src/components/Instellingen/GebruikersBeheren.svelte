@@ -291,7 +291,7 @@
 				/>
 				<button
 					on:click={verwijderZoek}
-					class="w-12 h-12 p-4 flex items-center justify-center bg-red-200 rounded-r-lg"
+					class="w-12 h-12 p-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-r-lg"
 				>
 					<GoX />
 				</button>

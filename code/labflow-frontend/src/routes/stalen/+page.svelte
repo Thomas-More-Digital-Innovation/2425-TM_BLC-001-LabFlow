@@ -2,7 +2,7 @@
 	import Nav from '../../components/nav.svelte';
 	import { onMount } from 'svelte';
 	import { getRol } from '$lib/globalFunctions';
-	import { fetchStalen } from '$lib/fetchFunctions';
+	import { fetchStalen, fetchStatussen } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
 	import { id } from '../../components/Modal/store';
 
@@ -39,8 +39,10 @@
 	// fetchen van stalen
 	let stalen: any[] = [];
 	let stalenSorted: any[] = [];
+	let statussen: any[] = [];
 	let searchCode = '';
 	let searchDate = '';
+
 	let token: string = '';
 
 	let editStaalError = {
@@ -76,7 +78,9 @@
 		if (result) {
 			stalen = result.stalen;
 			stalenSorted = result.stalen;
+			statussen = await fetchStatussen();
 		}
+		console.log(statussen);
 		console.log(stalen);
 	});
 
@@ -106,6 +110,18 @@
 		});
 	}
 
+	// Function om te filteren op status
+	let filteredStatus = '';
+	function filterStatus() {
+		stalenSorted = stalen.filter((staal) => {
+			const statusMatch = staal.status
+				.toString()
+				.toLowerCase()
+				.includes(filteredStatus.toLowerCase());
+			return statusMatch;
+		});
+	}
+
 	function verwijderZoek() {
 		searchCode = '';
 		stalenSorted = stalen;
@@ -114,6 +130,7 @@
 	function deleteFilters() {
 		searchCode = '';
 		searchDate = '';
+		filteredStatus = '';
 		filterStalen();
 	}
 
@@ -276,26 +293,42 @@
 					type="text"
 					id="searchCode"
 					name="searchCode"
-					placeholder="zoeken"
+					placeholder="Zoeken"
 					bind:value={searchCode}
 					on:input={filterStalen}
-					class="h-14 rounded-l-lg text-black pl-3 flex-grow"
+					class="h-14 rounded-l-lg text-black pl-3 flex-grow border border-gray-300"
 				/>
 				<button
 					on:click={verwijderZoek}
-					class="w-12 h-14 p-4 flex items-center justify-center bg-red-200 rounded-r-lg"
+					class="w-14 h-14 p-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-r-lg"
 				>
 					<GoX />
 				</button>
 			</div>
 
-			<!-- Label and Date Input -->
-			<div class="flex items-center w-1/3">
+			<!-- Filteren op status -->
+			<div class="flex items-center w-1/5">
+				<select
+					id="searchStatus"
+					name="searchStatus"
+					bind:value={filteredStatus}
+					on:input={filterStatus}
+					class="w-full h-14 rounded-lg text-black px-3 border border-gray-300"
+				>
+					<option value="" disabled>Status</option>
+					{#each statussen as status}
+						<option value={status}>{status.toLowerCase()}</option>
+					{/each}
+				</select>
+			</div>
+
+			<!-- Filteren op aanmaakdatum -->
+			<div class="flex items-center w-1/5">
 				<label
 					for="searchDate"
-					class="text-white bg-gray-400 h-14 flex items-center rounded-l-xl px-3"
+					class="text-black bg-gray-200 h-14 flex items-center justify-center rounded-l-lg px-3 border border-gray-300"
 				>
-					Filter op aanmaakdatum
+					Datum
 				</label>
 				<input
 					type="date"
@@ -303,17 +336,17 @@
 					name="searchDate"
 					bind:value={searchDate}
 					on:input={filterStalen}
-					class="flex-grow h-14 rounded-r-lg text-black px-3"
+					class="flex-grow h-14 rounded-r-lg text-black px-3 border border-gray-300"
 				/>
 			</div>
 
 			<!-- Delete Filters Button -->
 			<button
-				class="bg-blue-600 rounded-lg p-3 text-white h-14 w-1/6"
+				class="bg-blue-600 rounded-lg h-14 w-1/6 flex items-center justify-center text-white hover:bg-blue-700"
 				type="button"
 				on:click={deleteFilters}
 			>
-				Verwijder filters
+				Verwijder Filters
 			</button>
 		</div>
 
@@ -324,11 +357,13 @@
 						type="button"
 						class="grid {rol !== 'admin'
 							? 'grid-cols-7'
-							: 'grid-cols-7'} gap-4 bg-white rounded-lg h-16 items-center px-3
-							{rol != 'admin' ? 'w-full' : 'w-11/12'}
-							{staal.status === 'CREATED' && rol !== 'admin' ? 'pointer-events-none' : ''}
-							{staal.status == 'DONE' ? 'bg-green-50' : ''}
-							{staal.status == 'REGISTERED' ? 'bg-blue-100' : ''}"
+							: 'grid-cols-7'} gap-4 rounded-lg h-16 items-center px-3
+							{rol != 'admin' ? 'w-full ' : 'w-11/12'}
+							{staal.status === 'CREATED' ? 'bg-white' : ''}
+							{staal.status === 'CREATED' && rol !== 'pointer-events-none' ? 'bg-white' : ''}							
+							{staal.status === 'DONE' ? 'bg-green-50' : ''}
+							{staal.status === 'REGISTERED' ? 'bg-blue-100' : ''}
+							"
 						on:click={() => {
 							if (rol !== 'admin') {
 								setStoreGoToDependingStatus(staal);
