@@ -12,6 +12,8 @@
 	import FaCloudDownloadAlt from 'svelte-icons/fa/FaCloudDownloadAlt.svelte';
 	import { staalCodeStore } from '$lib/store';
 	import { onDestroy, onMount } from 'svelte';
+	import { ClientPrintJob, DefaultPrinter, InstalledPrinter, JSPrintManager, WSStatus } from 'jsprintmanager';
+	
 
 	// neem de id
 	let sampleCode: string | undefined;
@@ -134,7 +136,7 @@
 	let zplCode: String = "";
 	let amount: number = 1;
 
-	async function getZpl(staalId: string, amount: number) {
+	async function printLabels(staalId: string, amount: number) {
 		try {
 			const response = await fetch(`http://localhost:8080/api/printer/labels/${staalId}/${amount}`, {
 				method: 'GET',
@@ -149,17 +151,63 @@
 			}
 			
 			zplCode = await response.text();
-			console.log(zplCode);
+			
+			if (!jspmWSStatus()) return;
+
+			const cpj = new ClientPrintJob();
+
+			if (useDefaultPrinter) {
+				cpj.clientPrinter = new DefaultPrinter();
+			} else {
+				cpj.clientPrinter = new InstalledPrinter(selectedPrinter);
+			}
+
+			cpj.printerCommands = zplCode.trim();
+			cpj.sendToClient()
 
 		} catch (error) {
 			console.error('Error while downloading ZPL:', error);
 		}
 	}
 
+	// connection with printer
+	let printers:any = [];
+    let selectedPrinter = '';
+    let useDefaultPrinter = false;
+
+	function jspmWSStatus() {
+		const status = JSPrintManager.websocket_status;
+		if (status == WSStatus.Open) {
+			return true;
+		} else if (status == WSStatus.Closed) {
+			return false;
+		} else if (status == WSStatus.Blocked) {
+			return false;
+		}
+	}
+
+	function fetchPrinters() {
+		JSPrintManager.getPrinters().then((printerList) => {
+			printers = printerList;
+			if (printers.length > 0) selectedPrinter = printers[0];
+		});
+	}
+    
+
 	onMount(async () => {
 		token = getCookie('authToken') || '';
 		await loadData();
 		await fetchPdf();
+
+		JSPrintManager.auto_reconnect = true;
+		JSPrintManager.start();
+		if (JSPrintManager.WS) {
+			JSPrintManager.WS.onStatusChanged = () => {
+				if (jspmWSStatus()) {
+					fetchPrinters();
+				}
+			}
+		}
 	});
 
 	onDestroy(() => {
@@ -253,7 +301,7 @@
 				<div class="w-full h-1/5 bg-slate-200 flex justify-between items-baseline">
 					<!-- left button-->
 					<div class="w-1/4 mt-auto">
-						<button on:click={() => getZpl(staalId, amount)}
+						<button on:click={() => printLabels(staalId, amount)}
 							class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-full flex flex-row items-center justify-center"
 						>
 							afdrukken
@@ -281,10 +329,10 @@
 						</div>
 						<div class="w-1/2">
 							<p>printer</p>
-							<select class="rounded-lg text-xl p-3 h-20 bg-white w-full border border-gray-400">
-								<option value="standaard">- selecteer -</option>
-								<option value="heparine">printer lokaal A</option>
-								<option value="heparine">printer lokaal B</option>
+							<select bind:value={selectedPrinter} class="rounded-lg text-xl p-3 h-20 bg-white w-full border border-gray-400">
+								{#each printers as printer}
+									<option value={printer}>{printer}</option>
+								{/each}
 							</select>
 						</div>
 					</div>
