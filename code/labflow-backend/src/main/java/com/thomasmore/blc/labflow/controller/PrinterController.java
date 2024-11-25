@@ -15,6 +15,7 @@ public class PrinterController {
     @GetMapping("/labels/{staalId}/{amountOfCopies}")
     public ResponseEntity<String> generateLabel(@PathVariable String staalId, @PathVariable int amountOfCopies) {
         try {
+            System.out.println("Printing label for staalId: " + staalId + " with amount of copies: " + amountOfCopies);
             return printerService.printLabel(staalId, amountOfCopies);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error while printing label");

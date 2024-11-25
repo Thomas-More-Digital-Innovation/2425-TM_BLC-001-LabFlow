@@ -26,9 +26,6 @@
 	let testCategories: any[] = [];
 	let token: string = getCookie('authToken') || '';
 
-	// printen
-	let hoeveelheid: number = 1;
-
 	// alle tests categorieën ophalen die bij de testen horen
 	async function loadData() {
 		if (token != null) {
@@ -135,6 +132,7 @@
 
 	// get the zpl code for the labels
 	let zplCode: String = "";
+	let amount: number = 1;
 
 	async function getZpl(staalId: string, amount: number) {
 		try {
@@ -255,7 +253,7 @@
 				<div class="w-full h-1/5 bg-slate-200 flex justify-between items-baseline">
 					<!-- left button-->
 					<div class="w-1/4 mt-auto">
-						<button on:click={() => getZpl(staalId, 1)}
+						<button on:click={() => getZpl(staalId, amount)}
 							class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-full flex flex-row items-center justify-center"
 						>
 							afdrukken
@@ -277,7 +275,7 @@
 							<p>hoeveelheid</p>
 							<input
 								type="number"
-								bind:value={hoeveelheid}
+								bind:value={amount}
 								class="rounded-lg text-xl p-3 h-20 w-11/12 bg-white border border-gray-400"
 							/>
 						</div>
