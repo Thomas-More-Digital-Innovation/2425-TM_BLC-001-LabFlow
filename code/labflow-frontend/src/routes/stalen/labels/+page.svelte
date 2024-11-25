@@ -133,6 +133,31 @@
 		}
 	}
 
+	// get the zpl code for the labels
+	let zplCode: String = "";
+
+	async function getZpl(staalId: string, amount: number) {
+		try {
+			const response = await fetch(`http://localhost:8080/api/printer/labels/${staalId}/${amount}`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			});
+
+			if (!response.ok) {
+				console.error('Failed to fetch ZPL:', response.statusText);
+				return;
+			}
+			
+			zplCode = await response.text();
+			console.log(zplCode);
+
+		} catch (error) {
+			console.error('Error while downloading ZPL:', error);
+		}
+	}
+
 	onMount(async () => {
 		token = getCookie('authToken') || '';
 		await loadData();
@@ -230,7 +255,7 @@
 				<div class="w-full h-1/5 bg-slate-200 flex justify-between items-baseline">
 					<!-- left button-->
 					<div class="w-1/4 mt-auto">
-						<button
+						<button on:click={() => getZpl(staalId, 1)}
 							class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-full flex flex-row items-center justify-center"
 						>
 							afdrukken

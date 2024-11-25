@@ -1,6 +1,5 @@
 package com.thomasmore.blc.labflow.service;
 
-import com.thomasmore.blc.labflow.entity.PrintRequest;
 import com.thomasmore.blc.labflow.repository.StaalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +10,9 @@ public class PrinterService {
     @Autowired
     private StaalRepository staalRepository;
 
-    public ResponseEntity<String> printLabel(PrintRequest request) {
+    public ResponseEntity<String> printLabel(String staalId, int amountOfCopies) {
         try {
-            if (request.getAmountOfCopies() > 0) {
+            if (amountOfCopies < 0) {
                 return ResponseEntity.badRequest().body("Amount of copies must be greater than 0");
             }
 
