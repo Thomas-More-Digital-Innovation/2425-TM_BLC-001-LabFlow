@@ -110,15 +110,21 @@
 		});
 	}
 
-	// Function om te filteren op status
+	// Functie om te filteren op status
 	let filteredStatus = '';
+
 	function filterStatus() {
+		console.log(statussen);
+
+		// Make sure filteredStatus is in uppercase for a consistent comparison
+		const normalizedFilteredStatus = filteredStatus.toUpperCase();
+
 		stalenSorted = stalen.filter((staal) => {
-			const statusMatch = staal.status
-				.toString()
-				.toLowerCase()
-				.includes(filteredStatus.toLowerCase());
-			return statusMatch;
+			// Ensure staal.status is in uppercase as well
+			const normalizedStaalStatus = staal.status.toUpperCase();
+
+			// Compare the statuses directly
+			return normalizedStaalStatus === normalizedFilteredStatus;
 		});
 	}
 
@@ -312,7 +318,7 @@
 					id="searchStatus"
 					name="searchStatus"
 					bind:value={filteredStatus}
-					on:input={filterStatus}
+					on:change={filterStatus}
 					class="w-full h-14 rounded-lg text-black px-3 border border-gray-300"
 				>
 					<option value="" disabled>Status</option>
@@ -360,7 +366,7 @@
 							: 'grid-cols-7'} gap-4 rounded-lg h-16 items-center px-3
 							{rol != 'admin' ? 'w-full ' : 'w-11/12'}
 							{staal.status === 'CREATED' ? 'bg-white' : ''}
-							{staal.status === 'CREATED' && rol !== 'pointer-events-none' ? 'bg-white' : ''}							
+							{staal.status === 'CREATED' && rol !== 'admin' ? 'pointer-events-none' : ''}							
 							{staal.status === 'DONE' ? 'bg-green-50' : ''}
 							{staal.status === 'REGISTERED' ? 'bg-blue-100' : ''}
 							"
