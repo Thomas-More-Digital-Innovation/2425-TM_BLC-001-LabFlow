@@ -17,7 +17,7 @@
 	import EenhedenBeheren from '../../components/Instellingen/EenhedenBeheren.svelte';
 
 	// default gerenderde component
-	let navElement = 'Gebruiker';
+	let navElement = 'Test';
 </script>
 
 <Nav />
@@ -46,16 +46,6 @@
 		</button>
 		<button
 			type="button"
-			on:click={() => (navElement = 'Categorie')}
-			class="p-2 text-center text-md {navElement == 'Categorie'
-				? 'bg-blue-500'
-				: 'bg-blue-400'} flex flex-col items-center justify-center w-32 h-32 rounded-2xl text-white"
-		>
-			<div class="w-12 h-12 mb-3"><FaClipboardList /></div>
-			Categorieën
-		</button>
-		<button
-			type="button"
 			on:click={() => (navElement = 'Staal')}
 			class="p-2 text-center text-md {navElement == 'Staal'
 				? 'bg-blue-500'
@@ -63,6 +53,16 @@
 		>
 			<div class="w-12 h-12 mb-3"><GiTestTubes /></div>
 			Stalen
+		</button>
+		<button
+			type="button"
+			on:click={() => (navElement = 'Categorie')}
+			class="p-2 text-center text-md {navElement == 'Categorie'
+				? 'bg-blue-500'
+				: 'bg-blue-400'} flex flex-col items-center justify-center w-32 h-32 rounded-2xl text-white"
+		>
+			<div class="w-12 h-12 mb-3"><FaClipboardList /></div>
+			Categorieën
 		</button>
 		<button
 			type="button"

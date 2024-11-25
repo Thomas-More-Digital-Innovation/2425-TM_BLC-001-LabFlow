@@ -77,6 +77,7 @@
 			stalen = result.stalen;
 			stalenSorted = result.stalen;
 		}
+		console.log(stalen);
 	});
 
 	// Function om te filteren op staalcode en datum
@@ -314,9 +315,9 @@
 						class="grid {rol !== 'admin'
 							? 'grid-cols-7'
 							: 'grid-cols-7'} gap-4 bg-white rounded-lg h-16 items-center px-3 {rol != 'admin'
-							? 'w-full'
+							? 'w-full pointer-events-none'
 							: 'w-11/12'}"
-						on:click={() => setStore(staal.staalCode)}
+						on:click={rol !== 'admin' ? null : () => setStore(staal.staalCode)}
 					>
 						<div class="flex flex-col justify-center">
 							<p class="text-gray-400">Code</p>

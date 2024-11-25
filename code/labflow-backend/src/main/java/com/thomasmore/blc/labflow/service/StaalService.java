@@ -1,5 +1,6 @@
 package com.thomasmore.blc.labflow.service;
 
+import com.thomasmore.blc.labflow.config.UniqueConstraintViolationException;
 import com.thomasmore.blc.labflow.entity.Staal;
 import com.thomasmore.blc.labflow.entity.StaalTest;
 import com.thomasmore.blc.labflow.entity.Test;
@@ -28,12 +29,17 @@ public class StaalService {
     // Create
     public void createStaal(Staal staal) {
         // loopen door elke test
-        for (StaalTest registeredTest : staal.getRegisteredTests()) {
-            // testobject ophalen en koppelen met staal
-            Test test = testRepository.findByTestCode(registeredTest.getTest().getTestCode());
-            registeredTest.setTest(test);
+        if (staalRepository.findByStaalCode(staal.getStaalCode()) == null) {
+            for (StaalTest registeredTest : staal.getRegisteredTests()) {
+                // testobject ophalen en koppelen met staal
+                Test test = testRepository.findByTestCode(registeredTest.getTest().getTestCode());
+                registeredTest.setTest(test);
+            }
+            staalRepository.save(staal);
+        } else {
+            throw new UniqueConstraintViolationException("Staalcode already exists");
         }
-        staalRepository.save(staal);
+
     }
 
     // Read all
@@ -95,7 +101,7 @@ public class StaalService {
     }
 
     // Get staal by staalcode
-    public Staal readByStaalCode(int staalCode) {
+    public Staal readByStaalCode(Long staalCode) {
         return staalRepository.findByStaalCode(staalCode);
     }
 

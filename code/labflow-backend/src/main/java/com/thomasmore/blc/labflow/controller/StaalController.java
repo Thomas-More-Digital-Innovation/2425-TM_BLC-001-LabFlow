@@ -19,13 +19,8 @@ public class StaalController {
     // create
     @PostMapping("/createstaal")
     public ResponseEntity<String> createStaal(@RequestBody Staal staal) {
-        try {
-            staalService.createStaal(staal);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Staal created successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while creating Staal");
-        }
+        staalService.createStaal(staal);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Staal created successfully");
     }
 
     // read
@@ -56,7 +51,7 @@ public class StaalController {
 
     // Krijg een staal op basis van id
     @GetMapping("/staal/{code}")
-    public Staal getStaal(@PathVariable int code) {
+    public Staal getStaal(@PathVariable Long code) {
         return staalService.readByStaalCode(code);
     }
 }

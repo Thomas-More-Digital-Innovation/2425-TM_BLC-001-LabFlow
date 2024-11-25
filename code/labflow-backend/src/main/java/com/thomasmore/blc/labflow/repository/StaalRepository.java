@@ -21,5 +21,5 @@ public interface StaalRepository extends JpaRepository<Staal, Integer> {
     String findLargestStaalCode();
 
     // verkrijg staal op basis van staalcode
-    public Staal findByStaalCode(int staalCode);
+    public Staal findByStaalCode(Long staalCode);
 }
