@@ -123,6 +123,16 @@
 		goto('stalen/nieuw');
 	}
 
+	// set staalcode in store en ga naar waarden registreren / afdrukken pdf
+	function setStoreGoToDependingStatus(staal: any) {
+		staalCodeStore.set(staal.staalCode);
+		if (staal.status === 'REGISTERED' || staal.status === 'DONE') {
+			goto('stalen/registreren');
+		} else {
+			return;
+		}
+	}
+
 	// delete staal
 	async function deleteStaal(id: number) {
 		console.log(id);
@@ -314,10 +324,18 @@
 						type="button"
 						class="grid {rol !== 'admin'
 							? 'grid-cols-7'
-							: 'grid-cols-7'} gap-4 bg-white rounded-lg h-16 items-center px-3 {rol != 'admin'
-							? 'w-full pointer-events-none'
-							: 'w-11/12'}"
-						on:click={rol !== 'admin' ? null : () => setStore(staal.staalCode)}
+							: 'grid-cols-7'} gap-4 bg-white rounded-lg h-16 items-center px-3
+							{rol != 'admin' ? 'w-full' : 'w-11/12'}
+							{staal.status != 'CREATED' ? '' : 'pointer-events-none'}
+							{staal.status == 'DONE' ? 'bg-green-50' : ''}
+							{staal.status == 'REGISTERED' ? 'bg-blue-100' : ''}"
+						on:click={() => {
+							if (rol !== 'admin') {
+								setStoreGoToDependingStatus(staal);
+							} else {
+								setStore(staal.staalCode);
+							}
+						}}
 					>
 						<div class="flex flex-col justify-center">
 							<p class="text-gray-400">Code</p>
