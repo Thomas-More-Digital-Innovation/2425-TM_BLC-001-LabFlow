@@ -40,10 +40,10 @@ public class Staal {
 
     // enumerable status
     public enum Status {
-        REGISTERED, DONE
+        CREATED, REGISTERED, DONE
     }
 
-    @Enumerated(EnumType.STRING) // Store as a string in the database (e.g., 'REGISTERED', 'DONE')
+    @Enumerated(EnumType.STRING) // Opslaan enumerable als een string
     private Status status;
 
     // lege constructor
@@ -63,7 +63,7 @@ public class Staal {
         this.laborantRnummer = laborantRnummer;
         this.user = user;
         this.aanmaakDatum = new Date();
-        this.status = Status.REGISTERED;
+        this.status = Status.CREATED;
     }
 
     // constructor voor het registreren van een staal met tests
@@ -80,7 +80,7 @@ public class Staal {
         this.user = user;
         this.setRegisteredTests(registeredTests); // Use setter to ensure proper association
         this.aanmaakDatum = new Date();
-        this.status = Status.REGISTERED;
+        this.status = Status.CREATED;
     }
 
     // getters en setters

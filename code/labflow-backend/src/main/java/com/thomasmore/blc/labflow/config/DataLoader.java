@@ -58,13 +58,13 @@ public class DataLoader implements CommandLineRunner {
 
 
         // aanmaken testcategorie
-        Testcategorie edtaCat = new Testcategorie("EDTA", "#CA3DD4");
-        Testcategorie citraatCat = new Testcategorie("Citraat", "#12D3E9");
-        Testcategorie serumCat = new Testcategorie("Serum", "#ED3A3A");
-        Testcategorie heparineCat = new Testcategorie("Heparine", "#2DE57A");
-        Testcategorie fluorideCat = new Testcategorie("Fluoride", "#8c8c8c");
-        Testcategorie urineCat = new Testcategorie("Urine", "#ffcc40");
-        Testcategorie noCat = new Testcategorie("Geen Categorie", "#ffffff");
+        Testcategorie edtaCat = new Testcategorie("EDTA", "#CA3DD4", "Paars");
+        Testcategorie citraatCat = new Testcategorie("Citraat", "#12D3E9", "Blauw");
+        Testcategorie serumCat = new Testcategorie("Serum", "#ED3A3A", "Rood");
+        Testcategorie heparineCat = new Testcategorie("Heparine", "#2DE57A", "Groen");
+        Testcategorie fluorideCat = new Testcategorie("Fluoride", "#8c8c8c", "Grijs");
+        Testcategorie urineCat = new Testcategorie("Urine", "#ffcc40","Geel");
+        Testcategorie noCat = new Testcategorie("Geen Categorie", "#ffffff", "Geen");
         testCategorieRepository.save(edtaCat);
         testCategorieRepository.save(citraatCat);
         testCategorieRepository.save(serumCat);

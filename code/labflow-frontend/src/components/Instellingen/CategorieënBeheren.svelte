@@ -73,15 +73,17 @@
 	let categorienaam = '';
 	// dit geeft een warning in console en geeft de kleur transparant weer (dit is wat ik wil)
 	let hex = '';
+	let kleurnaam = '';
 
 	let errorVeldenCategoriePOST = {
 		categorienaam: false,
-		kleur: false
+		kleur: false,
+		kleurnaam: false
 	};
 
 	let errorMessageCategorie = '';
 	async function nieuweCategorie() {
-		errorVeldenCategoriePOST = { categorienaam: false, kleur: false };
+		errorVeldenCategoriePOST = { categorienaam: false, kleur: false, kleurnaam: false };
 		let isValid = true;
 		const regex = /^#([0-9A-F]{3}){1,2}$/i;
 
@@ -91,6 +93,10 @@
 		}
 		if (!hex || !regex.test(hex)) {
 			errorVeldenCategoriePOST.kleur = true;
+			isValid = false;
+		}
+		if (!kleurnaam) {
+			errorVeldenCategoriePOST.kleurnaam = true;
 			isValid = false;
 		}
 		// errorMessageStaal tonen indien niet alle velden zijn ingevuld
@@ -108,11 +114,13 @@
 				},
 				body: JSON.stringify({
 					naam: categorienaam,
-					kleur: hex
+					kleur: hex,
+					kleurnaam: kleurnaam
 				})
 			});
 			categorienaam = '';
 			hex = '';
+			kleurnaam = '';
 			errorMessageCategorie = '';
 			if (response.status === 409) {
 				errorMessageCategorie = 'Deze categorie bestaat al.';
@@ -132,17 +140,17 @@
 
 	let errorVeldenCategoriePUT = {
 		categorienaam: false,
-		kleur: false
+		kleur: false,
+		kleurnaam: false
 	};
 
 	let errorMessageCategoriePUT = '';
 
 	async function updateCategorie(id: string) {
 		const categorie = categorieën.find((c) => c.id === id);
-		console.log(categorie);
 		if (!categorie) return;
 
-		errorVeldenCategoriePUT = { categorienaam: false, kleur: false };
+		errorVeldenCategoriePUT = { categorienaam: false, kleur: false, kleurnaam: false };
 		let isValid = true;
 
 		if (!categorie.naam) {
@@ -152,10 +160,15 @@
 		if (!categorie.kleur) {
 			errorVeldenCategoriePUT.kleur = true;
 		}
+		if (!categorie.kleurnaam) {
+			errorVeldenCategoriePUT.kleurnaam = true;
+			isValid = false;
+		}
 		if (!isValid) {
 			errorMessageCategoriePUT = 'Vul alle verplichte velden in.';
 			return;
 		}
+		console.log(categorie.kleurnaam);
 		try {
 			await fetch(`http://localhost:8080/api/testCategorieen/${id}`, {
 				method: 'PUT',
@@ -165,13 +178,15 @@
 				},
 				body: JSON.stringify({
 					naam: categorie.naam,
-					kleur: categorie.kleur
+					kleur: categorie.kleur,
+					kleurnaam: categorie.kleurnaam
 				})
 			});
-			errorMessageCategoriePUT = '';
 		} catch (error) {
 			console.error('Categorie kon niet worden aangepast: ', error);
 		}
+		errorMessageCategoriePUT = '';
+
 		return;
 	}
 </script>
@@ -213,22 +228,28 @@
 			<div class="text-red-500 mb-2">{deleteError}</div>
 			<!-- Header -->
 			<div class="grid grid-cols-12 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
-				<div class="col-span-4">
+				<div class="col-span-3">
 					<p>Naam</p>
 				</div>
-				<div class="col-span-4 text-center">
+				<div class="col-span-3 text-center">
 					<p>Kleur</p>
 				</div>
-				<div class="col-span-4 text-right">
+				<div class="col-span-3 text-center">
+					<p>Naam kleur</p>
+				</div>
+				<div class="col-span-3 text-right">
 					<p>Acties</p>
 				</div>
 			</div>
 			{#if errorMessageCategorie}
 				<div class="text-red-500 mb-2">{errorMessageCategorie}</div>
 			{/if}
+			{#if errorMessageCategoriePUT}
+				<div class="text-red-500 mb-2">{errorMessageCategoriePUT}</div>
+			{/if}
 			<div class="grid grid-cols-12 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
 				<!-- Naam -->
-				<div class="col-span-4">
+				<div class="col-span-3">
 					<input
 						type="text"
 						id="nieuwecategorie"
@@ -241,8 +262,12 @@
 				</div>
 
 				<!-- Kleur Picker -->
-				<div class="col-span-4 flex justify-center items-center">
-					<div class={errorVeldenCategoriePOST.categorienaam ? 'border-b border-red-500' : ''}>
+				<div class="col-span-3 flex justify-center items-center">
+					<div
+						class={errorVeldenCategoriePOST.categorienaam
+							? 'border-2 border-red-500 rounded-lg'
+							: ''}
+					>
 						<ColorPicker
 							bind:hex
 							label="Kies een kleur"
@@ -252,8 +277,21 @@
 					</div>
 				</div>
 
+				<!-- Naam kleur -->
+				<div class="col-span-3">
+					<input
+						type="text"
+						id="kleurnaam"
+						bind:value={kleurnaam}
+						placeholder="Naam van de kleur"
+						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full {errorVeldenCategoriePOST.categorienaam
+							? 'border-2 border-red-500'
+							: ''}"
+					/>
+				</div>
+
 				<!-- Acties -->
-				<div class="col-span-4 flex justify-end">
+				<div class="col-span-3 flex justify-end">
 					<button
 						type="submit"
 						class="h-10 w-10 bg-green-500 p-2 rounded-lg text-white"
@@ -265,14 +303,10 @@
 				</div>
 			</div>
 
-			{#if errorMessageCategoriePUT}
-				<div class="text-red-500 mb-2">{errorMessageCategoriePUT}</div>
-			{/if}
-
 			{#each categorieënSorted as categorie, index}
 				<div class="grid grid-cols-12 gap-4 bg-white rounded-lg h-20 items-center px-3 shadow-md">
 					<!-- Naam -->
-					<div class="col-span-4">
+					<div class="col-span-3">
 						<input
 							type="text"
 							on:blur={() => updateCategorie(categorie.id)}
@@ -283,7 +317,7 @@
 					</div>
 
 					<!-- Kleur Picker -->
-					<div class="col-span-4 flex justify-center items-center">
+					<div class="col-span-3 flex justify-center items-center">
 						<div class="custom-color-picker">
 							<ColorPicker
 								label="Kies een kleur"
@@ -295,8 +329,19 @@
 						</div>
 					</div>
 
+					<!-- Naam kleur -->
+					<div class="col-span-3">
+						<input
+							type="text"
+							on:blur={() => updateCategorie(categorie.id)}
+							id="categorie-{categorie?.id}"
+							bind:value={categorie.kleurnaam}
+							class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full"
+						/>
+					</div>
+
 					<!-- Acties -->
-					<div class="col-span-4 flex justify-end">
+					<div class="col-span-3 flex justify-end">
 						{#if categorie.confirmDelete}
 							<button
 								type="button"

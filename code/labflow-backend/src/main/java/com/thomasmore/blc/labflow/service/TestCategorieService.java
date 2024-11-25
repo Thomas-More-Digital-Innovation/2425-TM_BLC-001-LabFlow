@@ -40,6 +40,7 @@ public class TestCategorieService {
         if (testcategorie != null) {
             testcategorie.setNaam(updateTestCategorie.getNaam());
             testcategorie.setKleur(updateTestCategorie.getKleur());
+            testcategorie.setKleurnaam(updateTestCategorie.getKleurnaam());
             testCategorieRepository.save(testcategorie);
             return new ResponseEntity<>(testcategorie, HttpStatus.OK);
         }

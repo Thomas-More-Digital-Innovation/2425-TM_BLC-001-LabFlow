@@ -124,4 +124,23 @@ public class StaalService {
         }
         return nieuweStaalCode;
     }
+
+    // patch staalstatus
+    public ResponseEntity<Staal> patchStatus(String status, Long id) {
+        Staal toPatchStaal = staalRepository.findByStaalCode(id);
+        if (toPatchStaal != null) {
+            // converten van status pathvariabele naar instance van Status object
+            Staal.Status newStatus = Staal.Status.valueOf(status.toUpperCase());
+            toPatchStaal.setStatus(newStatus);
+            staalRepository.save(toPatchStaal);
+            return new ResponseEntity<>(toPatchStaal, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // returns een lijst van unieke statussen die aan een staal gekoppeld kunnen worden
+    public List<Staal.Status> getstatus() {
+        return staalRepository.findDistinctStaalStatus();
+    }
 }

@@ -54,4 +54,25 @@ public class StaalController {
     public Staal getStaal(@PathVariable Long code) {
         return staalService.readByStaalCode(code);
     }
+
+    // Patch voor het aanpassen van een staal
+    @PatchMapping("/updatestaalstatus/{status}/{id}")
+    public ResponseEntity<Staal> updateStaalStatus(@PathVariable String status, @PathVariable Long id) {
+        try {
+            return staalService.patchStatus(status, id);
+        }
+        catch (Exception e) {
+            throw new UniqueConstraintViolationException(e.getMessage());
+        }
+    }
+
+    // get status van stalen
+    @GetMapping("/getstatus")
+    public List<Staal.Status> getStatus() throws Exception {
+        try {
+            return staalService.getstatus();
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
 }
