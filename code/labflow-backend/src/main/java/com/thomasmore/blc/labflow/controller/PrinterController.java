@@ -13,7 +13,7 @@ public class PrinterController {
     private PrinterService printerService;
 
     @GetMapping("/labels/{staalId}/{amountOfCopies}")
-    public ResponseEntity<String> generateLabel(@PathVariable String staalId, @PathVariable int amountOfCopies) {
+    public ResponseEntity<String> generateLabel(@PathVariable Long staalId, @PathVariable int amountOfCopies) {
         try {
             System.out.println("Printing label for staalId: " + staalId + " with amount of copies: " + amountOfCopies);
             return printerService.printLabel(staalId, amountOfCopies);
