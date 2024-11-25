@@ -19,13 +19,8 @@ public class StaalController {
     // create
     @PostMapping("/createstaal")
     public ResponseEntity<String> createStaal(@RequestBody Staal staal) {
-        try {
-            staalService.createStaal(staal);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Staal created successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while creating Staal");
-        }
+        staalService.createStaal(staal);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Staal created successfully");
     }
 
     // read
@@ -56,7 +51,28 @@ public class StaalController {
 
     // Krijg een staal op basis van id
     @GetMapping("/staal/{code}")
-    public Staal getStaal(@PathVariable int code) {
+    public Staal getStaal(@PathVariable Long code) {
         return staalService.readByStaalCode(code);
+    }
+
+    // Patch voor het aanpassen van een staal
+    @PatchMapping("/updatestaalstatus/{status}/{id}")
+    public ResponseEntity<Staal> updateStaalStatus(@PathVariable String status, @PathVariable Long id) {
+        try {
+            return staalService.patchStatus(status, id);
+        }
+        catch (Exception e) {
+            throw new UniqueConstraintViolationException(e.getMessage());
+        }
+    }
+
+    // get status van stalen
+    @GetMapping("/getstatus")
+    public List<Staal.Status> getStatus() throws Exception {
+        try {
+            return staalService.getstatus();
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 }

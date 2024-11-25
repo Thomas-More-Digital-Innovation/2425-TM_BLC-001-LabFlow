@@ -7,7 +7,7 @@
 	// @ts-ignore
 	import FaTrashAlt from 'svelte-icons/fa/FaTrashAlt.svelte';
 	// @ts-ignore
-	// import FaPlus from 'svelte-icons/fa/FaPlus.svelte';
+	import FaPlus from 'svelte-icons/fa/FaPlus.svelte';
 	import { onMount } from 'svelte';
 	import { fetchStalen } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
@@ -17,20 +17,20 @@
 	let searchCode = '';
 
 	// functie voor het filteren op basis van staalcode
-	let filteredStalen: any[] = [];
+	let stalenSorted: any[] = [];
 	let stalen: any[] = [];
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
 		const result = await fetchStalen();
 		if (result) {
-			[stalen, filteredStalen] = [result.stalen, result.filteredStalen];
+			[stalen, stalenSorted] = [result.stalen, result.stalen];
 		}
-		console.log(filteredStalen);
+		console.log(stalenSorted);
 	});
 
 	function filterStalenMetCode() {
-		filteredStalen = stalen.filter((staal) => {
+		stalenSorted = stalen.filter((staal) => {
 			const codeMatch =
 				staal.staalCode.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
 				staal.patientAchternaam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
@@ -41,6 +41,11 @@
 				staal.aanmaakDatum.toString().toLowerCase().includes(searchCode.toLowerCase());
 			return codeMatch;
 		});
+	}
+
+	function verwijderZoek() {
+		searchCode = '';
+		stalenSorted = stalen;
 	}
 
 	///// DELETE staal /////
@@ -58,7 +63,7 @@
 		}
 		const result = await fetchStalen();
 		if (result) {
-			[stalen, filteredStalen] = [result.stalen, result.stalen];
+			[stalen, stalenSorted] = [result.stalen, result.stalen];
 		}
 		return;
 	}
@@ -83,98 +88,103 @@
 		laborantRnummer: false
 	};
 
-	// let errorMessageStaalPOST = '';
-	// async function nieuweStaal() {
-	// 	// Resetten van de errorvelden
-	// 	errorVeldenStaalPOST = {
-	// 		staalcode: false,
-	// 		naam: false,
-	// 		voornaam: false,
-	// 		geslacht: false,
-	// 		geboortedatum: false,
-	// 		laborantNaam: false,
-	// 		laborantRnummer: false
-	// 	};
-	// 	let isValid = true;
-	// 	laborantRnummer = laborantRnummer.toUpperCase();
-	// 	const regex = /^R\d{7}$/;
-	// 	if (!StaalCode) {
-	// 		errorVeldenStaalPOST.staalcode = true;
-	// 		isValid = false;
-	// 	}
-	// 	if (!patientAchternaam) {
-	// 		errorVeldenStaalPOST.naam = true;
-	// 		isValid = false;
-	// 	}
-	// 	if (!patientVoornaam) {
-	// 		errorVeldenStaalPOST.voornaam = true;
-	// 		isValid = false;
-	// 	}
-	// 	if (!patientGeslacht) {
-	// 		errorVeldenStaalPOST.geslacht = true;
-	// 		isValid = false;
-	// 	}
-	// 	if (!patientGeboorteDatum) {
-	// 		errorVeldenStaalPOST.geboortedatum = true;
-	// 		isValid = false;
-	// 	}
-	// 	if (!laborantNaam) {
-	// 		errorVeldenStaalPOST.laborantNaam = true;
-	// 		isValid = false;
-	// 	}
-	// 	if (!laborantRnummer) {
-	// 		errorVeldenStaalPOST.laborantRnummer = true;
-	// 		isValid = false;
-	// 	}
-	// 	if (!laborantRnummer || !regex.test(laborantRnummer)) {
-	// 		errorVeldenStaalPOST.laborantRnummer = true;
-	// 		errorMessageStaalPOST = 'RNummer moet beginnen met een R en gevolgd worden door 7 cijfers.';
-	// 		return;
-	// 	}
-	// 	if (laborantNaam && laborantRnummer && regex.test(laborantRnummer)) {
-	// 		isValid = true;
-	// 	}
-	// 	if (!isValid) {
-	// 		errorMessageStaalPOST = 'Vul alle verplichte velden in.';
-	// 		return;
-	// 	}
-	// 	try {
-	// 		const response = await fetch('http://localhost:8080/api/createstaal', {
-	// 			method: 'POST',
-	// 			headers: {
-	// 				'Content-Type': 'application/json',
-	// 				Authorization: 'Bearer ' + token
-	// 			},
-	// 			body: JSON.stringify({
-	// 				staalCode: StaalCode,
-	// 				patientAchternaam: patientAchternaam,
-	// 				patientVoornaam: patientVoornaam,
-	// 				patientGeslacht: patientGeslacht,
-	// 				patientGeboorteDatum: patientGeboorteDatum,
-	// 				laborantNaam: laborantNaam,
-	// 				laborantRnummer: laborantRnummer,
-	// 				user: {
-	// 					id: userId
-	// 				}
-	// 			})
-	// 		});
-	// 		StaalCode = '';
-	// 		patientAchternaam = '';
-	// 		patientVoornaam = '';
-	// 		patientGeslacht = '';
-	// 		patientGeboorteDatum = '';
-	// 		laborantNaam = '';
-	// 		laborantRnummer = '';
-	// 		errorMessageStaalPOST = '';
-	// 		const result = await fetchStalen();
-	// 		if (result) {
-	//		    [stalen, filteredStalen] = [result.stalen, result.stalen];
-	// 		}
-	// 	} catch (error) {
-	// 		console.error('Staal kon niet worden aangemaakt: ', error);
-	// 	}
-	// 	return;
-	// }
+	let errorMessageStaalPOST = '';
+	async function nieuweStaal() {
+		// Resetten van de errorvelden
+		errorVeldenStaalPOST = {
+			staalcode: false,
+			naam: false,
+			voornaam: false,
+			geslacht: false,
+			geboortedatum: false,
+			laborantNaam: false,
+			laborantRnummer: false
+		};
+		let isValid = true;
+		laborantRnummer = laborantRnummer.toUpperCase();
+		const regex = /^R\d{7}$/;
+		if (!StaalCode) {
+			errorVeldenStaalPOST.staalcode = true;
+			isValid = false;
+		}
+		if (!patientAchternaam) {
+			errorVeldenStaalPOST.naam = true;
+			isValid = false;
+		}
+		if (!patientVoornaam) {
+			errorVeldenStaalPOST.voornaam = true;
+			isValid = false;
+		}
+		if (!patientGeslacht) {
+			errorVeldenStaalPOST.geslacht = true;
+			isValid = false;
+		}
+		if (!patientGeboorteDatum) {
+			errorVeldenStaalPOST.geboortedatum = true;
+			isValid = false;
+		}
+		if (!laborantNaam) {
+			errorVeldenStaalPOST.laborantNaam = true;
+			isValid = false;
+		}
+		if (!laborantRnummer) {
+			errorVeldenStaalPOST.laborantRnummer = true;
+			isValid = false;
+		}
+		if (!laborantRnummer || !regex.test(laborantRnummer)) {
+			errorVeldenStaalPOST.laborantRnummer = true;
+			errorMessageStaalPOST = 'RNummer moet beginnen met een R en gevolgd worden door 7 cijfers.';
+			return;
+		}
+		if (laborantNaam && laborantRnummer && regex.test(laborantRnummer)) {
+			isValid = true;
+		}
+		if (!isValid) {
+			errorMessageStaalPOST = 'Vul alle verplichte velden in.';
+			return;
+		}
+		try {
+			const response = await fetch('http://localhost:8080/api/createstaal', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + token
+				},
+				body: JSON.stringify({
+					staalCode: StaalCode,
+					patientAchternaam: patientAchternaam,
+					patientVoornaam: patientVoornaam,
+					patientGeslacht: patientGeslacht,
+					patientGeboorteDatum: patientGeboorteDatum,
+					laborantNaam: laborantNaam,
+					laborantRnummer: laborantRnummer,
+					user: {
+						id: userId
+					}
+				})
+			});
+			StaalCode = '';
+			patientAchternaam = '';
+			patientVoornaam = '';
+			patientGeslacht = '';
+			patientGeboorteDatum = '';
+			laborantNaam = '';
+			laborantRnummer = '';
+			errorMessageStaalPOST = '';
+			const result = await fetchStalen();
+			if (result) {
+				[stalen, stalenSorted] = [result.stalen, result.stalen];
+			}
+			if (response.status === 409) {
+				errorMessageStaalPOST = 'Staalcode is niet uniek.';
+				console.log(errorMessageStaalPOST);
+			}
+		} catch (error) {
+			console.error('Staal kon niet worden aangemaakt: ', error);
+			console.log(errorMessageStaalPOST);
+		}
+		return;
+	}
 
 	///// PUT Staal aanpassen /////
 	let errorVeldenStaalPUT = {
@@ -287,7 +297,7 @@
 	</div>
 
 	<div class="bg-slate-100 w-full h-full rounded-2xl p-5">
-		<div class="flex space-x-5 mb-5">
+		<div class="flex mb-5 w-full">
 			<input
 				type="text"
 				id="searchCode"
@@ -295,8 +305,14 @@
 				placeholder="zoeken"
 				bind:value={searchCode}
 				on:input={filterStalenMetCode}
-				class="w-2/5 h-12 rounded-lg text-black pl-3"
+				class="w-2/5 h-12 rounded-l-lg text-black pl-3"
 			/>
+			<button
+				on:click={verwijderZoek}
+				class="w-12 h-12 p-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-r-lg"
+			>
+				<GoX />
+			</button>
 		</div>
 		<div class="space-y-3">
 			<!-- Header -->
@@ -331,7 +347,7 @@
 					<p>Acties</p>
 				</div>
 			</div>
-			<!-- {#if errorMessageStaalPOST}
+			{#if errorMessageStaalPOST}
 				<div class="text-red-500 mb-2">{errorMessageStaalPOST}</div>
 			{/if}
 			<div class="grid grid-cols-9 space-x-3 bg-white rounded-lg h-20 items-center px-3 shadow-md">
@@ -421,12 +437,12 @@
 						<FaPlus />
 					</button>
 				</div>
-			</div> -->
+			</div>
 			{#if errorMessageStaalPUT}
 				<div class="text-red-500 mb-2">{errorMessageStaalPUT}</div>
 			{/if}
 			<div class="space-y-3">
-				{#each filteredStalen as staal, index}
+				{#each stalenSorted as staal, index}
 					<div
 						class="grid grid-cols-9 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
 					>
@@ -509,7 +525,7 @@
 								<button
 									type="button"
 									on:click={() => {
-										filteredStalen.forEach((c, i) => {
+										stalenSorted.forEach((c, i) => {
 											if (i !== index) c.confirmDelete = false;
 										});
 										staal.confirmDelete = true;

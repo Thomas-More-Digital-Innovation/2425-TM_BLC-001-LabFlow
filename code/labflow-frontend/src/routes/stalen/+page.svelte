@@ -2,7 +2,7 @@
 	import Nav from '../../components/nav.svelte';
 	import { onMount } from 'svelte';
 	import { getRol } from '$lib/globalFunctions';
-	import { fetchStalen } from '$lib/fetchFunctions';
+	import { fetchStalen, fetchStatussen } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
 	import { id } from '../../components/Modal/store';
 
@@ -22,6 +22,8 @@
 	import Modal from '../../components/Modal/Modal.svelte';
 	import Trigger from '../../components/Modal/Trigger.svelte';
 	import Content from '../../components/Modal/Content.svelte';
+	import { staalCodeStore } from '$lib/store';
+	import { goto } from '$app/navigation';
 
 	let openModalTestId: number | null = null;
 
@@ -36,9 +38,11 @@
 
 	// fetchen van stalen
 	let stalen: any[] = [];
-	let filteredStalen: any[] = [];
+	let stalenSorted: any[] = [];
+	let statussen: any[] = [];
 	let searchCode = '';
 	let searchDate = '';
+
 	let token: string = '';
 
 	let editStaalError = {
@@ -73,13 +77,16 @@
 		const result = await fetchStalen();
 		if (result) {
 			stalen = result.stalen;
-			filteredStalen = result.filteredStalen;
+			stalenSorted = result.stalen;
+			statussen = await fetchStatussen();
 		}
+		console.log(statussen);
+		console.log(stalen);
 	});
 
 	// Function om te filteren op staalcode en datum
 	function filterStalen() {
-		filteredStalen = stalen.filter((staal) => {
+		stalenSorted = stalen.filter((staal) => {
 			const codeMatch =
 				staal.staalCode.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
 				staal.patientAchternaam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
@@ -103,10 +110,50 @@
 		});
 	}
 
+	// Functie om te filteren op status
+	let filteredStatus = '';
+
+	function filterStatus() {
+		console.log(statussen);
+
+		// Make sure filteredStatus is in uppercase for a consistent comparison
+		const normalizedFilteredStatus = filteredStatus.toUpperCase();
+
+		stalenSorted = stalen.filter((staal) => {
+			// Ensure staal.status is in uppercase as well
+			const normalizedStaalStatus = staal.status.toUpperCase();
+
+			// Compare the statuses directly
+			return normalizedStaalStatus === normalizedFilteredStatus;
+		});
+	}
+
+	function verwijderZoek() {
+		searchCode = '';
+		stalenSorted = stalen;
+	}
+
 	function deleteFilters() {
 		searchCode = '';
 		searchDate = '';
+		filteredStatus = '';
 		filterStalen();
+	}
+
+	// set store
+	function setStore(staalCode: string) {
+		staalCodeStore.set(staalCode);
+		goto('stalen/nieuw');
+	}
+
+	// set staalcode in store en ga naar waarden registreren / afdrukken pdf
+	function setStoreGoToDependingStatus(staal: any) {
+		staalCodeStore.set(staal.staalCode);
+		if (staal.status === 'REGISTERED' || staal.status === 'DONE') {
+			goto('stalen/registreren');
+		} else {
+			return;
+		}
 	}
 
 	// delete staal
@@ -125,7 +172,7 @@
 		const result = await fetchStalen();
 		if (result) {
 			stalen = result.stalen;
-			filteredStalen = result.filteredStalen;
+			stalenSorted = result.stalen;
 		}
 	}
 
@@ -223,6 +270,7 @@
 <div class="px-8 flex flex-row space-x-5">
 	<div class="flex flex-col space-y-5">
 		<a
+			on:click={() => setStore('')}
 			href="/stalen/nieuw"
 			class="bg-blue-400 flex flex-col items-center justify-center w-56 h-56 rounded-2xl"
 		>
@@ -246,23 +294,47 @@
 		<!-- filteren op code en datum -->
 		<div class="flex mb-5 items-center space-x-5">
 			<!-- Search Code Input -->
-			<input
-				type="text"
-				id="searchCode"
-				name="searchCode"
-				placeholder="zoeken"
-				bind:value={searchCode}
-				on:input={filterStalen}
-				class="w-1/3 h-14 rounded-lg text-black pl-3 flex-grow"
-			/>
+			<div class="flex items-center flex-grow">
+				<input
+					type="text"
+					id="searchCode"
+					name="searchCode"
+					placeholder="Zoeken"
+					bind:value={searchCode}
+					on:input={filterStalen}
+					class="h-14 rounded-l-lg text-black pl-3 flex-grow border border-gray-300"
+				/>
+				<button
+					on:click={verwijderZoek}
+					class="w-14 h-14 p-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-r-lg"
+				>
+					<GoX />
+				</button>
+			</div>
 
-			<!-- Label and Date Input -->
-			<div class="flex items-center w-1/3">
+			<!-- Filteren op status -->
+			<div class="flex items-center w-1/5">
+				<select
+					id="searchStatus"
+					name="searchStatus"
+					bind:value={filteredStatus}
+					on:change={filterStatus}
+					class="w-full h-14 rounded-lg text-black px-3 border border-gray-300"
+				>
+					<option value="" disabled>Status</option>
+					{#each statussen as status}
+						<option value={status}>{status.toLowerCase()}</option>
+					{/each}
+				</select>
+			</div>
+
+			<!-- Filteren op aanmaakdatum -->
+			<div class="flex items-center w-1/5">
 				<label
 					for="searchDate"
-					class="text-white bg-gray-400 h-14 flex items-center rounded-l-xl px-3"
+					class="text-black bg-gray-200 h-14 flex items-center justify-center rounded-l-lg px-3 border border-gray-300"
 				>
-					Filter op aanmaakdatum
+					Datum
 				</label>
 				<input
 					type="date"
@@ -270,55 +342,72 @@
 					name="searchDate"
 					bind:value={searchDate}
 					on:input={filterStalen}
-					class="flex-grow h-14 rounded-r-lg text-black px-3"
+					class="flex-grow h-14 rounded-r-lg text-black px-3 border border-gray-300"
 				/>
 			</div>
 
 			<!-- Delete Filters Button -->
 			<button
-				class="bg-blue-600 rounded-lg p-3 text-white h-14 w-1/6"
+				class="bg-blue-600 rounded-lg h-14 w-1/6 flex items-center justify-center text-white hover:bg-blue-700"
 				type="button"
 				on:click={deleteFilters}
 			>
-				Verwijder filters
+				Verwijder Filters
 			</button>
 		</div>
 
 		<div class="space-y-3">
-			{#each filteredStalen as staal, index}
-				<div
-					class="grid {rol !== 'admin'
-						? 'grid-cols-7'
-						: 'grid-cols-8'} gap-4 bg-white rounded-lg h-16 items-center px-3"
-				>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Code</p>
-						<p>{staal?.staalCode || ''}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Aanmaakdatum</p>
-						<p>{new Date(staal?.aanmaakDatum).toLocaleDateString() || ''}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Naam</p>
-						<p>{staal?.patientAchternaam || ''}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Voornaam</p>
-						<p>{staal?.patientVoornaam || ''}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Geslacht</p>
-						<p>{staal?.patientGeslacht === 'V' ? 'Vrouw' : 'Man'}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400">Geboortedatum</p>
-						<p>{new Date(staal?.patientGeboorteDatum).toLocaleDateString() || ''}</p>
-					</div>
-					<div class="flex flex-col justify-center">
-						<p class="text-gray-400 font-bold">Laborant</p>
-						<p>{staal?.laborantNaam || ''}</p>
-					</div>
+			{#each stalenSorted as staal, index}
+				<div class="flex items-center justify-between">
+					<button
+						type="button"
+						class="grid {rol !== 'admin'
+							? 'grid-cols-7'
+							: 'grid-cols-7'} gap-4 rounded-lg h-16 items-center px-3
+							{rol != 'admin' ? 'w-full ' : 'w-11/12'}
+							{staal.status === 'CREATED' ? 'bg-white' : ''}
+							{staal.status === 'CREATED' && rol !== 'admin' ? 'pointer-events-none' : ''}							
+							{staal.status === 'DONE' ? 'bg-green-50' : ''}
+							{staal.status === 'REGISTERED' ? 'bg-blue-100' : ''}
+							"
+						on:click={() => {
+							if (rol !== 'admin') {
+								setStoreGoToDependingStatus(staal);
+							} else {
+								setStore(staal.staalCode);
+							}
+						}}
+					>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Code</p>
+							<p>{staal?.staalCode || ''}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Aanmaakdatum</p>
+							<p>{new Date(staal?.aanmaakDatum).toLocaleDateString() || ''}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Naam</p>
+							<p>{staal?.patientAchternaam || ''}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Voornaam</p>
+							<p>{staal?.patientVoornaam || ''}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Geslacht</p>
+							<p>{staal?.patientGeslacht === 'V' ? 'Vrouw' : 'Man'}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400">Geboortedatum</p>
+							<p>{new Date(staal?.patientGeboorteDatum).toLocaleDateString() || ''}</p>
+						</div>
+						<div class="flex flex-col justify-center">
+							<p class="text-gray-400 font-bold">Laborant</p>
+							<p>{staal?.laborantNaam || ''}</p>
+						</div>
+					</button>
+
 					{#if rol === 'admin'}
 						<div class="col-span-1 flex justify-end space-x-2">
 							<!-- Admin-only CRUD buttons -->
@@ -470,7 +559,7 @@
 										<button
 											type="button"
 											on:click={() => {
-												filteredStalen.forEach((s, i) => {
+												stalenSorted.forEach((s, i) => {
 													if (i !== index) s.confirmDelete = false;
 												});
 												staal.confirmDelete = true;

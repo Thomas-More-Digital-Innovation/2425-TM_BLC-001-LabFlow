@@ -38,6 +38,14 @@ public class Staal {
     @JsonManagedReference
     private List<StaalTest> registeredTests = new ArrayList<>();
 
+    // enumerable status
+    public enum Status {
+        CREATED, REGISTERED, DONE
+    }
+
+    @Enumerated(EnumType.STRING) // Opslaan enumerable als een string
+    private Status status;
+
     // lege constructor
     public Staal() {
         this.aanmaakDatum = new Date();
@@ -55,6 +63,7 @@ public class Staal {
         this.laborantRnummer = laborantRnummer;
         this.user = user;
         this.aanmaakDatum = new Date();
+        this.status = Status.CREATED;
     }
 
     // constructor voor het registreren van een staal met tests
@@ -71,6 +80,7 @@ public class Staal {
         this.user = user;
         this.setRegisteredTests(registeredTests); // Use setter to ensure proper association
         this.aanmaakDatum = new Date();
+        this.status = Status.CREATED;
     }
 
     // getters en setters
@@ -180,5 +190,13 @@ public class Staal {
     public void removeRegisteredTest(StaalTest test) {
         registeredTests.remove(test);
         test.setStaal(null);
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

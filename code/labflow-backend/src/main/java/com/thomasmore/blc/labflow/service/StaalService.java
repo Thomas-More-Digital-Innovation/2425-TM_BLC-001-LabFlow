@@ -1,10 +1,13 @@
 package com.thomasmore.blc.labflow.service;
 
+import com.thomasmore.blc.labflow.config.UniqueConstraintViolationException;
 import com.thomasmore.blc.labflow.entity.Staal;
 import com.thomasmore.blc.labflow.entity.StaalTest;
 import com.thomasmore.blc.labflow.entity.Test;
+import com.thomasmore.blc.labflow.entity.User;
 import com.thomasmore.blc.labflow.repository.StaalRepository;
 import com.thomasmore.blc.labflow.repository.TestRepository;
+import com.thomasmore.blc.labflow.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +23,23 @@ public class StaalService {
 
     @Autowired
     private TestRepository testRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     // Create
     public void createStaal(Staal staal) {
         // loopen door elke test
-        for (StaalTest registeredTest : staal.getRegisteredTests()) {
-            // testobject ophalen en koppelen met staal
-            Test test = testRepository.findByTestCode(registeredTest.getTest().getTestCode());
-            registeredTest.setTest(test);
+        if (staalRepository.findByStaalCode(staal.getStaalCode()) == null) {
+            for (StaalTest registeredTest : staal.getRegisteredTests()) {
+                // testobject ophalen en koppelen met staal
+                Test test = testRepository.findByTestCode(registeredTest.getTest().getTestCode());
+                registeredTest.setTest(test);
+            }
+            staalRepository.save(staal);
+        } else {
+            throw new UniqueConstraintViolationException("Staalcode already exists");
         }
-        staalRepository.save(staal);
+
     }
 
     // Read all
@@ -40,24 +50,37 @@ public class StaalService {
     // Update
     public ResponseEntity<Staal> update(Long id, Staal staal) {
         Staal existingStaal = staalRepository.findById(id);
+        User user = userRepository.findById(staal.getUser().getId());
         if (existingStaal != null) {
 
             // Update the fields
             existingStaal.setStaalCode(staal.getStaalCode());
             existingStaal.setLaborantNaam(staal.getLaborantNaam());
-            existingStaal.setUser(staal.getUser());
-            existingStaal.setRegisteredTests(staal.getRegisteredTests());
+            existingStaal.setUser(user);
             existingStaal.setLaborantRnummer(staal.getLaborantRnummer());
             existingStaal.setPatientAchternaam(staal.getPatientAchternaam());
             existingStaal.setPatientVoornaam(staal.getPatientVoornaam());
             existingStaal.setPatientGeboorteDatum(staal.getPatientGeboorteDatum());
             existingStaal.setPatientGeslacht(staal.getPatientGeslacht());
 
-            // Save the updated entity
+            // loopen door elke test en de link leggen tussen test en staal
+            for (StaalTest registeredTest : staal.getRegisteredTests()) {
+                Test test = testRepository.findByTestCode(registeredTest.getTest().getTestCode());
+
+                if (test != null) {
+                    registeredTest.setTest(test);
+                    registeredTest.setStaal(existingStaal);
+                    existingStaal.getRegisteredTests().add(registeredTest);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            }
+
+            // Save the updated Staal entity, along with the StaalTest associations
             Staal updatedStaal = staalRepository.save(existingStaal);
             return new ResponseEntity<>(updatedStaal, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // Return NOT_FOUND if the Staal entity doesn't exist
         }
     }
 
@@ -78,7 +101,7 @@ public class StaalService {
     }
 
     // Get staal by staalcode
-    public Staal readByStaalCode(int staalCode) {
+    public Staal readByStaalCode(Long staalCode) {
         return staalRepository.findByStaalCode(staalCode);
     }
 
@@ -100,5 +123,24 @@ public class StaalService {
             nieuweStaalCode = huidigJaar + "000001";
         }
         return nieuweStaalCode;
+    }
+
+    // patch staalstatus
+    public ResponseEntity<Staal> patchStatus(String status, Long id) {
+        Staal toPatchStaal = staalRepository.findByStaalCode(id);
+        if (toPatchStaal != null) {
+            // converten van status pathvariabele naar instance van Status object
+            Staal.Status newStatus = Staal.Status.valueOf(status.toUpperCase());
+            toPatchStaal.setStatus(newStatus);
+            staalRepository.save(toPatchStaal);
+            return new ResponseEntity<>(toPatchStaal, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // returns een lijst van unieke statussen die aan een staal gekoppeld kunnen worden
+    public List<Staal.Status> getstatus() {
+        return staalRepository.findDistinctStaalStatus();
     }
 }

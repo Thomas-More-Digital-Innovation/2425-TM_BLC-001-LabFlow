@@ -36,6 +36,11 @@
 		});
 	}
 
+	function verwijderZoek() {
+		searchCode = '';
+		eenhedenSorted = eenheden;
+	}
+
 	///// DELETE eenheid /////
 	let deleteError = '';
 	async function deleteEenheid(id: string) {
@@ -184,7 +189,7 @@
 	</div>
 
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
-		<div class="flex space-x-5 mb-5">
+		<div class="flex mb-5 w-full">
 			<input
 				type="text"
 				id="searchCode"
@@ -192,10 +197,15 @@
 				placeholder="zoeken"
 				bind:value={searchCode}
 				on:input={filterEenheden}
-				class="w-2/5 h-12 rounded-lg text-black pl-3"
+				class="w-2/5 h-12 rounded-l-lg text-black pl-3"
 			/>
+			<button
+				on:click={verwijderZoek}
+				class="w-12 h-12 p-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-r-lg"
+			>
+				<GoX />
+			</button>
 		</div>
-
 		<div class="space-y-3">
 			{#if deleteError}
 				<div class="text-red-500 mb-2">{deleteError}</div>

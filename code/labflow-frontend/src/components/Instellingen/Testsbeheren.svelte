@@ -72,6 +72,11 @@
 		});
 	}
 
+	function verwijderZoek() {
+		searchCode = '';
+		testsSorted = tests;
+	}
+
 	///// DELETE test /////
 	async function deleteTest(id: string) {
 		console.log(id);
@@ -150,7 +155,7 @@
 		);
 
 		try {
-			await fetch('http://localhost:8080/api/createtest', {
+			const response = await fetch('http://localhost:8080/api/createtest', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -177,6 +182,9 @@
 			const result = await fetchTests();
 			if (result) {
 				[tests, testsSorted] = [result, result];
+			}
+			if (response.status === 409) {
+				errorMessageTestPOST = 'Testcode bestaat al.';
 			}
 		} catch (error) {
 			console.error('Test kon niet worden aangemaakt: ', error);
@@ -289,7 +297,7 @@
 	</div>
 
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
-		<div class="flex space-x-5 mb-5">
+		<div class="flex mb-5 w-full">
 			<input
 				type="text"
 				id="searchCode"
@@ -297,8 +305,14 @@
 				placeholder="zoeken"
 				bind:value={searchCode}
 				on:input={filterTests}
-				class="w-2/5 h-12 rounded-lg text-black pl-3"
+				class=" h-12 rounded-l-lg text-black pl-3 w-2/5"
 			/>
+			<button
+				on:click={verwijderZoek}
+				class="w-12 h-12 p-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-r-lg"
+			>
+				<GoX />
+			</button>
 		</div>
 		<div class="space-y-3">
 			<!-- Header -->

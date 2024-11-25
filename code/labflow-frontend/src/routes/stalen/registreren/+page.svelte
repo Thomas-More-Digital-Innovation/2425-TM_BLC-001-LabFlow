@@ -244,6 +244,22 @@
 		loadData().then(() => checkAllTestsDone());
 	});
 
+	// aanpassen status van staal naar DONE
+	async function setStatusStaal() {
+		let sampleCode: string | undefined;
+		staalCodeStore.subscribe((value) => {
+			sampleCode = value;
+			console.log('Dit is staalcode:' + sampleCode);
+		});
+
+		await fetch(`http://localhost:8080/api/updatestaalstatus/DONE/${sampleCode}`, {
+			method: 'PATCH',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+	}
+
 	// pdf downloaden
 	async function getPdf(staalId: string) {
 		try {
@@ -335,7 +351,7 @@
 					class="bg-gray-400 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center"
 				>
 					<div class="w-5 h-5 mr-2"><FaArrowLeft /></div>
-					Annuleren
+					Home
 				</button>
 				<!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
 				<button

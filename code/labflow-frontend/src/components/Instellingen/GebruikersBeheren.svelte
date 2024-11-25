@@ -49,6 +49,11 @@
 		});
 	}
 
+	function verwijderZoek() {
+		searchCode = '';
+		usersSorted = users;
+	}
+
 	///// DELETE verwijderen van een gebruiker /////
 	let errorMessageGebruikerDELETE = '';
 	async function deleteUser(id: string) {
@@ -274,7 +279,7 @@
 
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 		<div class="space-y-3">
-			<div class="flex space-x-5 mb-5">
+			<div class="flex mb-5 w-full">
 				<input
 					type="text"
 					id="searchCode"
@@ -282,8 +287,14 @@
 					placeholder="zoeken"
 					bind:value={searchCode}
 					on:input={filterUsers}
-					class="w-2/5 h-12 rounded-lg text-black pl-3"
+					class="w-2/5 h-12 rounded-l-lg text-black pl-3"
 				/>
+				<button
+					on:click={verwijderZoek}
+					class="w-12 h-12 p-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-r-lg"
+				>
+					<GoX />
+				</button>
 			</div>
 			<!-- Header -->
 			<div class="grid grid-cols-12 gap-4 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">

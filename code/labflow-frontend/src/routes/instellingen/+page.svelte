@@ -17,13 +17,23 @@
 	import EenhedenBeheren from '../../components/Instellingen/EenhedenBeheren.svelte';
 
 	// default gerenderde component
-	let navElement = 'Gebruiker';
+	let navElement = 'Test';
 </script>
 
 <Nav />
 <div class="px-8 flex flex-row">
 	<!-- 4 knoppen -->
 	<div class="flex flex-col space-y-3 w-32 mt-[74px]">
+		<button
+			type="button"
+			on:click={() => (navElement = 'Test')}
+			class="p-2 text-center text-md {navElement == 'Test'
+				? 'bg-blue-500'
+				: 'bg-blue-400'} flex flex-col items-center justify-center w-32 h-32 rounded-2xl text-white"
+		>
+			<div class="w-12 h-12 mb-3"><GiHypodermicTest /></div>
+			Testen
+		</button>
 		<button
 			type="button"
 			on:click={() => (navElement = 'Gebruiker')}
@@ -33,16 +43,6 @@
 		>
 			<div class="w-12 h-12 mb-3"><FaUserAlt /></div>
 			Gebruikers
-		</button>
-		<button
-			type="button"
-			on:click={() => (navElement = 'Categorie')}
-			class="p-2 text-center text-md {navElement == 'Categorie'
-				? 'bg-blue-500'
-				: 'bg-blue-400'} flex flex-col items-center justify-center w-32 h-32 rounded-2xl text-white"
-		>
-			<div class="w-12 h-12 mb-3"><FaClipboardList /></div>
-			Categorieën
 		</button>
 		<button
 			type="button"
@@ -56,6 +56,16 @@
 		</button>
 		<button
 			type="button"
+			on:click={() => (navElement = 'Categorie')}
+			class="p-2 text-center text-md {navElement == 'Categorie'
+				? 'bg-blue-500'
+				: 'bg-blue-400'} flex flex-col items-center justify-center w-32 h-32 rounded-2xl text-white"
+		>
+			<div class="w-12 h-12 mb-3"><FaClipboardList /></div>
+			Categorieën
+		</button>
+		<button
+			type="button"
 			on:click={() => (navElement = 'Eenheid')}
 			class="p-2 text-center text-md {navElement == 'Eenheid'
 				? 'bg-blue-500'
@@ -63,16 +73,6 @@
 		>
 			<div class="w-12 h-12 mb-3"><FaWrench /></div>
 			Eenheden
-		</button>
-		<button
-			type="button"
-			on:click={() => (navElement = 'Test')}
-			class="p-2 text-center text-md {navElement == 'Test'
-				? 'bg-blue-500'
-				: 'bg-blue-400'} flex flex-col items-center justify-center w-32 h-32 rounded-2xl text-white"
-		>
-			<div class="w-12 h-12 mb-3"><GiHypodermicTest /></div>
-			Testen
 		</button>
 
 		<!-- spacing -->
