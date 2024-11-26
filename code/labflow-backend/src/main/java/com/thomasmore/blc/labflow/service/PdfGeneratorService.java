@@ -181,11 +181,6 @@ public class PdfGeneratorService {
         Font bodyFont = new Font(Font.FontFamily.HELVETICA, 10);
         Font headerDataFont = new Font(Font.FontFamily.HELVETICA, 8, Font.BOLD);
 
-        // Logo
-        // Image logo = Image.getInstance("/assets/labflowLogo.png");
-        // logo.scaleToFit(50, 50);
-        // document.add(logo); // Uncomment this if you have a logo image
-
         // Patient info
         List<StaalTest> registeredTests = staal.getRegisteredTests();
         Long staalCode = staal.getStaalCode();
@@ -193,6 +188,8 @@ public class PdfGeneratorService {
         String achternaam = staal.getPatientAchternaam();
         LocalDate geboortedatum = staal.getPatientGeboorteDatum();
         char geslacht = staal.getPatientGeslacht();
+        String laborant = staal.getLaborantNaam();
+        String rNummer = staal.getLaborantRnummer();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String formattedDate = geboortedatum.format(formatter);
@@ -219,7 +216,9 @@ public class PdfGeneratorService {
         PdfPCell rightCell = new PdfPCell();
         rightCell.setBorder(Rectangle.NO_BORDER);
         rightCell.addElement(new Paragraph("Testcode: " + staalCode, bodyFont));
-        rightCell.addElement(new Paragraph("Datum: " + formattedCurrentDate, bodyFont));  // Current date
+        rightCell.addElement(new Paragraph("Datum: " + formattedCurrentDate, bodyFont));
+        rightCell.addElement(new Paragraph("Laborant: " + laborant, bodyFont));
+        rightCell.addElement(new Paragraph("R-nummer: " + rNummer, bodyFont));// Current date
         headerTable.addCell(rightCell);
 
         document.add(headerTable);
@@ -321,6 +320,16 @@ public class PdfGeneratorService {
                     .findFirst()
                     .orElse("No result");
 
+            // get the note for the test
+            String note = test.getStalen().stream()
+                    .filter(staalTest -> staalTest.getStaal().getStaalCode().equals(staalCode))
+                    .map(StaalTest::getNote)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse("No note");
+
+            System.out.println("Note: " + note);
+
             if (result.equals("No result")) {
                 PdfPCell resultHeader = new PdfPCell(new Phrase("no result", bodyFont));
                 resultHeader.setBorder(Rectangle.NO_BORDER);
@@ -352,6 +361,13 @@ public class PdfGeneratorService {
             PdfPCell categoryHeader = new PdfPCell(new Phrase(test.getTestcategorie().getNaam(), bodyFont));
             categoryHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(categoryHeader);
+
+            if (!note.equals("No note")) {
+                PdfPCell noteCell = new PdfPCell(new Phrase("Nota: " + note, bodyFont));
+                noteCell.setBorder(Rectangle.NO_BORDER);
+                noteCell.setColspan(6);
+                dataTable.addCell(testCodeHeader);
+            }
         }
 
         document.add(dataTable);
