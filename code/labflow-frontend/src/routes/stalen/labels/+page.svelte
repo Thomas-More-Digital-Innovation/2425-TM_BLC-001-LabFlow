@@ -12,7 +12,10 @@
 	import FaCloudDownloadAlt from 'svelte-icons/fa/FaCloudDownloadAlt.svelte';
 	import { staalCodeStore } from '$lib/store';
 	import { onDestroy, onMount } from 'svelte';
-	import { ClientPrintJob, DefaultPrinter, InstalledPrinter, JSPrintManager, WSStatus } from 'jsprintmanager';
+
+	import * as JSPM from 'jsprintmanager'
+
+	const { ClientPrintJob, DefaultPrinter, InstalledPrinter, JSPrintManager, WSStatus } = JSPM;
 	
 
 	// neem de id
