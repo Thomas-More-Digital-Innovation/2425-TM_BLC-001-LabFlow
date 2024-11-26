@@ -244,7 +244,7 @@
 		loadData().then(() => checkAllTestsDone());
 	});
 
-	// aanpassen status van staal naar DONE
+	// aanpassen status van staal naar KLAAR
 	async function setStatusStaal() {
 		let sampleCode: string | undefined;
 		staalCodeStore.subscribe((value) => {
@@ -252,7 +252,7 @@
 			console.log('Dit is staalcode:' + sampleCode);
 		});
 
-		await fetch(`http://localhost:8080/api/updatestaalstatus/DONE/${sampleCode}`, {
+		await fetch(`http://localhost:8080/api/updatestaalstatus/KLAAR/${sampleCode}`, {
 			method: 'PATCH',
 			headers: {
 				Authorization: `Bearer ${token}`
