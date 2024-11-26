@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,18 +29,9 @@ public class PrinterService {
             // get staal
             Staal staal = staalRepository.findById(staalId);
 
-            // basic label
-            String zplCode = "^XA\n" +
-                    "^PW450\n" +
-                    "^LL250\n" +
-                    "^FO10,15^GB430,230,3^FS\n" +
-                    "^FO20,25^A0N,30,30^FD" + staal.getPatientVoornaam() + "^FS\n" +
-                    "^FO200,25^A0N,30,30^FD" + staal.getPatientAchternaam() + "^FS\n" +
-                    "^FO20,65^A0N,25,25^FD" + "Geboorte: " + staal.getPatientGeboorteDatum() + "^FS\n" +
-                    "^FO20,105^A0N,25,25^FD" + "Geslacht: " + staal.getPatientGeslacht() + "^FS\n" +
-                    "^FO170,205^A0N,25,25^FD" + staal.getStaalCode() + "^FS\n" +
-                    "^XZ\n";
-
+            // geboortedatum formatter
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String formattedGeboorte = staal.getPatientGeboorteDatum().format(formatter);
 
             // get all categories of the tests
             Set<Testcategorie> testcategorieSet = staal.getRegisteredTests().stream().map(StaalTest::getTest)
@@ -46,21 +39,46 @@ public class PrinterService {
                     .filter(testcategorie -> testcategorie.getId() != 7)
                     .collect(Collectors.toSet());
 
+            // format geslacht
+            char geslacht = staal.getPatientGeslacht();
+            String formattedGeslacht;
+            if (geslacht == 'M') {
+                formattedGeslacht = "Man";
+            } else {
+                formattedGeslacht = "Vrouw";
+            }
 
-            // label per category
-            for (Testcategorie testcategorie : testcategorieSet) {
-                zplCode += "^XA\n" +
+            String zplCode = "";
+
+            for (int i = 0; i < amountOfCopies; i++) {
+                // basic label
+                zplCode = "^XA\n" +
                         "^PW450\n" +
                         "^LL250\n" +
                         "^FO10,15^GB430,230,3^FS\n" +
                         "^FO20,25^A0N,30,30^FD" + staal.getPatientVoornaam() + "^FS\n" +
                         "^FO200,25^A0N,30,30^FD" + staal.getPatientAchternaam() + "^FS\n" +
-                        "^FO20,65^A0N,25,25^FD" + "Geboorte: " + staal.getPatientGeboorteDatum() + "^FS\n" +
-                        "^FO20,105^A0N,25,25^FD" + "Geslacht: " + staal.getPatientGeslacht() + "^FS\n" +
+                        "^FO20,65^A0N,25,25^FD" + "Geboorte: " + formattedGeboorte + "^FS\n" +
+                        "^FO20,105^A0N,25,25^FD" + "Geslacht: " + formattedGeslacht + "^FS\n" +
                         "^FO170,205^A0N,25,25^FD" + staal.getStaalCode() + "^FS\n" +
-                        "^FO390,65^A0N,30,30^FR^FWR^FD" + testcategorie.getNaam() + "^FS\n" +
                         "^XZ\n";
+
+                // label per category
+                for (Testcategorie testcategorie : testcategorieSet) {
+                    zplCode += "^XA\n" +
+                            "^PW450\n" +
+                            "^LL250\n" +
+                            "^FO10,15^GB430,230,3^FS\n" +
+                            "^FO20,25^A0N,30,30^FD" + staal.getPatientVoornaam() + "^FS\n" +
+                            "^FO200,25^A0N,30,30^FD" + staal.getPatientAchternaam() + "^FS\n" +
+                            "^FO20,65^A0N,25,25^FD" + "Geboorte: " + staal.getPatientGeboorteDatum() + "^FS\n" +
+                            "^FO20,105^A0N,25,25^FD" + "Geslacht: " + staal.getPatientGeslacht() + "^FS\n" +
+                            "^FO170,205^A0N,25,25^FD" + staal.getStaalCode() + "^FS\n" +
+                            "^FO390,65^A0N,30,30^FR^FWR^FD" + testcategorie.getNaam() + "^FS\n" +
+                            "^XZ\n";
+                }
             }
+
 
 
 
