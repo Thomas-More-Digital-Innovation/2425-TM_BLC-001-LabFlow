@@ -40,7 +40,7 @@ public class Staal {
 
     // enumerable status
     public enum Status {
-        CREATED, REGISTERED, DONE
+        AANGEMAAKT, GEREGISTREERD, KLAAR
     }
 
     @Enumerated(EnumType.STRING) // Opslaan enumerable als een string
@@ -63,7 +63,7 @@ public class Staal {
         this.laborantRnummer = laborantRnummer;
         this.user = user;
         this.aanmaakDatum = new Date();
-        this.status = Status.CREATED;
+        this.status = Status.AANGEMAAKT;
     }
 
     // constructor voor het registreren van een staal met tests
@@ -80,7 +80,7 @@ public class Staal {
         this.user = user;
         this.setRegisteredTests(registeredTests); // Use setter to ensure proper association
         this.aanmaakDatum = new Date();
-        this.status = Status.CREATED;
+        this.status = Status.AANGEMAAKT;
     }
 
     // getters en setters
