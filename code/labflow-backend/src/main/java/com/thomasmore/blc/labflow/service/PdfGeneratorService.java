@@ -129,14 +129,12 @@ public class PdfGeneratorService {
 
         // Iterate through each `Testcategorie` and create a page for each label
         for (Testcategorie testcategorie : testcategorieSet) {
-            if (document.getPageNumber() > 1) {
-                document.newPage(); // Add a new page for every subsequent label
-            }
+            document.newPage(); // Add a new page for every label
 
             // Draw the label border
             Rectangle newBorder = new Rectangle(10, 10, 200, 130); // Create a new rectangle for each page
             newBorder.setBorder(Rectangle.BOX);
-            newBorder.setBorderWidth(2);
+            newBorder.setBorderWidth(1);
             canvas.rectangle(newBorder);
             canvas.stroke();
 
