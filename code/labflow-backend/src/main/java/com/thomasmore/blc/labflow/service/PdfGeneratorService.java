@@ -1,9 +1,7 @@
 package com.thomasmore.blc.labflow.service;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.thomasmore.blc.labflow.entity.*;
 import org.springframework.stereotype.Service;
@@ -70,6 +68,104 @@ public class PdfGeneratorService {
         document.close();
         return out.toByteArray();
     }
+
+    public byte[] generateLabelPdfv2(Staal staal) throws DocumentException {
+
+        // Create a small page size for labels
+        Document document = new Document(new Rectangle(210, 140)); // A7 size
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        PdfWriter writer = PdfWriter.getInstance(document, out);
+        document.open();
+
+        // Extract details from `staal`
+        Long staalCode = staal.getStaalCode();
+        String voornaam = staal.getPatientVoornaam();
+        String achternaam = staal.getPatientAchternaam();
+        LocalDate geboortedatum = staal.getPatientGeboorteDatum();
+        char geslacht = staal.getPatientGeslacht();
+
+        // Filter categories
+        Set<Testcategorie> testcategorieSet = staal.getRegisteredTests().stream()
+                .map(StaalTest::getTest)
+                .map(Test::getTestcategorie)
+                .filter(testcategorie -> testcategorie.getId() != 7)
+                .collect(Collectors.toSet());
+
+        // Format the birthdate
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String formattedDate = geboortedatum.format(formatter);
+
+        // Set fonts
+        Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+        Font regularFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+
+        // Get the canvas for custom drawing
+        PdfContentByte canvas = writer.getDirectContent();
+
+        // Draw the label border
+        Rectangle border = new Rectangle(10, 10, 200, 130); // Define rectangle dimensions
+        border.setBorder(Rectangle.BOX);
+        border.setBorderWidth(1);
+        canvas.rectangle(border);
+        canvas.stroke();
+
+        // Add patient name (Bold)
+        Paragraph nameParagraph = new Paragraph(voornaam + " " + achternaam, boldFont);
+        nameParagraph.setAlignment(Element.ALIGN_LEFT);
+        document.add(nameParagraph);
+
+        // Add birthdate and gender
+        document.add(new Paragraph("Geboorte: " + formattedDate, regularFont));
+        document.add(new Paragraph("Geslacht: " + (geslacht == 'M' ? "Man" : "Vrouw"), regularFont));
+
+        // Add some spacing
+        document.add(Chunk.NEWLINE);
+
+        // Add the `staalCode` inside the black rectangle at the bottom
+        ColumnText.showTextAligned(canvas, Element.ALIGN_CENTER,
+                new Phrase(String.valueOf(staalCode), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK)),
+                105, 25, 0); // Center the text inside the black rectangle
+
+        // Iterate through each `Testcategorie` and create a page for each label
+        for (Testcategorie testcategorie : testcategorieSet) {
+            if (document.getPageNumber() > 1) {
+                document.newPage(); // Add a new page for every subsequent label
+            }
+
+            // Draw the label border
+            border.setBorder(Rectangle.BOX);
+            border.setBorderWidth(1);
+            canvas.rectangle(border);
+            canvas.stroke();
+
+            // Add patient name (Bold)
+            nameParagraph.setAlignment(Element.ALIGN_LEFT);
+            document.add(nameParagraph);
+
+            // Add birthdate and gender
+            document.add(new Paragraph("Geboorte: " + formattedDate, regularFont));
+            document.add(new Paragraph("Geslacht: " + (geslacht == 'M' ? "Man" : "Vrouw"), regularFont));
+
+            // Add some spacing
+            document.add(Chunk.NEWLINE);
+
+            // Add the `staalCode` inside the black rectangle at the bottom
+            ColumnText.showTextAligned(canvas, Element.ALIGN_CENTER,
+                    new Phrase(String.valueOf(staalCode), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK)),
+                    105, 25, 0); // Center the text inside the black rectangle
+
+            // Add vertical EDTA text on the right side
+            ColumnText.showTextAligned(canvas, Element.ALIGN_RIGHT,
+                    new Phrase(testcategorie.getNaam(), boldFont), 185, 60, 270); // Rotated 90 degrees
+        }
+
+        document.close();
+        return out.toByteArray();
+    }
+
+
+
 
     public byte[] generateResultsPdf(Staal staal) throws DocumentException {
 

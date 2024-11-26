@@ -30,7 +30,7 @@ public class PdfGeneratorController {
         byte[] pdfBytes;
 
         try {
-            pdfBytes = pdfGeneratorService.generateLabelPdf(staal);
+            pdfBytes = pdfGeneratorService.generateLabelPdfv2(staal);
         } catch (DocumentException e) {
             return ResponseEntity.internalServerError().build();
         }
