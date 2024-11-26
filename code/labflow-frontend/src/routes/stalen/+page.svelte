@@ -149,7 +149,7 @@
 	// set staalcode in store en ga naar waarden registreren / afdrukken pdf
 	function setStoreGoToDependingStatus(staal: any) {
 		staalCodeStore.set(staal.staalCode);
-		if (staal.status === 'REGISTERED' || staal.status === 'DONE') {
+		if (staal.status === 'GEREGISTREERD' || staal.status === 'KLAAR') {
 			goto('stalen/registreren');
 		} else {
 			return;
@@ -365,10 +365,10 @@
 							? 'grid-cols-7'
 							: 'grid-cols-7'} gap-4 rounded-lg h-16 items-center px-3
 							{rol != 'admin' ? 'w-full ' : 'w-11/12'}
-							{staal.status === 'CREATED' ? 'bg-white' : ''}
-							{staal.status === 'CREATED' && rol !== 'admin' ? 'pointer-events-none' : ''}							
-							{staal.status === 'DONE' ? 'bg-green-50' : ''}
-							{staal.status === 'REGISTERED' ? 'bg-blue-100' : ''}
+							{staal.status === 'AANGEMAAKT' ? 'bg-white' : ''}
+							{staal.status === 'AANGEMAAKT' && rol !== 'admin' ? 'pointer-events-none' : ''}							
+							{staal.status === 'KLAAR' ? 'bg-green-50' : ''}
+							{staal.status === 'GEREGISTREERD' ? 'bg-blue-100' : ''}
 							"
 						on:click={() => {
 							if (rol !== 'admin') {

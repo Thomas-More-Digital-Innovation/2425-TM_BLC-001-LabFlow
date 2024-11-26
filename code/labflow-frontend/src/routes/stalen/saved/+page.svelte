@@ -17,7 +17,7 @@
 			console.log('Dit is staalcode:' + sampleCode);
 		});
 
-		await fetch(`http://localhost:8080/api/updatestaalstatus/REGISTERED/${sampleCode}`, {
+		await fetch(`http://localhost:8080/api/updatestaalstatus/GEREGISTREERD/${sampleCode}`, {
 			method: 'PATCH',
 			headers: {
 				Authorization: `Bearer ${token}`

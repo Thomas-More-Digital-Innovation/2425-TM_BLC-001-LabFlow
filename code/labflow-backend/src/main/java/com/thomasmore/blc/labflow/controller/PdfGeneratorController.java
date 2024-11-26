@@ -66,7 +66,7 @@ public class PdfGeneratorController {
 
         // STATUS UPDATE
         // staal is 'klaar' testen en waarden zijn geregistreerd, pdf is afgedrukt
-        staal.setStatus(Staal.Status.DONE);
+        staal.setStatus(Staal.Status.KLAAR);
         staalRepository.save(staal);
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
