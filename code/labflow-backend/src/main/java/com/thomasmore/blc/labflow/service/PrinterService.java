@@ -52,7 +52,7 @@ public class PrinterService {
 
             for (int i = 0; i < amountOfCopies; i++) {
                 // basic label
-                zplCode = "^XA\n" +
+                zplCode += "^XA\n" +
                         "^PW450\n" +
                         "^LL250\n" +
                         "^FO10,15^GB430,230,3^FS\n" +
@@ -71,8 +71,8 @@ public class PrinterService {
                             "^FO10,15^GB430,230,3^FS\n" +
                             "^FO20,25^A0N,30,30^FD" + staal.getPatientVoornaam() + "^FS\n" +
                             "^FO200,25^A0N,30,30^FD" + staal.getPatientAchternaam() + "^FS\n" +
-                            "^FO20,65^A0N,25,25^FD" + "Geboorte: " + staal.getPatientGeboorteDatum() + "^FS\n" +
-                            "^FO20,105^A0N,25,25^FD" + "Geslacht: " + staal.getPatientGeslacht() + "^FS\n" +
+                            "^FO20,65^A0N,25,25^FD" + "Geboorte: " + formattedGeboorte + "^FS\n" +
+                            "^FO20,105^A0N,25,25^FD" + "Geslacht: " + formattedGeslacht + "^FS\n" +
                             "^FO170,205^A0N,25,25^FD" + staal.getStaalCode() + "^FS\n" +
                             "^FO390,65^A0N,30,30^FR^FWR^FD" + testcategorie.getNaam() + "^FS\n" +
                             "^XZ\n";
