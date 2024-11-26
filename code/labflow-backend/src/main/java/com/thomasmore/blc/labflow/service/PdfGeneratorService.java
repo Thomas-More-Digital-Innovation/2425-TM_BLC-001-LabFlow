@@ -134,9 +134,10 @@ public class PdfGeneratorService {
             }
 
             // Draw the label border
-            border.setBorder(Rectangle.BOX);
-            border.setBorderWidth(1);
-            canvas.rectangle(border);
+            Rectangle newBorder = new Rectangle(10, 10, 200, 130); // Create a new rectangle for each page
+            newBorder.setBorder(Rectangle.BOX);
+            newBorder.setBorderWidth(2);
+            canvas.rectangle(newBorder);
             canvas.stroke();
 
             // Add patient name (Bold)
