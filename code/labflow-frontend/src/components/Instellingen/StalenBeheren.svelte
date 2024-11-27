@@ -12,6 +12,7 @@
 	import { fetchStalen } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
 	import { getUserId } from '$lib/globalFunctions';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
 	let token: string = '';
 	let searchCode = '';
@@ -50,7 +51,7 @@
 	///// DELETE staal /////
 	async function deleteStaal(id: string) {
 		try {
-			await fetch(`http://localhost:8080/api/deletestaal/${id}`, {
+			await fetch(`${backend_path}/api/deletestaal/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: 'Bearer ' + token
@@ -142,7 +143,7 @@
 			return;
 		}
 		try {
-			const response = await fetch('http://localhost:8080/api/createstaal', {
+			const response = await fetch(`${backend_path}/api/createstaal`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -248,7 +249,7 @@
 			return;
 		}
 		try {
-			await fetch(`http://localhost:8080/api/updatestaal/${id}`, {
+			await fetch(`${backend_path}/api/updatestaal/${id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',

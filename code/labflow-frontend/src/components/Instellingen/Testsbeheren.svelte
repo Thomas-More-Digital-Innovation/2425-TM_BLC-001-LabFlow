@@ -19,8 +19,9 @@
 	import FaSave from 'svelte-icons/fa/FaSave.svelte';
 	import { getCookie } from '$lib/globalFunctions';
 	import Modal from './modalReferentiewaarden/Modal.svelte';
-
 	import { writable, get } from 'svelte/store';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
+
 	let showModal = writable(false);
 
 	let token: string = '';
@@ -80,7 +81,7 @@
 	///// DELETE test /////
 	async function deleteTest(id: string) {
 		try {
-			await fetch(`http://localhost:8080/api/deletetest/${id}`, {
+			await fetch(`${backend_path}/api/deletetest/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: 'Bearer ' + token
@@ -154,7 +155,7 @@
 		);
 
 		try {
-			const response = await fetch('http://localhost:8080/api/createtest', {
+			const response = await fetch(`${backend_path}/api/createtest`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -258,7 +259,7 @@
 			})
 		);
 		try {
-			await fetch(`http://localhost:8080/api/updatetest/${id}`, {
+			await fetch(`${backend_path}/api/updatetest/${id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',

@@ -34,6 +34,7 @@
 	import { fetchStaal_StaalCode } from '$lib/fetchFunctions';
 	import Staal from '../../../components/Staal.svelte';
 	import { slide } from 'svelte/transition';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
 	// voor het inladen van crud voor admins
 	const rol = getRol();
@@ -226,7 +227,7 @@
 			return;
 		}
 		try {
-			await fetch('http://localhost:8080/api/createtest', {
+			await fetch(`${backend_path}/api/createtest`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -320,7 +321,7 @@
 		}
 
 		try {
-			await fetch('http://localhost:8080/api/createstaal', {
+			await fetch(` ${backend_path}/api/createstaal`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -403,7 +404,7 @@
 			return; // wachten voor volgende click
 		}
 		try {
-			await fetch(`http://localhost:8080/api/updatestaal/${staalId}`, {
+			await fetch(`${backend_path}/api/updatestaal/${staalId}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
@@ -463,7 +464,7 @@
 		}
 
 		try {
-			await fetch('http://localhost:8080/api/createtestcategorie', {
+			await fetch(`${backend_path}/api/createtestcategorie`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -483,7 +484,7 @@
 	// crud buttons voor admin
 	async function deleteTest(id: number) {
 		try {
-			await fetch(`http://localhost:8080/api/deletetest/${id}`, {
+			await fetch(`${backend_path}/api/deletetest/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: 'Bearer ' + token
@@ -532,7 +533,7 @@
 			return;
 		}
 		try {
-			const response = await fetch(`http://localhost:8080/api/updatetest/${test.id}`, {
+			const response = await fetch(`${backend_path}/api/updatetest/${test.id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',

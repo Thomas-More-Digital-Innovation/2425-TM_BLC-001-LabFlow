@@ -12,6 +12,7 @@
 	import { onMount } from 'svelte';
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import { getCookie } from '../../lib/globalFunctions';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
 	let searchCode = '';
 	let token: string = '';
@@ -43,7 +44,7 @@
 	let deleteError = '';
 	async function deleteCategorie(id: string) {
 		try {
-			const response = await fetch(`http://localhost:8080/api/testcategorie/${id}`, {
+			const response = await fetch(`${backend_path}/api/testcategorie/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: 'Bearer ' + token
@@ -105,7 +106,7 @@
 		}
 
 		try {
-			const response = await fetch('http://localhost:8080/api/createtestcategorie', {
+			const response = await fetch(`${backend_path}/api/createtestcategorie`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -167,7 +168,7 @@
 			return;
 		}
 		try {
-			await fetch(`http://localhost:8080/api/testCategorieen/${id}`, {
+			await fetch(`${backend_path}/api/testCategorieen/${id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',

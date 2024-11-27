@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import { staalCodeStore } from '$lib/store';
 	import { getCookie } from '$lib/globalFunctions';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
 	const token = getCookie('authToken') || '';
 
@@ -16,7 +17,7 @@
 			sampleCode = value;
 		});
 
-		await fetch(`http://localhost:8080/api/updatestaalstatus/GEREGISTREERD/${sampleCode}`, {
+		await fetch(`${backend_path}/api/updatestaalstatus/GEREGISTREERD/${sampleCode}`, {
 			method: 'PATCH',
 			headers: {
 				Authorization: `Bearer ${token}`
