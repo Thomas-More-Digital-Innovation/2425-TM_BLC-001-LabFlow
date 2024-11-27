@@ -229,7 +229,7 @@
 			<!-- Header -->
 			<div class="grid grid-cols-12 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
 				<div class="col-span-3">
-					<p>Naam</p>
+					<p>Naam categorie</p>
 				</div>
 				<div class="col-span-3 text-center">
 					<p>Kleur</p>

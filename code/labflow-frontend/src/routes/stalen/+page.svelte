@@ -151,6 +151,8 @@
 		staalCodeStore.set(staal.staalCode);
 		if (staal.status === 'GEREGISTREERD' || staal.status === 'KLAAR') {
 			goto('stalen/registreren');
+		} else if (staal.status === 'AANGEMAAKT') {
+			goto('stalen/nieuw');
 		} else {
 			return;
 		}
@@ -366,7 +368,7 @@
 							: 'grid-cols-7'} gap-4 rounded-lg h-16 items-center px-3
 							{rol != 'admin' ? 'w-full ' : 'w-11/12'}
 							{staal.status === 'AANGEMAAKT' ? 'bg-white' : ''}
-							{staal.status === 'AANGEMAAKT' && rol !== 'admin' ? 'pointer-events-none' : ''}							
+														
 							{staal.status === 'KLAAR' ? 'bg-green-50' : ''}
 							{staal.status === 'GEREGISTREERD' ? 'bg-blue-100' : ''}
 							"

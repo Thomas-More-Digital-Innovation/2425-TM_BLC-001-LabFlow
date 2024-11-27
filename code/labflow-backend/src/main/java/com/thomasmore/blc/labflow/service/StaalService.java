@@ -35,6 +35,7 @@ public class StaalService {
                 Test test = testRepository.findByTestCode(registeredTest.getTest().getTestCode());
                 registeredTest.setTest(test);
             }
+            staal.setStatus(Staal.Status.AANGEMAAKT);
             staalRepository.save(staal);
         } else {
             throw new UniqueConstraintViolationException("Staalcode already exists");
