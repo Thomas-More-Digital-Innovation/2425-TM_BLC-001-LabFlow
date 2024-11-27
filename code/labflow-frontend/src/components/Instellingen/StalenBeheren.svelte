@@ -203,7 +203,7 @@
 		staal.laborantRnummer = staal.laborantRnummer.toUpperCase();
 		// regex voor R-nummer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes
 		const regex = /^[RU]\d{7}$/;
-		const errorVeldenStaalPUT = {
+		errorVeldenStaalPUT = {
 			staalcode: false,
 			naam: false,
 			voornaam: false,
