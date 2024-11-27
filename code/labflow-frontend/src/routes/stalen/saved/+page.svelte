@@ -14,7 +14,6 @@
 		let sampleCode: string | undefined;
 		staalCodeStore.subscribe((value) => {
 			sampleCode = value;
-			console.log('Dit is staalcode:' + sampleCode);
 		});
 
 		await fetch(`http://localhost:8080/api/updatestaalstatus/GEREGISTREERD/${sampleCode}`, {
@@ -48,9 +47,10 @@
 		>
 			Waarden Registreren
 		</button>
+		<!-- async functie omdat de status van de staal moet worden aangepast voordat de gebruiker naar de homepagina wordt geleid -->
 		<button
-			on:click={() => {
-				setStatusStaal();
+			on:click={async () => {
+				await setStatusStaal();
 				goto('/stalen');
 			}}
 			class="bg-blue-600 text-lg rounded-lg w-56 p-3 text-white h-14 flex flex-row items-center justify-center"

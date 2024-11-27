@@ -26,7 +26,6 @@
 		if (result) {
 			[stalen, stalenSorted] = [result.stalen, result.stalen];
 		}
-		console.log(stalenSorted);
 	});
 
 	function filterStalenMetCode() {
@@ -50,7 +49,6 @@
 
 	///// DELETE staal /////
 	async function deleteStaal(id: string) {
-		console.log(id);
 		try {
 			await fetch(`http://localhost:8080/api/deletestaal/${id}`, {
 				method: 'DELETE',
@@ -177,11 +175,9 @@
 			}
 			if (response.status === 409) {
 				errorMessageStaalPOST = 'Staalcode is niet uniek.';
-				console.log(errorMessageStaalPOST);
 			}
 		} catch (error) {
 			console.error('Staal kon niet worden aangemaakt: ', error);
-			console.log(errorMessageStaalPOST);
 		}
 		return;
 	}
@@ -201,7 +197,6 @@
 
 	async function updateStaal(id: string) {
 		const staal = stalen.find((s) => s.id === id);
-		console.log(staal);
 		if (!staal) return;
 
 		let isValid = true;

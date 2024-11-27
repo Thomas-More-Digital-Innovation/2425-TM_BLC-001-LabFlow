@@ -16,7 +16,6 @@
 	let sampleCode: string | undefined;
 	staalCodeStore.subscribe((value) => {
 		sampleCode = value;
-		console.log('Dit is staalcode:' + sampleCode);
 	});
 
 	let tests: any[] = [];
@@ -35,7 +34,6 @@
 				staal = await fetchAll(token, `staal/${sampleCode}`);
 				// assign id to staalId
 				staalId = staal.id;
-				console.log(staalId);
 				// Extract unique test categories
 				extractUniqueTestCategories(staal.registeredTests);
 			} catch (error) {
@@ -60,7 +58,6 @@
 
 		// Convert Map to an array of unique categories
 		testCategories = Array.from(categoryMap.values());
-		console.log('Unique Test Categories:', testCategories);
 	}
 
 	// fetch labels pdf

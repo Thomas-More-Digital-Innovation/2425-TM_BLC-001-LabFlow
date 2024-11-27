@@ -44,7 +44,6 @@
 	///// DELETE eenheid /////
 	let deleteError = '';
 	async function deleteEenheid(id: string) {
-		console.log(id);
 		try {
 			const response = await fetch(`http://localhost:8080/api/deleteeenheid/${id}`, {
 				method: 'DELETE',
@@ -152,7 +151,6 @@
 			errorMessageEenheidPUT = 'Vul alle verplichte velden in.';
 			return;
 		}
-		console.log(eenheid);
 		try {
 			await fetch(`http://localhost:8080/api/updateeenheid/${id}`, {
 				method: 'PUT',

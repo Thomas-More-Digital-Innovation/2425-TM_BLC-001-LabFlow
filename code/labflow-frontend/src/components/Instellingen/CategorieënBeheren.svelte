@@ -42,7 +42,6 @@
 	///// DELETE verwijderen van een categorie /////
 	let deleteError = '';
 	async function deleteCategorie(id: string) {
-		console.log(id);
 		try {
 			const response = await fetch(`http://localhost:8080/api/testcategorie/${id}`, {
 				method: 'DELETE',
@@ -124,7 +123,6 @@
 			errorMessageCategorie = '';
 			if (response.status === 409) {
 				errorMessageCategorie = 'Deze categorie bestaat al.';
-				console.log(errorMessageCategorie);
 			}
 		} catch (error) {
 			console.error('categorie kon niet worden aangemaakt: ', error);
@@ -168,7 +166,6 @@
 			errorMessageCategoriePUT = 'Vul alle verplichte velden in.';
 			return;
 		}
-		console.log(categorie.kleurnaam);
 		try {
 			await fetch(`http://localhost:8080/api/testCategorieen/${id}`, {
 				method: 'PUT',
@@ -229,7 +226,7 @@
 			<!-- Header -->
 			<div class="grid grid-cols-12 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
 				<div class="col-span-3">
-					<p>Naam</p>
+					<p>Naam categorie</p>
 				</div>
 				<div class="col-span-3 text-center">
 					<p>Kleur</p>

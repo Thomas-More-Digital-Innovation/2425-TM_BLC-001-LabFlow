@@ -80,8 +80,6 @@
 			stalenSorted = result.stalen;
 			statussen = await fetchStatussen();
 		}
-		console.log(statussen);
-		console.log(stalen);
 	});
 
 	// Function om te filteren op staalcode en datum
@@ -114,7 +112,6 @@
 	let filteredStatus = '';
 
 	function filterStatus() {
-		console.log(statussen);
 
 		// Make sure filteredStatus is in uppercase for a consistent comparison
 		const normalizedFilteredStatus = filteredStatus.toUpperCase();
@@ -151,6 +148,8 @@
 		staalCodeStore.set(staal.staalCode);
 		if (staal.status === 'GEREGISTREERD' || staal.status === 'KLAAR') {
 			goto('stalen/registreren');
+		} else if (staal.status === 'AANGEMAAKT') {
+			goto('stalen/nieuw');
 		} else {
 			return;
 		}
@@ -158,7 +157,6 @@
 
 	// delete staal
 	async function deleteStaal(id: number) {
-		console.log(id);
 		try {
 			await fetch(`http://localhost:8080/api/deletestaal/${id}`, {
 				method: 'DELETE',
@@ -365,8 +363,7 @@
 							? 'grid-cols-7'
 							: 'grid-cols-7'} gap-4 rounded-lg h-16 items-center px-3
 							{rol != 'admin' ? 'w-full ' : 'w-11/12'}
-							{staal.status === 'AANGEMAAKT' ? 'bg-white' : ''}
-							{staal.status === 'AANGEMAAKT' && rol !== 'admin' ? 'pointer-events-none' : ''}							
+							{staal.status === 'AANGEMAAKT' ? 'bg-white' : ''}	
 							{staal.status === 'KLAAR' ? 'bg-green-50' : ''}
 							{staal.status === 'GEREGISTREERD' ? 'bg-blue-100' : ''}
 							"
