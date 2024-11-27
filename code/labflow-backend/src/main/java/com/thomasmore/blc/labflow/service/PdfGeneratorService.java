@@ -177,6 +177,7 @@ public class PdfGeneratorService {
         // Font settings
         Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
         Font bodyFont = new Font(Font.FontFamily.HELVETICA, 10);
+        Font noteFont = new Font(Font.FontFamily.HELVETICA, 8, Font.BOLD);
         Font headerDataFont = new Font(Font.FontFamily.HELVETICA, 8, Font.BOLD);
 
         // Patient info
@@ -299,6 +300,23 @@ public class PdfGeneratorService {
             PdfPCell categoryHeader = new PdfPCell(new Phrase("", bodyFont));
             categoryHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(categoryHeader);
+
+            String note = notitie.getStalen().stream()
+                    .filter(staalTest -> staalTest.getStaal().getStaalCode() == staalCode)
+                    .map(StaalTest::getNote)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null);
+
+            if (note != null) {
+                PdfPCell noteCell = new PdfPCell(new Phrase("Nota: " + note, noteFont));
+                noteCell.setPaddingLeft(20);
+                noteCell.setPaddingBottom(5);
+                noteCell.setBackgroundColor(new BaseColor(239, 239, 239));
+                noteCell.setBorder(Rectangle.NO_BORDER);
+                noteCell.setColspan(6);
+                dataTable.addCell(noteCell);
+            }
         }
 
         for (Test test : testList) {
@@ -320,7 +338,7 @@ public class PdfGeneratorService {
 
             // get the note for the test
             String note = test.getStalen().stream()
-                    .filter(staalTest -> staalTest.getStaal().getStaalCode().equals(staalCode))
+                    .filter(staalTest -> staalTest.getStaal().getStaalCode() == staalCode)
                     .map(StaalTest::getNote)
                     .filter(Objects::nonNull)
                     .findFirst()
@@ -361,10 +379,13 @@ public class PdfGeneratorService {
             dataTable.addCell(categoryHeader);
 
             if (!note.equals("No note")) {
-                PdfPCell noteCell = new PdfPCell(new Phrase("Nota: " + note, bodyFont));
+                PdfPCell noteCell = new PdfPCell(new Phrase("Nota: " + note, noteFont));
+                noteCell.setPaddingLeft(20);
+                noteCell.setPaddingBottom(5);
+                noteCell.setBackgroundColor(new BaseColor(239, 239, 239));
                 noteCell.setBorder(Rectangle.NO_BORDER);
                 noteCell.setColspan(6);
-                dataTable.addCell(testCodeHeader);
+                dataTable.addCell(noteCell);
             }
         }
 
