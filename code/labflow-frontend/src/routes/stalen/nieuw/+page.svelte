@@ -32,13 +32,21 @@
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import { loadTestCategorieën, loadEenheden } from '$lib/fetchFunctions';
 	import { fetchStaal_StaalCode } from '$lib/fetchFunctions';
+	// types
+	import type { Test, TestCategorie, Eenheid } from '$lib/types/dbTypes';
+	// wrapper for array of testcodes (strings)
+	interface TestCodeWrapper {
+		test: {
+			testCode: string;
+		};
+	}
 
 	// voor het inladen van crud voor admins
 	const rol = getRolNaam_FromToken();
 	let userId = getUserId();
 
-	let tests: any[] = [];
-	let testsSorted: any[] = [];
+	let tests: Test[] = [];
+	let testsSorted: Test[] = [];
 	let searchCode = '';
 	let token: string = '';
 
@@ -68,8 +76,8 @@
 	let eenheid = '';
 	let testcategorie = '';
 
-	let testcategorieën: any[] = [];
-	let eenheden: any[] = [];
+	let testcategorieën: TestCategorie[] = [];
+	let eenheden: Eenheid[] = [];
 	let errorVeldenTest = {
 		testCode: false,
 		testNaam: false,
@@ -86,8 +94,8 @@
 		kleur: false
 	};
 
-	// geselecteerde tests
-	let geselecteerdeTests: any[] = [];
+	// array geselecteerde testcodes
+	let geselecteerdeTests: string[] = [];
 
 	onMount(() => {
 		token = getCookie('authToken') || '';
@@ -128,10 +136,13 @@
 				geboortedatum = test.patientGeboorteDatum;
 				laborantNaam = test.laborantNaam;
 				laborantRnummer = test.laborantRnummer;
-				geselecteerdeTests = test.registeredTests.map((test: any) => test.test.testCode);
+				geselecteerdeTests = test.registeredTests.map(
+					(test: TestCodeWrapper) => test.test.testCode
+				);
 				// setten van de id die we aan het aanpassen zijn
 				staalId = test.id;
 				loading = false;
+				console.log(geselecteerdeTests);
 			} catch (error) {
 				console.error('testen kon niet gefetched worden:', error);
 			}
@@ -167,8 +178,8 @@
 	function filterTests() {
 		testsSorted = tests.filter((test) => {
 			const codeMatch =
-				test.naam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
-				test.testCode.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.naam.toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.testCode.toLowerCase().includes(searchCode.toLowerCase()) ||
 				test.testcategorie.naam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
 				test.eenheid.afkorting.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
 				test.eenheid.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
@@ -188,7 +199,7 @@
 	}
 
 	// toevoegen van geselecteerde test, of verwijderen indien al geselecteerd
-	function toggleTestSelectie(testCode: number) {
+	function toggleTestSelectie(testCode: string) {
 		if (geselecteerdeTests.includes(testCode)) {
 			geselecteerdeTests = geselecteerdeTests.filter((code) => code !== testCode);
 		} else {
@@ -252,7 +263,8 @@
 	// helper functie om te checken of er een warning moet worden gegeven 'heb je zeker nagekeken of je de extra tests hebt toegevoegd?'
 	let isWarningAcknowledged = false; // Tracken of warning getoond is of niet
 
-	function checkWarning(geselecteerdeTestsArray: any[]) {
+	function checkWarning(geselecteerdeTestsArray: TestCodeWrapper[]) {
+		console.log(geselecteerdeTestsArray);
 		if (
 			geselecteerdeTestsArray.some((test) => test.test.testCode !== 'X') ||
 			geselecteerdeTestsArray.length === 0
@@ -301,9 +313,11 @@
 			return;
 		}
 
-		const geselecteerdeTestsArray = Array.from(geselecteerdeTests).map((testCode) => ({
-			test: { testCode: testCode }
-		}));
+		const geselecteerdeTestsArray: TestCodeWrapper[] = Array.from(geselecteerdeTests).map(
+			(testCode) => ({
+				test: { testCode: testCode }
+			})
+		);
 
 		// als er de test met code 'X' is geselecteerd, dan wordt de warning niet getoond
 		if (geselecteerdeTestsArray.some((test) => test.test.testCode === 'X')) {
@@ -506,7 +520,7 @@
 	};
 	let editTestErrorMessage = '';
 	// edit de test: PUT request
-	async function editTest(test: any) {
+	async function editTest(test: Test) {
 		editTestError = { testCode: false, naam: false, eenheid: false, testcategorie: false };
 		let isValid = true;
 

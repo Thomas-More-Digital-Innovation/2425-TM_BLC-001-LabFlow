@@ -30,7 +30,7 @@
 		}
 		errorWaarde = false;
 		try {
-			const response = await fetch('http://localhost:8080/api/createreferentiewaarde', {
+			await fetch('http://localhost:8080/api/createreferentiewaarde', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
