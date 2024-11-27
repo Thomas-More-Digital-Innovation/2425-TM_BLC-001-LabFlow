@@ -17,59 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class PdfGeneratorService {
 
-    public int placeholder() {
-        return 0;
-    }
-
     public byte[] generateLabelPdf(Staal staal) throws DocumentException {
-
-        Document document = new Document();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        PdfWriter.getInstance(document, out);
-        document.open();
-
-        // staal info
-        Long staalCode = staal.getStaalCode();
-        String voornaam = staal.getPatientVoornaam();
-        String achternaam = staal.getPatientAchternaam();
-        LocalDate geboortedatum = staal.getPatientGeboorteDatum();
-        char geslacht = staal.getPatientGeslacht();
-
-        // date formatter
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        String formattedDate = geboortedatum.format(formatter);
-
-        // filter categories
-        Set<Testcategorie> testcategorieSet = staal.getRegisteredTests().stream().map(StaalTest::getTest)
-                .map(Test::getTestcategorie)
-                .filter(testcategorie -> testcategorie.getId() != 7)
-                .collect(Collectors.toSet());
-
-        // start label
-        document.add(new Paragraph("Testcode: " + staalCode));
-        document.add(new Paragraph(voornaam + " " + achternaam));
-        document.add(new Paragraph("Geboorte: " + formattedDate));
-        document.add(new Paragraph("Geslacht: " + geslacht));
-        document.add(new Paragraph("--------------------------------"));
-        document.add(new Paragraph("\n"));
-
-        // Adding content to PDF
-        for (Testcategorie testcategorie : testcategorieSet) {
-            document.add(new Paragraph("Testcode: " + staalCode));
-            document.add(new Paragraph(voornaam + " " + achternaam));
-            document.add(new Paragraph("Geboorte: " + formattedDate));
-            document.add(new Paragraph("Geslacht: " + geslacht));
-            document.add(new Paragraph(testcategorie.getKleur() + " " + testcategorie.getNaam()));
-            document.add(new Paragraph("--------------------------------"));
-            document.add(new Paragraph("\n"));
-        }
-
-        document.close();
-        return out.toByteArray();
-    }
-
-    public byte[] generateLabelPdfv2(Staal staal) throws DocumentException {
 
         // Create a small page size for labels
         Document document = new Document(new Rectangle(210, 140)); // A7 size
