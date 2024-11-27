@@ -310,7 +310,6 @@
 		// als er de test met code 'X' is geselecteerd, dan wordt de warning niet getoond
 		if (geselecteerdeTestsArray.some((test) => test.test.testCode === 'X')) {
 			isWarningAcknowledged = true;
-		} else {
 		}
 
 		if (!isWarningAcknowledged) {
