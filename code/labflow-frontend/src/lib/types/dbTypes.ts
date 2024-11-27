@@ -3,16 +3,19 @@ export interface Staal {
     staalCode: string;
     patientAchternaam: string;
     patientVoornaam: string;
-    patientGeboorteDatum: Date;
+    patientGeboorteDatum: string;
     patientGeslacht: string;
     laborantNaam: string;
     laborantRnummer: string;
-    aanmaakDatum: Date;
+    aanmaakDatum: string;
     status: string;
     confirmDelete: boolean; // voor het verwijderen van een staal
     user: User; // gebruiker die dit staal heeft aangemaakt/aangepast
     registeredTests: Test[]; // testen die aan staal gekoppeld zijn/worden
+}
 
+export interface Status {
+    status: string;
 }
 
 export interface User {
@@ -25,6 +28,3 @@ export interface User {
 
 export interface Test {}
 
-export interface Status {
-    status: string;
-}

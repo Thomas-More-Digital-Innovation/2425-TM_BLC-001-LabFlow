@@ -25,13 +25,13 @@
 	import { staalCodeStore } from '$lib/store';
 	import { goto } from '$app/navigation';
 	// types
-	import type { Staal } from '$lib/types/dbTypes';
+	import type { Staal, Status } from '$lib/types/dbTypes';
 
 	let openModalTestId: number | null = null;
 
 	// achtergrond en klikbaar maken van instellingen gebaseerd op rol
-	let bgColor = 'bg-blue-400';
-	let pointerEvent = 'pointer-events-auto';
+	let bgColor: string = 'bg-blue-400';
+	let pointerEvent: string = 'pointer-events-auto';
 	const rol = getRol();
 	if (rol !== 'admin') {
 		bgColor = 'bg-gray-400';
@@ -45,7 +45,7 @@
 	let searchCode = '';
 	let searchDate = '';
 
-	let token: string = '';
+	let token = '';
 
 	let editStaalError = {
 		staalCode: false,
@@ -111,7 +111,7 @@
 	}
 
 	// Functie om te filteren op status
-	let filteredStatus = '';
+	let filteredStatus: string = '';
 
 	function filterStatus() {
 		// Make sure filteredStatus is in uppercase for a consistent comparison
@@ -322,7 +322,7 @@
 				>
 					<option value="" disabled>Status</option>
 					{#each statussen as status}
-						<option value={status}>{status.toLowerCase()}</option>
+						<option value={status}>{status.status.toLowerCase()}</option>
 					{/each}
 				</select>
 			</div>
