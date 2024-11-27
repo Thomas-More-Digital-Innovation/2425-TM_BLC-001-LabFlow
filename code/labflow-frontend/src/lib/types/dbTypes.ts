@@ -4,6 +4,15 @@ export interface User {
     voorNaam: string;
     achterNaam: string;
     wachtwoord: string;
+    fullName: string;
+    rol: Rol;
+    newWachtwoord: string | null; // bestaat niet in db, wordt gebruikt voor wachtwoord wijzigen
+    confirmDelete: boolean; // voor het verwijderen van een gebruiker
+}
+
+export interface Rol {
+    id: number;
+    naam: string;
 }
 
 export interface Staal {
@@ -44,6 +53,7 @@ export interface TestCategorie {
     naam: string;
     kleur: string;
     kleurnaam: string;
+    confirmDelete: boolean; // voor het verwijderen van een testcategorie
 }
 
 export interface Referentiewaarde {

@@ -12,13 +12,14 @@
 	import { fetchStalen } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
 	import { getUserId } from '$lib/globalFunctions';
+	// types
+	import Staal from '../Staal.svelte';
 
 	let token: string = '';
 	let searchCode = '';
 
-	// functie voor het filteren op basis van staalcode
-	let stalenSorted: any[] = [];
-	let stalen: any[] = [];
+	let stalen: Staal[] = [];
+	let stalenSorted: Staal[] = [];
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
