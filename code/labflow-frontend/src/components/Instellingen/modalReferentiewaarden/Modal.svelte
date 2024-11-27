@@ -53,33 +53,27 @@
 	}
 </script>
 
-<dialog
-	bind:this={dialog}
-	on:close={closeDialog}
-	on:click={(e) => {
-		if (e.target === dialog) closeDialog();
-	}}
->
+<dialog bind:this={dialog} on:close={closeDialog} tabindex="-1">
 	<div class="modal-content">
 		<div class="flex flex-row justify-between items-center">
 			<p class="font-bold text-xl">Referentiewaardes linken</p>
 			<button
-				autofocus
+				type="button"
 				on:click={closeDialog}
 				class="w-10 h-10 p-2 mb-3 flex items-center justify-center bg-red-400 rounded-lg"
 				><GoX /></button
 			>
 		</div>
-		<label for="fruits">
-			<strong>Kies je referentiewaarden:</strong>
+		<label for="referentiewaarden">
+			<strong>Kies je referentiewaardes:</strong>
 		</label>
 		<MultiSelect
-			id="fruits"
+			id="referentiewaarden"
 			options={waarden}
 			bind:value={$selectedValues}
 			placeholder="Referentiewaarden"
 		/>
-		<p class="font-bold text-xl mt-16">Aanmaken referentiewaarde</p>
+		<p class="font-bold text-xl mt-24">Aanmaken referentiewaarde</p>
 		<div class="flex flex-row justify-between">
 			<input
 				type="text"
