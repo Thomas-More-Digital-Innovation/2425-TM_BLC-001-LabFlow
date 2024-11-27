@@ -54,47 +54,52 @@
 </script>
 
 <dialog bind:this={dialog} on:close={closeDialog} tabindex="-1">
-	<div class="modal-content">
-		<div class="flex flex-row justify-between items-center">
-			<p class="font-bold text-xl">Referentiewaardes linken</p>
-			<button
-				type="button"
-				on:click={closeDialog}
-				class="w-10 h-10 p-2 mb-3 flex items-center justify-center bg-red-400 rounded-lg"
-				><GoX /></button
-			>
-		</div>
-		<label for="referentiewaarden">
-			<strong>Kies je referentiewaardes:</strong>
-		</label>
-		<MultiSelect
-			id="referentiewaarden"
-			options={waarden}
-			bind:value={$selectedValues}
-			placeholder="Referentiewaarden"
-		/>
-		<p class="font-bold text-xl mt-24">Aanmaken referentiewaarde</p>
-		<div class="flex flex-row justify-between">
-			<input
-				type="text"
-				name="referentiewaarde"
-				id="referentiewaarde"
-				bind:value={waarde}
-				class="rounded-lg text-black bg-gray-200 h-12 w-80 mt-4 {errorWaarde
-					? 'border-red-500 border-2'
-					: ''}"
+	<div class="modal-content flex flex-col justify-between w-full h-full">
+		<div>
+			<div class="flex flex-row justify-between items-center">
+				<p class="font-bold text-xl">Referentiewaardes linken</p>
+				<button
+					type="button"
+					on:click={closeDialog}
+					class="w-10 h-10 p-2 mb-3 flex items-center justify-center bg-red-400 rounded-lg"
+					><GoX /></button
+				>
+			</div>
+			<label for="referentiewaarden">
+				<strong>Kies je referentiewaardes:</strong>
+			</label>
+			<MultiSelect
+				style="height: 60px;"
+				id="referentiewaarden"
+				options={waarden}
+				bind:value={$selectedValues}
+				placeholder="Referentiewaarden"
 			/>
-			<button
-				on:click={nieuweReferentiewaarde}
-				type="button"
-				class="bg-green-500 rounded-lg text-black h-12 w-56 font-bold text-lg"
-			>
-				Opslaan
-			</button>
 		</div>
-		{#if errorWaarde}
-			<p class="text-red-500 mt-2">Vul een waarde in.</p>
-		{/if}
+		<div>
+			<p class="font-bold text-xl mb-5">Aanmaken referentiewaarde</p>
+			<div class="flex flex-row justify-between">
+				<input
+					type="text"
+					name="referentiewaarde"
+					id="referentiewaarde"
+					bind:value={waarde}
+					class="rounded-lg text-black bg-gray-200 h-12 w-80 mt-4 px-3 {errorWaarde
+						? 'border-red-500 border-2'
+						: ''}"
+				/>
+				<button
+					on:click={nieuweReferentiewaarde}
+					type="button"
+					class="bg-green-500 rounded-lg text-black h-12 w-56 font-bold text-lg"
+				>
+					Opslaan
+				</button>
+			</div>
+			{#if errorWaarde}
+				<p class="text-red-500 mt-2">Vul een waarde in.</p>
+			{/if}
+		</div>
 	</div>
 </dialog>
 
