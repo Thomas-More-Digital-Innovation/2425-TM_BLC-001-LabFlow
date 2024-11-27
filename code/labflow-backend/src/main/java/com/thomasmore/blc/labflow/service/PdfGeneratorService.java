@@ -1,9 +1,7 @@
 package com.thomasmore.blc.labflow.service;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.thomasmore.blc.labflow.entity.*;
 import org.springframework.stereotype.Service;
@@ -19,57 +17,102 @@ import java.util.stream.Collectors;
 @Service
 public class PdfGeneratorService {
 
-    public int placeholder() {
-        return 0;
-    }
-
     public byte[] generateLabelPdf(Staal staal) throws DocumentException {
 
-        Document document = new Document();
+        // Create a small page size for labels
+        Document document = new Document(new Rectangle(210, 140)); // A7 size
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        PdfWriter.getInstance(document, out);
+        PdfWriter writer = PdfWriter.getInstance(document, out);
         document.open();
 
-        // staal info
+        // Extract details from `staal`
         Long staalCode = staal.getStaalCode();
         String voornaam = staal.getPatientVoornaam();
         String achternaam = staal.getPatientAchternaam();
         LocalDate geboortedatum = staal.getPatientGeboorteDatum();
         char geslacht = staal.getPatientGeslacht();
 
-        // date formatter
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        String formattedDate = geboortedatum.format(formatter);
-
-        // filter categories
-        Set<Testcategorie> testcategorieSet = staal.getRegisteredTests().stream().map(StaalTest::getTest)
+        // Filter categories
+        Set<Testcategorie> testcategorieSet = staal.getRegisteredTests().stream()
+                .map(StaalTest::getTest)
                 .map(Test::getTestcategorie)
                 .filter(testcategorie -> testcategorie.getId() != 7)
                 .collect(Collectors.toSet());
 
-        // start label
-        document.add(new Paragraph("Testcode: " + staalCode));
-        document.add(new Paragraph(voornaam + " " + achternaam));
-        document.add(new Paragraph("Geboorte: " + formattedDate));
-        document.add(new Paragraph("Geslacht: " + geslacht));
-        document.add(new Paragraph("--------------------------------"));
-        document.add(new Paragraph("\n"));
+        // Format the birthdate
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String formattedDate = geboortedatum.format(formatter);
 
-        // Adding content to PDF
+        // Set fonts
+        Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+        Font regularFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+
+        // Get the canvas for custom drawing
+        PdfContentByte canvas = writer.getDirectContent();
+
+        // Draw the label border
+        Rectangle border = new Rectangle(10, 10, 200, 130); // Define rectangle dimensions
+        border.setBorder(Rectangle.BOX);
+        border.setBorderWidth(1);
+        canvas.rectangle(border);
+        canvas.stroke();
+
+        // Add patient name (Bold)
+        Paragraph nameParagraph = new Paragraph(voornaam + " " + achternaam, boldFont);
+        nameParagraph.setAlignment(Element.ALIGN_LEFT);
+        document.add(nameParagraph);
+
+        // Add birthdate and gender
+        document.add(new Paragraph("Geboorte: " + formattedDate, regularFont));
+        document.add(new Paragraph("Geslacht: " + (geslacht == 'M' ? "Man" : "Vrouw"), regularFont));
+
+        // Add some spacing
+        document.add(Chunk.NEWLINE);
+
+        // Add the `staalCode` inside the black rectangle at the bottom
+        ColumnText.showTextAligned(canvas, Element.ALIGN_CENTER,
+                new Phrase(String.valueOf(staalCode), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK)),
+                105, 25, 0); // Center the text inside the black rectangle
+
+        // Iterate through each `Testcategorie` and create a page for each label
         for (Testcategorie testcategorie : testcategorieSet) {
-            document.add(new Paragraph("Testcode: " + staalCode));
-            document.add(new Paragraph(voornaam + " " + achternaam));
-            document.add(new Paragraph("Geboorte: " + formattedDate));
-            document.add(new Paragraph("Geslacht: " + geslacht));
-            document.add(new Paragraph(testcategorie.getKleur() + " " + testcategorie.getNaam()));
-            document.add(new Paragraph("--------------------------------"));
-            document.add(new Paragraph("\n"));
+            document.newPage(); // Add a new page for every label
+
+            // Draw the label border
+            Rectangle newBorder = new Rectangle(10, 10, 200, 130); // Create a new rectangle for each page
+            newBorder.setBorder(Rectangle.BOX);
+            newBorder.setBorderWidth(1);
+            canvas.rectangle(newBorder);
+            canvas.stroke();
+
+            // Add patient name (Bold)
+            nameParagraph.setAlignment(Element.ALIGN_LEFT);
+            document.add(nameParagraph);
+
+            // Add birthdate and gender
+            document.add(new Paragraph("Geboorte: " + formattedDate, regularFont));
+            document.add(new Paragraph("Geslacht: " + (geslacht == 'M' ? "Man" : "Vrouw"), regularFont));
+
+            // Add some spacing
+            document.add(Chunk.NEWLINE);
+
+            // Add the `staalCode` inside the black rectangle at the bottom
+            ColumnText.showTextAligned(canvas, Element.ALIGN_CENTER,
+                    new Phrase(String.valueOf(staalCode), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK)),
+                    105, 25, 0); // Center the text inside the black rectangle
+
+            // Add vertical EDTA text on the right side
+            ColumnText.showTextAligned(canvas, Element.ALIGN_RIGHT,
+                    new Phrase(testcategorie.getNaam(), boldFont), 185, 60, 270); // Rotated 90 degrees
         }
 
         document.close();
         return out.toByteArray();
     }
+
+
+
 
     public byte[] generateResultsPdf(Staal staal) throws DocumentException {
         Document document = new Document();
@@ -81,12 +124,8 @@ public class PdfGeneratorService {
         // Font settings
         Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
         Font bodyFont = new Font(Font.FontFamily.HELVETICA, 10);
+        Font noteFont = new Font(Font.FontFamily.HELVETICA, 8, Font.BOLD);
         Font headerDataFont = new Font(Font.FontFamily.HELVETICA, 8, Font.BOLD);
-
-        // Logo
-        // Image logo = Image.getInstance("/assets/labflowLogo.png");
-        // logo.scaleToFit(50, 50);
-        // document.add(logo); // Uncomment this if you have a logo image
 
         // Patient info
         List<StaalTest> registeredTests = staal.getRegisteredTests();
@@ -95,6 +134,8 @@ public class PdfGeneratorService {
         String achternaam = staal.getPatientAchternaam();
         LocalDate geboortedatum = staal.getPatientGeboorteDatum();
         char geslacht = staal.getPatientGeslacht();
+        String laborant = staal.getLaborantNaam();
+        String rNummer = staal.getLaborantRnummer();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String formattedDate = geboortedatum.format(formatter);
@@ -121,7 +162,9 @@ public class PdfGeneratorService {
         PdfPCell rightCell = new PdfPCell();
         rightCell.setBorder(Rectangle.NO_BORDER);
         rightCell.addElement(new Paragraph("Testcode: " + staalCode, bodyFont));
-        rightCell.addElement(new Paragraph("Datum: " + formattedCurrentDate, bodyFont));  // Current date
+        rightCell.addElement(new Paragraph("Datum: " + formattedCurrentDate, bodyFont));
+        rightCell.addElement(new Paragraph("Laborant: " + laborant, bodyFont));
+        rightCell.addElement(new Paragraph("R-nummer: " + rNummer, bodyFont));// Current date
         headerTable.addCell(rightCell);
 
         document.add(headerTable);
@@ -204,6 +247,23 @@ public class PdfGeneratorService {
             PdfPCell categoryHeader = new PdfPCell(new Phrase("", bodyFont));
             categoryHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(categoryHeader);
+
+            String note = notitie.getStalen().stream()
+                    .filter(staalTest -> staalTest.getStaal().getStaalCode() == staalCode)
+                    .map(StaalTest::getNote)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null);
+
+            if (note != null) {
+                PdfPCell noteCell = new PdfPCell(new Phrase("Nota: " + note, noteFont));
+                noteCell.setPaddingLeft(20);
+                noteCell.setPaddingBottom(5);
+                noteCell.setBackgroundColor(new BaseColor(239, 239, 239));
+                noteCell.setBorder(Rectangle.NO_BORDER);
+                noteCell.setColspan(6);
+                dataTable.addCell(noteCell);
+            }
         }
 
         for (Test test : testList) {
@@ -222,6 +282,16 @@ public class PdfGeneratorService {
                     .filter(Objects::nonNull)
                     .findFirst()
                     .orElse("No result");
+
+            // get the note for the test
+            String note = test.getStalen().stream()
+                    .filter(staalTest -> staalTest.getStaal().getStaalCode() == staalCode)
+                    .map(StaalTest::getNote)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse("No note");
+
+            System.out.println("Note: " + note);
 
             if (result.equals("No result")) {
                 PdfPCell resultHeader = new PdfPCell(new Phrase("no result", bodyFont));
@@ -254,6 +324,16 @@ public class PdfGeneratorService {
             PdfPCell categoryHeader = new PdfPCell(new Phrase(test.getTestcategorie().getNaam(), bodyFont));
             categoryHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(categoryHeader);
+
+            if (!note.equals("No note")) {
+                PdfPCell noteCell = new PdfPCell(new Phrase("Nota: " + note, noteFont));
+                noteCell.setPaddingLeft(20);
+                noteCell.setPaddingBottom(5);
+                noteCell.setBackgroundColor(new BaseColor(239, 239, 239));
+                noteCell.setBorder(Rectangle.NO_BORDER);
+                noteCell.setColspan(6);
+                dataTable.addCell(noteCell);
+            }
         }
 
         document.add(dataTable);
