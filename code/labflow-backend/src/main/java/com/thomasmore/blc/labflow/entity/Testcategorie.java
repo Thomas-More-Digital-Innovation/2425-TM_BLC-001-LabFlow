@@ -13,14 +13,17 @@ public class Testcategorie {
 
     private String kleur;
 
+    private String kleurnaam;
+
     // lege constructor
     public Testcategorie() {
     }
 
     // constructor met arguments
-    public Testcategorie(String naam, String kleur) {
+    public Testcategorie(String naam, String kleur, String kleurnaam) {
         this.naam = naam;
         this.kleur = kleur;
+        this.kleurnaam = kleurnaam;
     }
 
     // getters en setters
@@ -46,5 +49,13 @@ public class Testcategorie {
 
     public void setKleur(String kleur) {
         this.kleur = kleur;
+    }
+
+    public String getKleurnaam() {
+        return kleurnaam;
+    }
+
+    public void setKleurnaam(String kleurnaam) {
+        this.kleurnaam = kleurnaam;
     }
 }

@@ -13,6 +13,8 @@ In dit document geven we uitleg rond hoe je de LABflow web applicatie kan recre�
 - **3.1** - database
 - **3.2** - backend
 - **3.3** - frontend
+- **4** - PC installaties
+- **4.1** - Disclaimer
 
 ## 1 - Hoe project aanmaken
 
@@ -33,9 +35,9 @@ Eerst en vooral gaan we bespreken hoe je de LABflow applicatie zelf van scratch 
 - packaging: jar
 - java version: 17
 
-**Je krijgt een ZIP file en deze moet je unzippen en openen in je IntelliJ**
+Je krijgt een ZIP file en deze moet je unzippen en openen in je IntelliJ
 
-**surf naar [mvnrepository.com](https://mvnrepository.com/) en voeg volgende dependencies ook nog toe:**
+surf naar [mvnrepository.com](https://mvnrepository.com/) en voeg volgende dependencies ook nog toe:
 
 - [ ] [SQLite JDBC](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc)
 - [ ] [Spring Boot Starter Web](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web)
@@ -52,7 +54,7 @@ Eerst en vooral gaan we bespreken hoe je de LABflow applicatie zelf van scratch 
 - .env ontbreekt
 - Alle files met .db extensie ontbreken
 
-**ga naar application.properties**
+ga naar application.properties
 
 > path: src > main > resources > application.properties
 
@@ -88,7 +90,7 @@ spring.jpa.show-sql=true
 1. in de root van je applicatie maak je een map `databases` aan
 2. daarin zet je een file `labflow.db`
 
-> path: :databases/labflow.db
+> path: databases/labflow.db
 
 3. open rechts de tool voor databases
 4. sleep de labflow.db file in het venster van de database tool
@@ -103,7 +105,7 @@ Voor de front-end gebruiken we **Svelte**: documentatie -> [docs](https://svelte
 
 Installatie:
 
-```
+```bash
 npm create svelte@latest labflow-frontend
 cd labflow-frontend
 npm install
@@ -114,11 +116,38 @@ Door het uitvoeren van deze commando's maken we een startproject aan. Hierna ins
 
 Met `npm run dev` starten we een development server op, op poort 5173, dit is de standaardpoort voor Svelte applicaties.
 
-voor windows: http://localhost:5173/  
-voor Linux/Unix-based systemen: http://0.0.0.0:5173/
+voor windows & mac: [http://localhost:5173/](http://localhost:5173/)
+voor Linux/Unix-based systemen: [http://0.0.0.0:5173/](http://0.0.0.0:5173/)
 
 Meer informatie te vinden in code\labflow-frontend\README.md
 
 #### 2.2.1 hosting
+
 Voor onze frontend te hosten hebben we gekozen voor Github Pages.  
 Documentatie: [tutorial hosting svelte app to github pages](https://www.okupter.com/blog/deploy-sveltekit-website-to-github-pages).  
+
+## 4 - PC installaties
+
+Wanneer je labels wil afdrukken op onderstaand scherm. Kan je een van de Zebra ZD421 label printers aansluiten op je laptop doormiddel van de bijgevoegde usb kabel. Je zal merken dat wanneer je op de knop 'afdrukken' duwt er niets zal gebeuren. Hiervoor moeten we op de gebruikte PC een klein programmatje downloaden. Dit programma'tje, genaamd **JSPrintManager**, is geschreven door de mensen van [NEOdynamic](https://www.neodynamic.com/). Zei maken allerlei software programmas voor het verbinden van software met hardware van printers. **VEILIG DUS**
+
+![Label scherm](./assets//label-screen.png)
+
+We raden aan om enkel de link gebruikt in deze documentatie om virussen en gevaarlijke programmas te vermijden.
+
+Als je op deze [link](https://www.neodynamic.com/downloads/jspm/) drukt kom je terecht op een pagina waar je de JSPrintManager software veilig kan downloaden. Kies eerst en vooral het juiste OS waar je op werkt. Als je windows gebruikt zal je een uitvoerbaar bestand downloaden. Wanneer je een mac gebruikt zal er een .pkg bestand downloaden.
+
+>⚠️ Het kan zijn dat je computer het bestand niet wilt starten omdat hij niet zeker is of het wel veilig is. Zolang je het bestand hebt gedownload van de link hierboven is het bestand normaal veilig!
+
+Wanneer je dit hebt gedaan (ongeacht welke systeem je gebruikt) mag je naar je 'download' folder gaan en dubbel klikken op het net gedownloade bestand. Er zal een installatie pop komen waar je moet doorlopen. Ga erdoor en pas niets aan.
+
+Wanneer je dit hebt gedaan zou de applicatie automatisch moeten opstaan. Als je nog altijd niets zou kunnen afdrukken zoek dan naar de applicatie en doe hem open net zoals je eender ander applicatie zou starten.
+
+Top! Je bent klaar om te starten met labels printen
+
+## 4.1 - Disclaimer
+
+Wanneer je probeert af te drukken gaat de software eerst een nogal verontrusttend scherm laten zijn zoals afgebeeld onderaan. Dit is compleet normaal. Dit is omdat we de gratis versie van de software willen gebruiken. Geen zorgen, klik gewoon op de afdruk knop en wanneer als juist geïnstalleerd is en aan staat zullen de labels starten met printen.
+
+**prijs licensie:** €150 per maand
+
+![pop-up JSPrintManager](./assets/pop-up-jsprintmanager.png)

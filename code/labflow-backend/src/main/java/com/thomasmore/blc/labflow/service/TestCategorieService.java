@@ -2,6 +2,7 @@ package com.thomasmore.blc.labflow.service;
 
 import com.thomasmore.blc.labflow.entity.Testcategorie;
 import com.thomasmore.blc.labflow.repository.TestCategorieRepository;
+import com.thomasmore.blc.labflow.repository.TestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,8 @@ import java.util.Optional;
 public class TestCategorieService {
     @Autowired
     private TestCategorieRepository testCategorieRepository;
+    @Autowired
+    private TestRepository testRepository;
 
     // Create
     public void createTestcategorie(Testcategorie testcategorie) {
@@ -37,6 +40,7 @@ public class TestCategorieService {
         if (testcategorie != null) {
             testcategorie.setNaam(updateTestCategorie.getNaam());
             testcategorie.setKleur(updateTestCategorie.getKleur());
+            testcategorie.setKleurnaam(updateTestCategorie.getKleurnaam());
             testCategorieRepository.save(testcategorie);
             return new ResponseEntity<>(testcategorie, HttpStatus.OK);
         }
@@ -46,6 +50,9 @@ public class TestCategorieService {
     // Delete
     public ResponseEntity<Integer> deleteTestCategorie(Long id) {
         Testcategorie deleteTestcategorie = testCategorieRepository.findById(id);
+        if (testRepository.existsByTestcategorieId(id)) {
+            throw new IllegalStateException("Kan categorie niet verwijderen want deze is gelinked aan één of meerdere tests");
+        }
         if (deleteTestcategorie != null) {
             testCategorieRepository.delete(deleteTestcategorie);
             return new ResponseEntity<>(testCategorieRepository.findAll().size(), HttpStatus.OK);

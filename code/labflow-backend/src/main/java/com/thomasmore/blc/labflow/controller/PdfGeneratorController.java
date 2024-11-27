@@ -2,9 +2,11 @@ package com.thomasmore.blc.labflow.controller;
 
 import com.itextpdf.text.DocumentException;
 import com.thomasmore.blc.labflow.entity.Staal;
+import com.thomasmore.blc.labflow.repository.StaalRepository;
 import com.thomasmore.blc.labflow.service.PdfGeneratorService;
 import com.thomasmore.blc.labflow.service.StaalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,8 @@ public class PdfGeneratorController {
 
     @Autowired
     private StaalService staalService;
+    @Autowired
+    private StaalRepository staalRepository;
 
     @GetMapping("/generatelabel/{id}")
     public ResponseEntity<byte[]> generateLabelPdf(@PathVariable Long id) {
@@ -54,10 +58,16 @@ public class PdfGeneratorController {
             return ResponseEntity.internalServerError().build();
         }
 
+        String filename = "resultaten_" + staal.getPatientAchternaam() + "_" + staal.getPatientVoornaam() + ".pdf";
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "results_"+ staal.getPatientAchternaam() + "_" + staal.getPatientVoornaam() +".pdf");
+        headers.add("X-Filename", filename);  // Custom header
 
+        // STATUS UPDATE
+        // staal is 'klaar' testen en waarden zijn geregistreerd, pdf is afgedrukt
+        staal.setStatus(Staal.Status.KLAAR);
+        staalRepository.save(staal);
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
 }

@@ -3,9 +3,6 @@
 	import Input from './Input.svelte';
 	import { goto } from '$app/navigation'; // https://www.okupter.com/blog/sveltekit-goto
 
-	// https://svelte.dev/examples/if-blocks
-	let user = { loggedIn: false };
-
 	let email = '';
 	let wachtwoord = '';
 
@@ -27,16 +24,15 @@
 			const authToken = result.token;
 			// zonder httpOnly & sameSite is het onveilig
 			document.cookie = `authToken=${authToken};path=/;SameSite=Strict`;
-			goTo();
+			if (document.cookie && authToken) {
+				goto('stalen');
+			}
 		} catch (error) {
 			console.error(error);
 			displayError = true;
 		}
 	};
 
-	function goTo() {
-		goto('stalen');
-	}
 	let displayError = false;
 </script>
 

@@ -2,6 +2,7 @@ package com.thomasmore.blc.labflow.service;
 
 import com.thomasmore.blc.labflow.entity.Eenheid;
 import com.thomasmore.blc.labflow.repository.EenheidRepository;
+import com.thomasmore.blc.labflow.repository.TestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ import java.util.List;
 public class EenheidService {
     @Autowired
     private EenheidRepository eenheidRepository;
+    @Autowired
+    private TestRepository testRepository;
 
     // create
     public void create(Eenheid eenheid) {
@@ -41,6 +44,9 @@ public class EenheidService {
     // delete
     public ResponseEntity<Integer> delete(@PathVariable Long id) {
         Eenheid deleteEenheid = eenheidRepository.findById(id);
+        if (testRepository.existsByEenheidId(id)) {
+            throw new IllegalStateException("Kan eenheid niet verwijderen want deze is gelinked aan één of meerdere tests");
+        }
         if (eenheidRepository.findById(id) != null) {
             eenheidRepository.delete(deleteEenheid);
             return new ResponseEntity<>(HttpStatus.OK);

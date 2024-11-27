@@ -58,13 +58,13 @@ public class DataLoader implements CommandLineRunner {
 
 
         // aanmaken testcategorie
-        Testcategorie edtaCat = new Testcategorie("EDTA", "#CA3DD4");
-        Testcategorie citraatCat = new Testcategorie("Citraat", "#12D3E9");
-        Testcategorie serumCat = new Testcategorie("Serum", "#ED3A3A");
-        Testcategorie heparineCat = new Testcategorie("Heparine", "#2DE57A");
-        Testcategorie fluorideCat = new Testcategorie("Fluoride", "#8c8c8c");
-        Testcategorie urineCat = new Testcategorie("Urine", "#ffcc40");
-        Testcategorie noCat = new Testcategorie("Geen Categorie", "#ffffff");
+        Testcategorie edtaCat = new Testcategorie("EDTA", "#CA3DD4", "Paars");
+        Testcategorie citraatCat = new Testcategorie("Citraat", "#12D3E9", "Blauw");
+        Testcategorie serumCat = new Testcategorie("Serum", "#ED3A3A", "Rood");
+        Testcategorie heparineCat = new Testcategorie("Heparine", "#2DE57A", "Groen");
+        Testcategorie fluorideCat = new Testcategorie("Fluoride", "#8c8c8c", "Grijs");
+        Testcategorie urineCat = new Testcategorie("Urine", "#ffcc40","Geel");
+        Testcategorie noCat = new Testcategorie("Geen Categorie", "#ffffff", "Geen");
         testCategorieRepository.save(edtaCat);
         testCategorieRepository.save(citraatCat);
         testCategorieRepository.save(serumCat);
@@ -75,16 +75,16 @@ public class DataLoader implements CommandLineRunner {
 
 
         // Stalen, dit is voor development, geen echte waarden
-        Staal staal1 = new Staal(2024000001L, "César", "Van Leuffelen", java.sql.Date.valueOf("2004-07-29"), 'M', "Nathan Neve", "R1234567", user1);
-        Staal staal2 = new Staal(2024000002L, "Lucas", "Peeters", java.sql.Date.valueOf("1985-07-21"), 'M', "Sofie", "R1234567", user2);
-        Staal staal3 = new Staal(2024000003L, "Mila", "Vermeulen", java.sql.Date.valueOf("1993-02-11"), 'V', "Bart", "R1234567", user1);
-        Staal staal4 = new Staal(2024000004L, "Liam", "Claes", java.sql.Date.valueOf("1992-11-30"), 'M', "Lies", "R1234567", user2);
-        Staal staal5 = new Staal(2024000005L, "Olivia", "Dubois", java.sql.Date.valueOf("2000-01-08"), 'V', "An", "R1234567", user1);
-        Staal staal6 = new Staal(2024000006L, "Noah", "De Smet", java.sql.Date.valueOf("1987-03-16"), 'M', "Koen", "R1234567", user2);
-        Staal staal7 = new Staal(2024000007L, "Marie", "De Vries", java.sql.Date.valueOf("1991-09-25"), 'V', "Katrien", "R1234567", user1);
-        Staal staal8 = new Staal(2024000008L, "Arthur", "Van Damme", java.sql.Date.valueOf("1988-12-19"), 'M', "Jan", "R1234567", user2);
-        Staal staal9 = new Staal(2024000009L, "Charlotte", "Jacobs", java.sql.Date.valueOf("1995-04-03"), 'V', "Eva", "R1234567", user1);
-        Staal staal10 = new Staal(2024000010L, "Victor", "Maes", java.sql.Date.valueOf("1990-06-10"), 'M', "Lotte", "R1234567", user2);
+        Staal staal1 = new Staal(2024000001L, "César", "Van Leuffelen", java.time.LocalDate.parse("2004-07-29"), 'M', "Nathan Neve", "R1234567", user1);
+        Staal staal2 = new Staal(2024000002L, "Lucas", "Peeters", java.time.LocalDate.parse("1985-07-21"), 'M', "Sofie", "R1234567", user2);
+        Staal staal3 = new Staal(2024000003L, "Mila", "Vermeulen", java.time.LocalDate.parse("1993-02-11"), 'V', "Bart", "R1234567", user1);
+        Staal staal4 = new Staal(2024000004L, "Liam", "Claes", java.time.LocalDate.parse("1992-11-30"), 'M', "Lies", "R1234567", user2);
+        Staal staal5 = new Staal(2024000005L, "Olivia", "Dubois", java.time.LocalDate.parse("2000-01-08"), 'V', "An", "R1234567", user1);
+        Staal staal6 = new Staal(2024000006L, "Noah", "De Smet", java.time.LocalDate.parse("1987-03-16"), 'M', "Koen", "R1234567", user2);
+        Staal staal7 = new Staal(2024000007L, "Marie", "De Vries", java.time.LocalDate.parse("1991-09-25"), 'V', "Katrien", "R1234567", user1);
+        Staal staal8 = new Staal(2024000008L, "Arthur", "Van Damme", java.time.LocalDate.parse("1988-12-19"), 'M', "Jan", "R1234567", user2);
+        Staal staal9 = new Staal(2024000009L, "Charlotte", "Jacobs", java.time.LocalDate.parse("1995-04-03"), 'V', "Eva", "R1234567", user1);
+        Staal staal10 = new Staal(2024000010L, "Victor", "Maes", java.time.LocalDate.parse("1990-06-10"), 'M', "Lotte", "R1234567", user2);
 
         staalRepository.save(staal1);
         staalRepository.save(staal2);
@@ -454,11 +454,16 @@ public class DataLoader implements CommandLineRunner {
         referentiewaardeRepository.save(new Referentiewaarde("71-151", test553)); // Creatinine clearance
 
         // 3 tests toevoegen aan staal 1
+        StaalTest staalTestx= new StaalTest(staal1, test1);
         StaalTest staalTest1 = new StaalTest(staal1, test601);
         StaalTest staalTest2 = new StaalTest(staal1, test602);
         StaalTest staalTest3 = new StaalTest(staal1, test630);
+        staalTestx.setNote("this a note for notitie");
+        staalTestx.setResult("dronken");
         staalTest1.setResult("15.0");
         staalTest2.setResult("45.0");
+        staalTest1.setNote("This is a note for test 601");
+        staalTestRepository.save(staalTestx);
         staalTestRepository.save(staalTest1);
         staalTestRepository.save(staalTest2);
         staalTestRepository.save(staalTest3);

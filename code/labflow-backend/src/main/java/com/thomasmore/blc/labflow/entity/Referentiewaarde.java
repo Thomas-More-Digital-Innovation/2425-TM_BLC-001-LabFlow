@@ -14,8 +14,9 @@ public class Referentiewaarde {
 
     // foreign key naar de test tabel
     @ManyToOne
-    @JoinColumn(name = "test_id", nullable = false)
+    @JoinColumn(name = "test_id", nullable = true)
     @JsonBackReference
+    @Nullable
     private Test test;
 
     // Lege constructor
