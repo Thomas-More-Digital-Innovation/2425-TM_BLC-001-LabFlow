@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import type { DecodedToken } from "$lib/types";
+const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
 
 // helper functie om de jwt token te decoden
@@ -39,7 +40,7 @@ export async function fetchAll(token: string, subject: string) {
         "Authorization": "Bearer " + token
     };
 
-    const response = await fetch(`http://localhost:8080/api/${subject}`, { headers })
+    const response = await fetch(`${backend_path}/api/${subject}`, { headers })
         .then(response => response.json());
         return response;
 }
@@ -50,7 +51,7 @@ export async function fetchAllWithoutPrefix(token: string, subject: string) {
         "Authorization": "Bearer " + token
     };
 
-    const response = await fetch(`http://localhost:8080/${subject}`, { headers })
+    const response = await fetch(`${backend_path}/${subject}`, { headers })
         .then(response => response.json());
         return response;
 }
