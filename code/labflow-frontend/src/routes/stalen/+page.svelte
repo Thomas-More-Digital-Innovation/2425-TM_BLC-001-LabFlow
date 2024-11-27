@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Nav from '../../components/nav.svelte';
 	import { onMount } from 'svelte';
-	import { getRol } from '$lib/globalFunctions';
+	import { getRolNaam_FromToken } from '$lib/globalFunctions';
 	import { fetchStalen, fetchStatussen } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
 	import { id } from '../../components/Modal/store';
@@ -25,14 +25,14 @@
 	import { staalCodeStore } from '$lib/store';
 	import { goto } from '$app/navigation';
 	// types
-	import type { Staal, Status } from '$lib/types/dbTypes';
+	import type { Staal } from '$lib/types/dbTypes';
 
 	let openModalTestId: number | null = null;
 
 	// achtergrond en klikbaar maken van instellingen gebaseerd op rol
-	let bgColor: string = 'bg-blue-400';
-	let pointerEvent: string = 'pointer-events-auto';
-	const rol = getRol();
+	let bgColor = 'bg-blue-400';
+	let pointerEvent = 'pointer-events-auto';
+	const rol = getRolNaam_FromToken();
 	if (rol !== 'admin') {
 		bgColor = 'bg-gray-400';
 		pointerEvent = 'pointer-events-none';
@@ -41,11 +41,11 @@
 	// fetchen van stalen
 	let stalen: Staal[] = [];
 	let stalenSorted: Staal[] = [];
-	let statussen: Status[] = [];
+	let statussen: string[] = [];
 	let searchCode = '';
 	let searchDate = '';
 
-	let token = '';
+	let token: string = '';
 
 	let editStaalError = {
 		staalCode: false,
@@ -111,7 +111,7 @@
 	}
 
 	// Functie om te filteren op status
-	let filteredStatus: string = '';
+	let filteredStatus = '';
 
 	function filterStatus() {
 		// Make sure filteredStatus is in uppercase for a consistent comparison
@@ -322,7 +322,7 @@
 				>
 					<option value="" disabled>Status</option>
 					{#each statussen as status}
-						<option value={status}>{status.status.toLowerCase()}</option>
+						<option value={status}>{status.toLowerCase()}</option>
 					{/each}
 				</select>
 			</div>

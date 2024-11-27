@@ -2,7 +2,7 @@
 	import Nav from '../../../components/nav.svelte';
 	import { goto } from '$app/navigation';
 	import { getCookie, fetchAll } from '$lib/globalFunctions';
-	import { getRol } from '$lib/globalFunctions';
+	import { getRolNaam_FromToken } from '$lib/globalFunctions';
 	import { getUserId } from '$lib/globalFunctions';
 	import { onMount } from 'svelte';
 
@@ -32,11 +32,9 @@
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import { loadTestCategorieën, loadEenheden } from '$lib/fetchFunctions';
 	import { fetchStaal_StaalCode } from '$lib/fetchFunctions';
-	import Staal from '../../../components/Staal.svelte';
-	import { slide } from 'svelte/transition';
 
 	// voor het inladen van crud voor admins
-	const rol = getRol();
+	const rol = getRolNaam_FromToken();
 	let userId = getUserId();
 
 	let tests: any[] = [];

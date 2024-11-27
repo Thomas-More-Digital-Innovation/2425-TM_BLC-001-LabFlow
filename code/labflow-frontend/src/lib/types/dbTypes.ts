@@ -14,10 +14,6 @@ export interface Staal {
     registeredTests: Test[]; // testen die aan staal gekoppeld zijn/worden
 }
 
-export interface Status {
-    status: string;
-}
-
 export interface User {
     id: number;
     email: string;
