@@ -36,7 +36,6 @@
 		if (resultRollen) {
 			rollen = resultRollen;
 		}
-		console.log(usersSorted);
 	});
 
 	function filterUsers() {
@@ -58,7 +57,6 @@
 	let errorMessageGebruikerDELETE = '';
 	async function deleteUser(id: string) {
 		if (id === '1' || id === '2') {
-			console.log('Deze gebruiker kan niet worden verwijderd.');
 			errorMessageGebruikerDELETE = 'Deze gebruiker kan niet worden verwijderd.';
 			return;
 		} else {
@@ -227,7 +225,6 @@
 						}
 					})
 				});
-				console.log('user updated with password');
 			} else {
 				// If no new password, update other fields without changing the password
 				await fetch(`http://localhost:8080/updateuserwithoutpassword/${id}`, {
@@ -245,7 +242,6 @@
 						}
 					})
 				});
-				console.log('user updated without password');
 			}
 
 			errorMessageGebruikerPUT = '';

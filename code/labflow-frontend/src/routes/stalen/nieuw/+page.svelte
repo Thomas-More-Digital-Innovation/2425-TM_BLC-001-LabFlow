@@ -96,19 +96,10 @@
 		loadTests();
 	});
 
-	// neem de id
+	// neem de id van de store
 	let sampleCode: string | undefined;
 	staalCodeStore.subscribe((value) => {
 		sampleCode = value;
-		console.log('Dit is staalcode:' + sampleCode);
-		if (sampleCode) {
-			console.log('we gaan binden');
-			// nieuweStaalCode = sampleCode;
-			// naam = '';
-			// voornaam = '';
-			// geslacht = '';
-			// geboortedatum = '';
-		}
 	});
 
 	let loading = true;
@@ -127,7 +118,6 @@
 				console.error('testen kon niet gefetched worden:', error);
 			}
 		} else if (token != null && sampleCode != '') {
-			console.log(`dit is de testcode die we gaan aanpassen: ${sampleCode}`);
 			try {
 				tests = await fetchAll(token, 'tests');
 				const test = sampleCode ? await fetchStaal_StaalCode(sampleCode) : null;
@@ -269,7 +259,6 @@
 			geselecteerdeTestsArray.some((test) => test.test.testCode !== 'X') ||
 			geselecteerdeTestsArray.length === 0
 		) {
-			console.log(geselecteerdeTestsArray);
 			alert('Heb je nagekeken dat je geen notitie moet toevoegen?');
 			isWarningAcknowledged = true; // setten de warning als acknowledged (want hij is getoond)
 		}
@@ -320,10 +309,8 @@
 
 		// als er de test met code 'X' is geselecteerd, dan wordt de warning niet getoond
 		if (geselecteerdeTestsArray.some((test) => test.test.testCode === 'X')) {
-			console.log('contains X');
 			isWarningAcknowledged = true;
 		} else {
-			console.log('does not contain X');
 		}
 
 		if (!isWarningAcknowledged) {
@@ -406,10 +393,8 @@
 
 		// als er de test met code 'X' is geselecteerd, dan wordt de warning niet getoond
 		if (geselecteerdeTestsArray.some((test) => test.test.testCode === 'X')) {
-			console.log('contains X');
 			isWarningAcknowledged = true;
 		} else {
-			console.log('does not contain X');
 		}
 
 		if (!isWarningAcknowledged) {
@@ -418,15 +403,6 @@
 			errorMessageStaal = '';
 			return; // wachten voor volgende click
 		}
-		console.log(nieuweStaalCode);
-		console.log(naam);
-		console.log(voornaam);
-		console.log(geslacht);
-		console.log(geboortedatum);
-		console.log(laborantNaam);
-		console.log(laborantRnummer);
-		console.log(userId);
-		console.log(geselecteerdeTestsArray);
 		try {
 			await fetch(`http://localhost:8080/api/updatestaal/${staalId}`, {
 				method: 'PUT',
@@ -450,7 +426,6 @@
 			});
 			// doorgeven van aangemaakte staalcode naar volgend scherm
 			staalCodeStore.set(nieuweStaalCode);
-			console.log('staal aangepast');
 		} catch (error) {
 			console.error('staal kon niet worden aangemaakt: ', error);
 		}
@@ -508,7 +483,6 @@
 
 	// crud buttons voor admin
 	async function deleteTest(id: number) {
-		console.log(id);
 		try {
 			await fetch(`http://localhost:8080/api/deletetest/${id}`, {
 				method: 'DELETE',

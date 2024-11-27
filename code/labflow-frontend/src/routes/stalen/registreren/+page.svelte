@@ -42,7 +42,6 @@
 
 	// alle tests categorieën ophalen die bij de testen horen
 	async function loadData() {
-		console.log('reloading data...');
 		if (token != null) {
 			try {
 				staal = await fetchAll(token, `staal/${sampleCode}`);
@@ -81,7 +80,6 @@
 		if (selectedCategory.id == undefined) {
 			selectedCategory = testCategories[0];
 		}
-		console.log('Unique Test Categories:', testCategories);
 	}
 
 	function toggleNoteInput(testId: string) {
@@ -170,7 +168,6 @@
 
 			const data = await response.json();
 
-			console.log('update succesvol: ', data);
 			return data;
 		} catch (error) {
 			console.error('update error: ', error);
@@ -218,7 +215,6 @@
 
 			const data = await response.json();
 			loadData();
-			console.log('Checkbox change update successful:', data);
 		} catch (error) {
 			loadData();
 			console.error('Failed to update test status:', error);
@@ -249,7 +245,6 @@
 		let sampleCode: string | undefined;
 		staalCodeStore.subscribe((value) => {
 			sampleCode = value;
-			console.log('Dit is staalcode:' + sampleCode);
 		});
 
 		await fetch(`http://localhost:8080/api/updatestaalstatus/KLAAR/${sampleCode}`, {

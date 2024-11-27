@@ -79,7 +79,6 @@
 
 	///// DELETE test /////
 	async function deleteTest(id: string) {
-		console.log(id);
 		try {
 			await fetch(`http://localhost:8080/api/deletetest/${id}`, {
 				method: 'DELETE',

@@ -41,7 +41,6 @@
 				})
 			});
 
-			console.log(waarde);
 			waarden = waarden.concat({
 				id: waarden.length + 1,
 				waarde: waarde,
