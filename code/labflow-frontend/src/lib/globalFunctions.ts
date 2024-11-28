@@ -2,7 +2,6 @@ import { jwtDecode } from "jwt-decode";
 import type { DecodedToken } from "$lib/types";
 const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
-
 // helper functie om de jwt token te decoden
 function decodeToken() {
     const token = getCookie('authToken');
@@ -13,7 +12,7 @@ function decodeToken() {
 }
 
 // functie voor het ophalen van de rol van de gebruiker uit de jwt token
-export function getRol() {
+export function getRolNaam_FromToken() {
     const token = decodeToken();
     let rol: string | undefined;
     if (token) {

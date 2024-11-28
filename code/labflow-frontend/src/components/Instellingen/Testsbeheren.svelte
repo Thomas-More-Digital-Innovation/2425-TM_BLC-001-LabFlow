@@ -21,18 +21,20 @@
 	import Modal from './modalReferentiewaarden/Modal.svelte';
 	import { writable, get } from 'svelte/store';
 	const backend_path = import.meta.env.VITE_BACKEND_PATH;
+	// types
+	import type { Eenheid, Referentiewaarde, Test, TestCategorie } from '$lib/types/dbTypes';
 
 	let showModal = writable(false);
 
 	let token: string = '';
 
-	let tests: any[] = [];
-	let testsSorted: any[] = [];
+	let tests: Test[] = [];
+	let testsSorted: Test[] = [];
 	let searchCode = '';
-	let testcategorieën: any[] = [];
-	let eenheden: any[] = [];
-	let referentiewaardes: any[] = [];
-	let waarden: any[] = ['dummy']; // dummy zorgt ervoor dat bij het laden van de pagina de multiselect niet leeg is (geeft anders error in console)
+	let testcategorieën: TestCategorie[] = [];
+	let eenheden: Eenheid[] = [];
+	let referentiewaardes: Referentiewaarde[] = [];
+	let waarden: Referentiewaarde[] = [{ id: 9999999, waarde: 'dummy', label: 'dummy' }]; // dummy zorgt ervoor dat bij het laden van de pagina de multiselect niet leeg is (geeft anders error in console)
 
 	// volgorde is belangrijk, eerst eenheden en categorieën ophalen, daarna tests
 	onMount(async () => {
@@ -79,7 +81,7 @@
 	}
 
 	///// DELETE test /////
-	async function deleteTest(id: string) {
+	async function deleteTest(id: number) {
 		try {
 			await fetch(`${backend_path}/api/deletetest/${id}`, {
 				method: 'DELETE',
@@ -213,19 +215,20 @@
 		testCode: false,
 		naam: false,
 		eenheid: false,
-		testcategorie: false
+		testcategorie: false,
+		referentiewaardes: false
 	};
 
 	let referentiewaardesPUT = writable([]);
 	let errorMessageStaalPUT = '';
 
-	async function updateTest(id: string) {
+	async function updateTest(id: number) {
 		const test = tests.find((t) => t.id === id);
 		if (!test) return;
 
 		let isValid = true;
 
-		let errorVeldenTestPUT = {
+		errorVeldenTestPUT = {
 			testCode: false,
 			naam: false,
 			eenheid: false,
@@ -258,6 +261,8 @@
 				waarde: value.waarde // waarde extraheren uit referentiewaardesPUT store en mappen naar een array van objecten
 			})
 		);
+		console.log(referentiewaardesPUTMapped);
+
 		try {
 			await fetch(`${backend_path}/api/updatetest/${id}`, {
 				method: 'PUT',

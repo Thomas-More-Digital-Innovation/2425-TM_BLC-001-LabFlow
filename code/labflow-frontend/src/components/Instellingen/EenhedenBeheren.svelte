@@ -12,13 +12,16 @@
 	import FaPlus from 'svelte-icons/fa/FaPlus.svelte';
 	import { getCookie } from '$lib/globalFunctions';
 	const backend_path = import.meta.env.VITE_BACKEND_PATH;
+	// types
+	import type { Eenheid } from '$lib/types/dbTypes';
+
 
 	let token: string = '';
 
 	let errorMessageEenheid = '';
 	let searchCode = '';
-	let eenheden: any[] = [];
-	let eenhedenSorted: any[] = [];
+	let eenheden: Eenheid[] = [];
+	let eenhedenSorted: Eenheid[] = [];
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
@@ -44,7 +47,7 @@
 
 	///// DELETE eenheid /////
 	let deleteError = '';
-	async function deleteEenheid(id: string) {
+	async function deleteEenheid(id: number) {
 		try {
 			const response = await fetch(`${backend_path}/api/deleteeenheid/${id}`, {
 				method: 'DELETE',
@@ -130,7 +133,7 @@
 
 	let errorMessageEenheidPUT = '';
 
-	async function updateEenheid(id: string) {
+	async function updateEenheid(id: number) {
 		const eenheid = eenheden.find((e) => e.id === id);
 		if (!eenheid) return;
 

@@ -13,11 +13,14 @@
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import { getCookie } from '../../lib/globalFunctions';
 	const backend_path = import.meta.env.VITE_BACKEND_PATH;
+	// types
+	import type { TestCategorie } from '$lib/types/dbTypes';
+
 
 	let searchCode = '';
 	let token: string = '';
-	let categorieën: any[] = [];
-	let categorieënSorted: any[] = [];
+	let categorieën: TestCategorie[] = [];
+	let categorieënSorted: TestCategorie[] = [];
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
@@ -42,7 +45,7 @@
 
 	///// DELETE verwijderen van een categorie /////
 	let deleteError = '';
-	async function deleteCategorie(id: string) {
+	async function deleteCategorie(id: number) {
 		try {
 			const response = await fetch(`${backend_path}/api/testcategorie/${id}`, {
 				method: 'DELETE',
@@ -145,7 +148,7 @@
 
 	let errorMessageCategoriePUT = '';
 
-	async function updateCategorie(id: string) {
+	async function updateCategorie(id: number) {
 		const categorie = categorieën.find((c) => c.id === id);
 		if (!categorie) return;
 

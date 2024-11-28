@@ -13,6 +13,10 @@
 	import { onDestroy, onMount } from 'svelte';
 	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
+	// types & factories
+	import type { Test, TestCategorie, Staal } from '$lib/types/dbTypes';
+	import { createDefaultStaal } from '$lib/factories/staalfactory';
+
 	import * as JSPM from 'jsprintmanager'
 	import { backIn } from 'svelte/easing';
 
@@ -25,10 +29,11 @@
 		sampleCode = value;
 	});
 
-	let tests: any[] = [];
-	let staal: any = {};
-	let staalId: string = '';
-	let testCategories: any[] = [];
+	// instantiëren van een leeg staalobject
+	let staal: Staal = createDefaultStaal();
+
+	let staalId: number;
+	let testCategories: TestCategorie[] = [];
 	let token: string = getCookie('authToken') || '';
 
 	// alle tests categorieën ophalen die bij de testen horen
@@ -50,11 +55,11 @@
 	}
 
 	// Get unique test categories based on their id
-	function extractUniqueTestCategories(registeredTests: any[]) {
+	function extractUniqueTestCategories(registeredTests: Test[]) {
 		const categoryMap = new Map();
 
-		registeredTests.forEach((testItem) => {
-			const category = testItem.test.testcategorie;
+		registeredTests.forEach((testItem: Test) => {
+			const category = testItem.testcategorie;
 			if (category.id !== 7 && !categoryMap.has(category.id)) {
 				categoryMap.set(category.id, category);
 			}
@@ -89,7 +94,7 @@
 	}
 
 	// pdf labels downloaden
-	async function getPdf(staalId: string) {
+	async function getPdf(staalId: number) {
 		try {
 			const response = await fetch(`${backend_path}/api/pdf/generatelabel/${staalId}`, {
 				method: 'GET',

@@ -5,9 +5,9 @@
 	import GoPerson from 'svelte-icons/go/GoPerson.svelte';
 	// @ts-ignore
 	import GoOrganization from 'svelte-icons/go/GoOrganization.svelte';
-	import { getRol } from '$lib/globalFunctions';
+	import { getRolNaam_FromToken } from '$lib/globalFunctions';
 
-	const rol = getRol();
+	const rol = getRolNaam_FromToken();
 
 	function eraseCookie() {
 		// https://stackoverflow.com/questions/2144386/how-to-delete-a-cookie

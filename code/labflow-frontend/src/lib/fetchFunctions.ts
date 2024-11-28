@@ -1,12 +1,11 @@
 import { getCookie, fetchAll } from '$lib/globalFunctions';
 import { goto } from '$app/navigation';
 import { fetchAllWithoutPrefix } from '$lib/globalFunctions';
+import type { Eenheid, TestCategorie } from './types/dbTypes';
 
 const token = getCookie('authToken') ?? '';
-let testcategorieën: any[] = [];
-let eenheden: any[] = [];
-let stalen: any[] = [];
-let filteredStalen: any[] = [];
+let testcategorieën: TestCategorie[] = [];
+let eenheden: Eenheid[] = [];
 
 // laden categorieën
 export async function loadTestCategorieën() {
