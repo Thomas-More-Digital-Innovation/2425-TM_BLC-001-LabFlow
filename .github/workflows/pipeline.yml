@@ -31,7 +31,6 @@ jobs:
       #   run: mvn clean -e -X test
       #   working-directory: ./code/labflow-backend
 
-jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
         steps:
