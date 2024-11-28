@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - nn-hosting # verwijderen na testen, hierdoor wordt de pipeline ook getriggerd bij een push naar de nn-hosting branch
 jobs:
   test:
     runs-on: ubuntu-latest
