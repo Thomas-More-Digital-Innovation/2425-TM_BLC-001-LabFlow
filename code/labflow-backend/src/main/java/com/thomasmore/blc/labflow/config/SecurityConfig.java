@@ -71,6 +71,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("https://2425-tm-blc-001-labflow.pages.dev");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
