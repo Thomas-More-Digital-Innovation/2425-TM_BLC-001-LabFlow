@@ -1,4 +1,4 @@
-name: Labflow-back-end
+name: labflow-back-end
 
 on:
   push:
@@ -32,6 +32,7 @@ jobs:
       #   working-directory: ./code/labflow-backend
 
   build-and-deploy:
+        needs: test
         runs-on: ubuntu-latest
         steps:
         # checkout the repo
@@ -50,17 +51,17 @@ jobs:
             username: ${{ secrets.REGISTRY_USERNAME }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
         - run: |
-            docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/Labflow-back-end:${{ github.sha }}
-            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/Labflow-back-end:${{ github.sha }}
+            docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:${{ github.sha }}
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:${{ github.sha }}
 
         - name: 'Deploy to Azure Container Instances'
           uses: 'azure/aci-deploy@v1'
           with:
             resource-group: ${{ secrets.RESOURCE_GROUP }}
             dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
-            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/Labflow-back-end:${{ github.sha }}
+            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:${{ github.sha }}
             registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
             registry-username: ${{ secrets.REGISTRY_USERNAME }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-            name: aci-Labflow-back-end
+            name: aci-labflow-back-end
             location: 'west europe'
