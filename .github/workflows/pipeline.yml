@@ -51,7 +51,7 @@ jobs:
             username: ${{ secrets.REGISTRY_USERNAME }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
         - run: |
-            docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:${{ github.sha }}
+            docker build ./code/labflow-backend -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:${{ github.sha }}
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:${{ github.sha }}
 
         - name: 'Deploy to Azure Container Instances'
