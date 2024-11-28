@@ -13,23 +13,25 @@
 	import { getCookie } from '$lib/globalFunctions';
 	import { fetchRollen } from '$lib/fetchFunctions';
 	import { getUserId } from '$lib/globalFunctions';
+	// types
+	import type { Rol, User } from '$lib/types/dbTypes';
 	let token: string = '';
 
-	let users: any[] = [];
-	let usersSorted: any[] = [];
+	let users: User[] = [];
+	let usersSorted: User[] = [];
 	let searchCode = '';
-	let rollen: any[] = [];
+	let rollen: Rol[] = [];
 	const userId = getUserId();
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
 		const resultUsers = await fetchUsers();
 		if (resultUsers) {
-			[users, usersSorted] = [resultUsers, resultUsers].map((userList: any[]) =>
-				userList.map((user: any) => ({
-					...user,
-					newWachtwoord: undefined
-				}))
+			[users, usersSorted] = [resultUsers, resultUsers].map((userList: User[]) =>
+				userList.map((user) => {
+					user.confirmDelete = false;
+					return user;
+				})
 			);
 		}
 		const resultRollen = await fetchRollen();
@@ -172,7 +174,7 @@
 		rol: false
 	};
 
-	async function updateGebruiker(id: string, newWachtwoord: string | null | undefined) {
+	async function updateGebruiker(id: number, newWachtwoord: string | null | undefined) {
 		const user = users.find((u) => u.id === id);
 		if (!user) return;
 

@@ -12,13 +12,14 @@
 	import { fetchStalen } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
 	import { getUserId } from '$lib/globalFunctions';
+	// types
+	import Staal from '../Staal.svelte';
 
 	let token: string = '';
 	let searchCode = '';
 
-	// functie voor het filteren op basis van staalcode
-	let stalenSorted: any[] = [];
-	let stalen: any[] = [];
+	let stalen: Staal[] = [];
+	let stalenSorted: Staal[] = [];
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
@@ -203,7 +204,7 @@
 		staal.laborantRnummer = staal.laborantRnummer.toUpperCase();
 		// regex voor R-nummer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes
 		const regex = /^[RU]\d{7}$/;
-		const errorVeldenStaalPUT = {
+		errorVeldenStaalPUT = {
 			staalcode: false,
 			naam: false,
 			voornaam: false,

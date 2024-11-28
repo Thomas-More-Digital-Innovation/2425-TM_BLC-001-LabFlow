@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Nav from '../../components/nav.svelte';
 	import { onMount } from 'svelte';
-	import { getRol } from '$lib/globalFunctions';
+	import { getRolNaam_FromToken } from '$lib/globalFunctions';
 	import { fetchStalen, fetchStatussen } from '$lib/fetchFunctions';
 	import { getCookie } from '$lib/globalFunctions';
 	import { id } from '../../components/Modal/store';
@@ -24,22 +24,24 @@
 	import Content from '../../components/Modal/Content.svelte';
 	import { staalCodeStore } from '$lib/store';
 	import { goto } from '$app/navigation';
+	// types
+	import type { Staal } from '$lib/types/dbTypes';
 
 	let openModalTestId: number | null = null;
 
 	// achtergrond en klikbaar maken van instellingen gebaseerd op rol
 	let bgColor = 'bg-blue-400';
 	let pointerEvent = 'pointer-events-auto';
-	const rol = getRol();
+	const rol = getRolNaam_FromToken();
 	if (rol !== 'admin') {
 		bgColor = 'bg-gray-400';
 		pointerEvent = 'pointer-events-none';
 	}
 
 	// fetchen van stalen
-	let stalen: any[] = [];
-	let stalenSorted: any[] = [];
-	let statussen: any[] = [];
+	let stalen: Staal[] = [];
+	let stalenSorted: Staal[] = [];
+	let statussen: string[] = [];
 	let searchCode = '';
 	let searchDate = '';
 
@@ -112,7 +114,6 @@
 	let filteredStatus = '';
 
 	function filterStatus() {
-
 		// Make sure filteredStatus is in uppercase for a consistent comparison
 		const normalizedFilteredStatus = filteredStatus.toUpperCase();
 
@@ -144,7 +145,7 @@
 	}
 
 	// set staalcode in store en ga naar waarden registreren / afdrukken pdf
-	function setStoreGoToDependingStatus(staal: any) {
+	function setStoreGoToDependingStatus(staal: Staal) {
 		staalCodeStore.set(staal.staalCode);
 		if (staal.status === 'GEREGISTREERD' || staal.status === 'KLAAR') {
 			goto('stalen/registreren');
@@ -176,7 +177,7 @@
 
 	// edit staal
 	let editStaalErrorMessage = '';
-	async function editStaal(staal: any) {
+	async function editStaal(staal: Staal) {
 		editStaalError = {
 			staalCode: false,
 			patientVoornaam: false,

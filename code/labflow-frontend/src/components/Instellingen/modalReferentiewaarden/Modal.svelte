@@ -10,7 +10,7 @@
 
 	$: if (showModal && dialog) dialog.showModal();
 
-	// Close the dialog when it loses the `showModal` state
+	// Sluit de dialog en set showmodal op false
 	function closeDialog() {
 		dialog.close();
 		showModal = false;
@@ -30,7 +30,7 @@
 		}
 		errorWaarde = false;
 		try {
-			const response = await fetch('http://localhost:8080/api/createreferentiewaarde', {
+			await fetch('http://localhost:8080/api/createreferentiewaarde', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -40,13 +40,13 @@
 					waarde: waarde
 				})
 			});
-
 			waarden = waarden.concat({
 				id: waarden.length + 1,
 				waarde: waarde,
 				label: waarde
 			});
-			waarde = ''; // Reset waarde after successful submission
+
+			waarde = ''; // Reset waarde na toevoegen
 		} catch (error) {
 			console.error('Test kon niet worden aangemaakt: ', error);
 		}
