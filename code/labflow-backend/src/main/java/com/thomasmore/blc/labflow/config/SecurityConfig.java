@@ -25,6 +25,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 // dit zorgt ervoor dat we niet de default security provider gaan gebruiken
@@ -70,8 +72,10 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:5173");
-        config.addAllowedOrigin("https://2425-tm-blc-001-labflow.pages.dev");
+        config.setAllowedOriginPatterns(Arrays.asList(
+                "http://localhost:5173",
+                "https://2425-tm-blc-001-labflow.pages.dev"
+        ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
