@@ -19,17 +19,22 @@
 	import FaSave from 'svelte-icons/fa/FaSave.svelte';
 	import { getCookie } from '$lib/globalFunctions';
 	import Modal from './modalReferentiewaarden/Modal.svelte';
-
 	import { writable, get } from 'svelte/store';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
+	// types
+	import type { Eenheid, Referentiewaarde, Test, TestCategorie } from '$lib/types/dbTypes';
+
 	let showModal = writable(false);
 
 	let token: string = '';
 
-	let tests: any[] = [];
-	let testcategorieën: any[] = [];
-	let eenheden: any[] = [];
-	let referentiewaardes: any[] = [];
-	let waarden: any[] = ['dummy']; // dummy zorgt ervoor dat bij het laden van de pagina de multiselect niet leeg is (geeft error in console)
+	let tests: Test[] = [];
+	let testsSorted: Test[] = [];
+	let searchCode = '';
+	let testcategorieën: TestCategorie[] = [];
+	let eenheden: Eenheid[] = [];
+	let referentiewaardes: Referentiewaarde[] = [];
+	let waarden: Referentiewaarde[] = [{ id: 9999999, waarde: 'dummy', label: 'dummy' }]; // dummy zorgt ervoor dat bij het laden van de pagina de multiselect niet leeg is (geeft anders error in console)
 
 	// volgorde is belangrijk, eerst eenheden en categorieën ophalen, daarna tests
 	onMount(async () => {
@@ -44,7 +49,7 @@
 		}
 		const fetchedTests = await fetchTests();
 		if (fetchedTests) {
-			tests = fetchedTests;
+			[tests, testsSorted] = [fetchedTests, fetchedTests];
 		}
 		const fetchedReferentiewaardes = await fetchReferentiewaarden();
 		// mappen van referentiewaarden overeenkomstig de waarden die in de multiselect moeten komen
@@ -58,11 +63,27 @@
 		}
 	});
 
+	function filterTests() {
+		testsSorted = tests.filter((test) => {
+			const codeMatch =
+				test.naam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.testCode.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.testcategorie.naam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.eenheid.afkorting.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.eenheid.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
+			return codeMatch;
+		});
+	}
+
+	function verwijderZoek() {
+		searchCode = '';
+		testsSorted = tests;
+	}
+
 	///// DELETE test /////
-	async function deleteTest(id: string) {
-		console.log(id);
+	async function deleteTest(id: number) {
 		try {
-			await fetch(`http://localhost:8080/api/deletetest/${id}`, {
+			await fetch(`${backend_path}/api/deletetest/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: 'Bearer ' + token
@@ -73,7 +94,7 @@
 		}
 		const result = await fetchTests();
 		if (result) {
-			tests = result;
+			[tests, testsSorted] = [result, result];
 		}
 	}
 
@@ -136,7 +157,7 @@
 		);
 
 		try {
-			await fetch('http://localhost:8080/api/createtest', {
+			const response = await fetch(`${backend_path}/api/createtest`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -162,7 +183,10 @@
 			errorMessageTestPOST = '';
 			const result = await fetchTests();
 			if (result) {
-				tests = result;
+				[tests, testsSorted] = [result, result];
+			}
+			if (response.status === 409) {
+				errorMessageTestPOST = 'Testcode bestaat al.';
 			}
 		} catch (error) {
 			console.error('Test kon niet worden aangemaakt: ', error);
@@ -191,19 +215,20 @@
 		testCode: false,
 		naam: false,
 		eenheid: false,
-		testcategorie: false
+		testcategorie: false,
+		referentiewaardes: false
 	};
 
 	let referentiewaardesPUT = writable([]);
 	let errorMessageStaalPUT = '';
 
-	async function updateTest(id: string) {
+	async function updateTest(id: number) {
 		const test = tests.find((t) => t.id === id);
 		if (!test) return;
 
 		let isValid = true;
 
-		let errorVeldenTestPUT = {
+		errorVeldenTestPUT = {
 			testCode: false,
 			naam: false,
 			eenheid: false,
@@ -237,8 +262,9 @@
 			})
 		);
 		console.log(referentiewaardesPUTMapped);
+
 		try {
-			await fetch(`http://localhost:8080/api/updatetest/${id}`, {
+			await fetch(`${backend_path}/api/updatetest/${id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
@@ -276,6 +302,23 @@
 	</div>
 
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
+		<div class="flex mb-5 w-full">
+			<input
+				type="text"
+				id="searchCode"
+				name="searchCode"
+				placeholder="zoeken"
+				bind:value={searchCode}
+				on:input={filterTests}
+				class=" h-12 rounded-l-lg text-black pl-3 w-2/5"
+			/>
+			<button
+				on:click={verwijderZoek}
+				class="w-12 h-12 p-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-r-lg"
+			>
+				<GoX />
+			</button>
+		</div>
 		<div class="space-y-3">
 			<!-- Header -->
 			<div
@@ -378,7 +421,7 @@
 				</div>
 			</div>
 			<div class="space-y-3">
-				{#each tests as test, index}
+				{#each testsSorted as test, index}
 					<div
 						class="grid grid-cols-9 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
 					>
@@ -440,7 +483,7 @@
 						<div class="col-span-1 flex justify-end">
 							<button
 								type="button"
-								class="h-10 w-10 bg-green-500 p-2 rounded-lg text-white mr-2"
+								class="h-10 w-10 p-2 rounded-lg text-white mr-2 bg-green-500 hover:bg-green-700 transition duration-500"
 								on:click={() => updateTest(test.id)}
 								aria-label="Save test"
 							>

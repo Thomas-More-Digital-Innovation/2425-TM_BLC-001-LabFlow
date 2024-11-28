@@ -13,20 +13,28 @@
 	import { getCookie } from '$lib/globalFunctions';
 	import { fetchRollen } from '$lib/fetchFunctions';
 	import { getUserId } from '$lib/globalFunctions';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
+	// types
+	import type { Rol, User } from '$lib/types/dbTypes';
+
 	let token: string = '';
 
-	let users: any[] = [];
-	let rollen: any[] = [];
+	let users: User[] = [];
+	let usersSorted: User[] = [];
+	let searchCode = '';
+	let rollen: Rol[] = [];
 	const userId = getUserId();
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
 		const resultUsers = await fetchUsers();
 		if (resultUsers) {
-			users = resultUsers.map((user: any) => ({
-				...user,
-				newWachtwoord: undefined
-			}));
+			[users, usersSorted] = [resultUsers, resultUsers].map((userList: User[]) =>
+				userList.map((user) => {
+					user.confirmDelete = false;
+					return user;
+				})
+			);
 		}
 		const resultRollen = await fetchRollen();
 		if (resultRollen) {
@@ -34,16 +42,30 @@
 		}
 	});
 
+	function filterUsers() {
+		usersSorted = users.filter((user) => {
+			const codeMatch =
+				user.fullName.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				user.email.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				user.rol.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
+			return codeMatch;
+		});
+	}
+
+	function verwijderZoek() {
+		searchCode = '';
+		usersSorted = users;
+	}
+
 	///// DELETE verwijderen van een gebruiker /////
 	let errorMessageGebruikerDELETE = '';
 	async function deleteUser(id: string) {
 		if (id === '1' || id === '2') {
-			console.log('Deze gebruiker kan niet worden verwijderd.');
 			errorMessageGebruikerDELETE = 'Deze gebruiker kan niet worden verwijderd.';
 			return;
 		} else {
 			try {
-				const response = await fetch(`http://localhost:8080/deleteuser/${id}`, {
+				const response = await fetch(`${backend_path}/deleteuser/${id}`, {
 					method: 'DELETE',
 					headers: {
 						'Content-Type': 'application/json',
@@ -52,7 +74,7 @@
 				});
 				const result = await fetchUsers();
 				if (result) {
-					users = result;
+					[users, usersSorted] = [result, result];
 				}
 			} catch (error) {
 				console.error('Gebruiker kon niet worden verwijderd: ', error);
@@ -112,7 +134,7 @@
 		}
 
 		try {
-			await fetch(`http://localhost:8080/register`, {
+			await fetch(`${backend_path}/register`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -138,7 +160,7 @@
 		}
 		const result = await fetchUsers();
 		if (result) {
-			users = result;
+			[users, usersSorted] = [result, result];
 		}
 		return;
 	}
@@ -154,7 +176,7 @@
 		rol: false
 	};
 
-	async function updateGebruiker(id: string, newWachtwoord: string | null | undefined) {
+	async function updateGebruiker(id: number, newWachtwoord: string | null | undefined) {
 		const user = users.find((u) => u.id === id);
 		if (!user) return;
 
@@ -191,7 +213,7 @@
 		try {
 			// If newWachtwoord is provided and not empty, update with new password
 			if (newWachtwoord && newWachtwoord.trim() !== '') {
-				await fetch(`http://localhost:8080/updateuser/${id}`, {
+				await fetch(`${backend_path}/updateuser/${id}`, {
 					method: 'PUT',
 					headers: {
 						'Content-Type': 'application/json',
@@ -207,10 +229,9 @@
 						}
 					})
 				});
-				console.log('user updated with password');
 			} else {
 				// If no new password, update other fields without changing the password
-				await fetch(`http://localhost:8080/updateuserwithoutpassword/${id}`, {
+				await fetch(`${backend_path}/updateuserwithoutpassword/${id}`, {
 					method: 'PUT',
 					headers: {
 						'Content-Type': 'application/json',
@@ -225,7 +246,6 @@
 						}
 					})
 				});
-				console.log('user updated without password');
 			}
 
 			errorMessageGebruikerPUT = '';
@@ -234,7 +254,7 @@
 			}
 			const result = await fetchUsers();
 			if (result) {
-				users = result;
+				[users, usersSorted] = [result, result];
 			}
 		} catch (error) {
 			console.error('Gebruiker kon niet aangepast: ', error);
@@ -259,6 +279,23 @@
 
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
 		<div class="space-y-3">
+			<div class="flex mb-5 w-full">
+				<input
+					type="text"
+					id="searchCode"
+					name="searchCode"
+					placeholder="zoeken"
+					bind:value={searchCode}
+					on:input={filterUsers}
+					class="w-2/5 h-12 rounded-l-lg text-black pl-3"
+				/>
+				<button
+					on:click={verwijderZoek}
+					class="w-12 h-12 p-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-r-lg"
+				>
+					<GoX />
+				</button>
+			</div>
 			<!-- Header -->
 			<div class="grid grid-cols-12 gap-4 bg-gray-300 rounded-lg h-10 items-center px-3 font-bold">
 				<div class="col-span-2">
@@ -358,7 +395,7 @@
 				<div class="text-red-500 mb-2">{errorMessageGebruikerPUT}</div>
 			{/if}
 			<div class="space-y-3">
-				{#each users as user, index}
+				{#each usersSorted as user, index}
 					<div
 						class="grid grid-cols-12 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
 					>

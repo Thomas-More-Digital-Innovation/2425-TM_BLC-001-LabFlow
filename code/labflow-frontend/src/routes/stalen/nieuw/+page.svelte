@@ -2,7 +2,7 @@
 	import Nav from '../../../components/nav.svelte';
 	import { goto } from '$app/navigation';
 	import { getCookie, fetchAll } from '$lib/globalFunctions';
-	import { getRol } from '$lib/globalFunctions';
+	import { getRolNaam_FromToken } from '$lib/globalFunctions';
 	import { getUserId } from '$lib/globalFunctions';
 	import { onMount } from 'svelte';
 
@@ -31,18 +31,31 @@
 	// https://svelte-awesome-color-picker.vercel.app/
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import { loadTestCategorieën, loadEenheden } from '$lib/fetchFunctions';
+	import { fetchStaal_StaalCode } from '$lib/fetchFunctions';
+	import Staal from '../../../components/Staal.svelte';
+	import { slide } from 'svelte/transition';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
+
+	// types
+	import type { Test, TestCategorie, Eenheid } from '$lib/types/dbTypes';
+	// wrapper for array of testcodes (strings)
+	interface TestCodeWrapper {
+		test: {
+			testCode: string;
+		};
+	}
 
 	// voor het inladen van crud voor admins
-	const rol = getRol();
+	const rol = getRolNaam_FromToken();
 	let userId = getUserId();
 
-	let tests: any[] = [];
-	let filteredTests: any[] = [];
+	let tests: Test[] = [];
+	let testsSorted: Test[] = [];
 	let searchCode = '';
 	let token: string = '';
 
 	// nieuwe staalcode
-	let nieuweStaalCode = '';
+	let nieuweStaalCode: string = '';
 	let naam = '';
 	let voornaam = '';
 	let geslacht = '';
@@ -67,8 +80,8 @@
 	let eenheid = '';
 	let testcategorie = '';
 
-	let testcategorieën: any[] = [];
-	let eenheden: any[] = [];
+	let testcategorieën: TestCategorie[] = [];
+	let eenheden: Eenheid[] = [];
 	let errorVeldenTest = {
 		testCode: false,
 		testNaam: false,
@@ -85,38 +98,69 @@
 		kleur: false
 	};
 
-	// geselecteerde tests
-	let geselecteerdeTests: any[] = [];
-
-	let loading = true;
-	// fetchen van tests op "tests"
-	// verkrijgen nieuwe staalcode op "/api/newStaalCode"
-	async function loadTests() {
-		if (token != null) {
-			try {
-				tests = await fetchAll(token, 'tests');
-				filteredTests = tests; // zonder filter worden alle tests ingeladen
-				nieuweStaalCode = await fetchAll(token, 'newStaalCode'); // fetchen van nieuwe staalcode
-				loading = false; // zorgt ervoor dat de modal pas opent wanneer de data is ingeladen
-			} catch (error) {
-				console.error('testen kon niet gefetched worden:', error);
-			}
-		} else {
-			console.error('jwt error');
-			goto('/login');
-		}
-	}
+	// array geselecteerde testcodes
+	let geselecteerdeTests: string[] = [];
 
 	onMount(() => {
 		token = getCookie('authToken') || '';
 		loadTests();
 	});
 
+	// neem de id van de store
+	let sampleCode: string | undefined;
+	staalCodeStore.subscribe((value) => {
+		sampleCode = value;
+	});
+
+	let loading = true;
+	let staalId: string = '';
+	// fetchen van tests op "tests"
+	// verkrijgen nieuwe staalcode op "/api/newStaalCode"
+	// als we in de session storage een staalcode hebben, binden we deze zijn waarden aan de variabelen
+	async function loadTests() {
+		if (token != null && sampleCode == '') {
+			try {
+				tests = await fetchAll(token, 'tests');
+				testsSorted = tests;
+				nieuweStaalCode = await fetchAll(token, 'newStaalCode');
+				loading = false;
+			} catch (error) {
+				console.error('testen kon niet gefetched worden:', error);
+			}
+		} else if (token != null && sampleCode != '') {
+			try {
+				tests = await fetchAll(token, 'tests');
+				const test = sampleCode ? await fetchStaal_StaalCode(sampleCode) : null;
+				testsSorted = tests;
+				// binden van de bestaande staalwaarden aan de variabelen
+				nieuweStaalCode = test.staalCode;
+				naam = test.patientAchternaam;
+				voornaam = test.patientVoornaam;
+				geslacht = test.patientGeslacht;
+				geboortedatum = test.patientGeboorteDatum;
+				laborantNaam = test.laborantNaam;
+				laborantRnummer = test.laborantRnummer;
+				geselecteerdeTests = test.registeredTests.map(
+					(test: TestCodeWrapper) => test.test.testCode
+				);
+				// setten van de id die we aan het aanpassen zijn
+				staalId = test.id;
+				loading = false;
+				console.log(geselecteerdeTests);
+			} catch (error) {
+				console.error('testen kon niet gefetched worden:', error);
+			}
+		} else {
+			console.error('jwt error');
+			goto('/');
+		}
+	}
+
 	function setLaborant() {
 		let isValid = false;
 		laborantRnummer = laborantRnummer.toUpperCase();
 		// regex voor R-nummer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes
-		const regex = /^R\d{7}$/;
+		const regex = /^[RU]\d{7}$/;
 
 		if (!laborantNaam) {
 			errrorVeldenStaal.laborantNaam = true;
@@ -136,9 +180,13 @@
 
 	// zoeken op basis van code
 	function filterTests() {
-		filteredTests = tests.filter((test) => {
-			const codeMatch = test.testCode.toString().toLowerCase().includes(searchCode.toLowerCase());
-			console.log(geselecteerdeTests);
+		testsSorted = tests.filter((test) => {
+			const codeMatch =
+				test.naam.toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.testCode.toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.testcategorie.naam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.eenheid.afkorting.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				test.eenheid.naam.toString().toLowerCase().includes(searchCode.toLowerCase());
 			return codeMatch;
 		});
 	}
@@ -146,7 +194,7 @@
 	// verwijderen van zoekparameter, terug alle tests tonen
 	function verwijderZoek() {
 		searchCode = '';
-		filteredTests = tests;
+		testsSorted = tests;
 	}
 
 	// verwijderen van geselecteerde testen
@@ -155,7 +203,7 @@
 	}
 
 	// toevoegen van geselecteerde test, of verwijderen indien al geselecteerd
-	function toggleTestSelectie(testCode: number) {
+	function toggleTestSelectie(testCode: string) {
 		if (geselecteerdeTests.includes(testCode)) {
 			geselecteerdeTests = geselecteerdeTests.filter((code) => code !== testCode);
 		} else {
@@ -191,7 +239,7 @@
 			return;
 		}
 		try {
-			await fetch('http://localhost:8080/api/createtest', {
+			await fetch(`${backend_path}/api/createtest`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -212,19 +260,19 @@
 			console.error('test kon niet worden aangemaakt: ', error);
 		}
 		tests = await fetchAll(token, 'tests'); // tests refreshen, triggert een refresh
-		filteredTests = tests;
+		testsSorted = tests;
 		return ($id = null);
 	}
 
 	// helper functie om te checken of er een warning moet worden gegeven 'heb je zeker nagekeken of je de extra tests hebt toegevoegd?'
 	let isWarningAcknowledged = false; // Tracken of warning getoond is of niet
 
-	function checkWarning(geselecteerdeTestsArray: any[]) {
+	function checkWarning(geselecteerdeTestsArray: TestCodeWrapper[]) {
+		console.log(geselecteerdeTestsArray);
 		if (
 			geselecteerdeTestsArray.some((test) => test.test.testCode !== 'X') ||
 			geselecteerdeTestsArray.length === 0
 		) {
-			console.log(geselecteerdeTestsArray);
 			alert('Heb je nagekeken dat je geen notitie moet toevoegen?');
 			isWarningAcknowledged = true; // setten de warning als acknowledged (want hij is getoond)
 		}
@@ -269,16 +317,15 @@
 			return;
 		}
 
-		const geselecteerdeTestsArray = Array.from(geselecteerdeTests).map((testCode) => ({
-			test: { testCode: testCode }
-		}));
+		const geselecteerdeTestsArray: TestCodeWrapper[] = Array.from(geselecteerdeTests).map(
+			(testCode) => ({
+				test: { testCode: testCode }
+			})
+		);
 
 		// als er de test met code 'X' is geselecteerd, dan wordt de warning niet getoond
 		if (geselecteerdeTestsArray.some((test) => test.test.testCode === 'X')) {
-			console.log('contains X');
 			isWarningAcknowledged = true;
-		} else {
-			console.log('does not contain X');
 		}
 
 		if (!isWarningAcknowledged) {
@@ -289,7 +336,7 @@
 		}
 
 		try {
-			await fetch('http://localhost:8080/api/createstaal', {
+			await fetch(` ${backend_path}/api/createstaal`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -309,13 +356,105 @@
 					registeredTests: geselecteerdeTestsArray
 				})
 			});
-			// doorgeven van aangemaakte staal's id naar volgend scherm
+			// doorgeven van aangemaakte staalcode naar volgend scherm
 			staalCodeStore.set(nieuweStaalCode);
 		} catch (error) {
 			console.error('staal kon niet worden aangemaakt: ', error);
 		}
 		isWarningAcknowledged = false; // Reset de warning zodat de knop geklikt kan worden
 		return goto('/stalen/labels');
+	}
+
+	// PUT: Aanpassen van een bestaande staal
+	async function staalAanpassen() {
+		// Resetten van de errorvelden
+		errrorVeldenStaal = {
+			naam: false,
+			voornaam: false,
+			geslacht: false,
+			geboortedatum: false,
+			laborantNaam: true,
+			laborantRnummer: true
+		};
+
+		// Validatie van de input
+		let isValid = true;
+
+		if (!naam) {
+			errrorVeldenStaal.naam = true;
+			isValid = false;
+		}
+		if (!voornaam) {
+			errrorVeldenStaal.voornaam = true;
+			isValid = false;
+		}
+		if (!geboortedatum) {
+			errrorVeldenStaal.geboortedatum = true;
+			isValid = false;
+		}
+		if (!geslacht) {
+			errrorVeldenStaal.geslacht = true;
+			isValid = false;
+		}
+		// errorMessageStaal tonen indien niet alle velden zijn ingevuld
+		if (!isValid) {
+			errorMessageStaal = 'Vul alle verplichte velden in.';
+			return;
+		}
+
+		const geselecteerdeTestsArray = Array.from(geselecteerdeTests).map((testCode) => ({
+			test: { testCode: testCode }
+		}));
+
+		// als er de test met code 'X' is geselecteerd, dan wordt de warning niet getoond
+		if (geselecteerdeTestsArray.some((test) => test.test.testCode === 'X')) {
+			isWarningAcknowledged = true;
+		} else {
+		}
+
+		if (!isWarningAcknowledged) {
+			checkWarning(geselecteerdeTestsArray);
+			isWarningAcknowledged = true; // Set de warning als al getoond is
+			errorMessageStaal = '';
+			return; // wachten voor volgende click
+		}
+		try {
+			await fetch(`${backend_path}/api/updatestaal/${staalId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + token
+				},
+				body: JSON.stringify({
+					staalCode: nieuweStaalCode,
+					patientAchternaam: naam,
+					patientVoornaam: voornaam,
+					patientGeslacht: geslacht,
+					patientGeboorteDatum: geboortedatum,
+					laborantNaam: laborantNaam,
+					laborantRnummer: laborantRnummer,
+					user: {
+						id: 2
+					},
+					registeredTests: geselecteerdeTestsArray
+				})
+			});
+			// doorgeven van aangemaakte staalcode naar volgend scherm
+			staalCodeStore.set(nieuweStaalCode);
+		} catch (error) {
+			console.error('staal kon niet worden aangemaakt: ', error);
+		}
+		isWarningAcknowledged = false; // Reset de warning zodat de knop geklikt kan worden
+		return goto('/stalen/labels');
+	}
+
+	// post or put functie, afhankelijk van of er al een staalcode is in de session storage
+	function postOrPut() {
+		if (sampleCode === '') {
+			nieuweStaal();
+		} else {
+			staalAanpassen();
+		}
 	}
 
 	let errorMessageCategorie = '';
@@ -340,7 +479,7 @@
 		}
 
 		try {
-			await fetch('http://localhost:8080/api/createtestcategorie', {
+			await fetch(`${backend_path}/api/createtestcategorie`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -359,9 +498,8 @@
 
 	// crud buttons voor admin
 	async function deleteTest(id: number) {
-		console.log(id);
 		try {
-			await fetch(`http://localhost:8080/api/deletetest/${id}`, {
+			await fetch(`${backend_path}/api/deletetest/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: 'Bearer ' + token
@@ -385,7 +523,7 @@
 	};
 	let editTestErrorMessage = '';
 	// edit de test: PUT request
-	async function editTest(test: any) {
+	async function editTest(test: Test) {
 		editTestError = { testCode: false, naam: false, eenheid: false, testcategorie: false };
 		let isValid = true;
 
@@ -410,7 +548,7 @@
 			return;
 		}
 		try {
-			const response = await fetch(`http://localhost:8080/api/updatetest/${test.id}`, {
+			const response = await fetch(`${backend_path}/api/updatetest/${test.id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
@@ -571,7 +709,7 @@
 				</button>
 				<!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
 				<button
-					on:click={nieuweStaal}
+					on:click={postOrPut}
 					class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center"
 				>
 					Volgende
@@ -595,7 +733,7 @@
 					/>
 					<button
 						on:click={verwijderZoek}
-						class="w-12 h-12 p-3 flex items-center justify-center bg-red-200 rounded-r-lg"
+						class="w-12 h-12 p-4 flex items-center justify-center bg-red-200 rounded-r-lg"
 					>
 						<GoX />
 					</button>
@@ -770,7 +908,7 @@
 			</div>
 
 			<!-- tabel met alle tests -->
-			{#each filteredTests as test, index}
+			{#each testsSorted as test, index}
 				<div
 					class="grid grid-cols-12 gap-4 h-16 items-center px-3 border-b border-gray-300 {isNaN(
 						parseInt(test?.testCode)
@@ -931,7 +1069,7 @@
 								<button
 									type="button"
 									on:click={() => {
-										filteredTests.forEach((t, i) => {
+										testsSorted.forEach((t, i) => {
 											if (i !== index) t.confirmDelete = false;
 										});
 										test.confirmDelete = true;

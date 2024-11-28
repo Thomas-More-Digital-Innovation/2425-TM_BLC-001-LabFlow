@@ -58,13 +58,13 @@ public class DataLoader implements CommandLineRunner {
 
 
         // aanmaken testcategorie
-        Testcategorie edtaCat = new Testcategorie("EDTA", "#CA3DD4");
-        Testcategorie citraatCat = new Testcategorie("Citraat", "#12D3E9");
-        Testcategorie serumCat = new Testcategorie("Serum", "#ED3A3A");
-        Testcategorie heparineCat = new Testcategorie("Heparine", "#2DE57A");
-        Testcategorie fluorideCat = new Testcategorie("Fluoride", "#8c8c8c");
-        Testcategorie urineCat = new Testcategorie("Urine", "#ffcc40");
-        Testcategorie noCat = new Testcategorie("Geen Categorie", "#ffffff");
+        Testcategorie edtaCat = new Testcategorie("EDTA", "#CA3DD4", "Paars");
+        Testcategorie citraatCat = new Testcategorie("Citraat", "#12D3E9", "Blauw");
+        Testcategorie serumCat = new Testcategorie("Serum", "#ED3A3A", "Rood");
+        Testcategorie heparineCat = new Testcategorie("Heparine", "#2DE57A", "Groen");
+        Testcategorie fluorideCat = new Testcategorie("Fluoride", "#8c8c8c", "Grijs");
+        Testcategorie urineCat = new Testcategorie("Urine", "#ffcc40","Geel");
+        Testcategorie noCat = new Testcategorie("Geen Categorie", "#ffffff", "Geen");
         testCategorieRepository.save(edtaCat);
         testCategorieRepository.save(citraatCat);
         testCategorieRepository.save(serumCat);
@@ -454,11 +454,16 @@ public class DataLoader implements CommandLineRunner {
         referentiewaardeRepository.save(new Referentiewaarde("71-151", test553)); // Creatinine clearance
 
         // 3 tests toevoegen aan staal 1
+        StaalTest staalTestx= new StaalTest(staal1, test1);
         StaalTest staalTest1 = new StaalTest(staal1, test601);
         StaalTest staalTest2 = new StaalTest(staal1, test602);
         StaalTest staalTest3 = new StaalTest(staal1, test630);
+        staalTestx.setNote("this a note for notitie");
+        staalTestx.setResult("dronken");
         staalTest1.setResult("15.0");
         staalTest2.setResult("45.0");
+        staalTest1.setNote("This is a note for test 601");
+        staalTestRepository.save(staalTestx);
         staalTestRepository.save(staalTest1);
         staalTestRepository.save(staalTest2);
         staalTestRepository.save(staalTest3);

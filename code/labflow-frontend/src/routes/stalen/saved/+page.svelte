@@ -1,12 +1,29 @@
 <script lang="ts">
 	import Nav from '../../../components/nav.svelte';
 	// @ts-ignore
-	import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte';
-	// @ts-ignore
 	import FaArrowRight from 'svelte-icons/fa/FaArrowRight.svelte';
 	// @ts-ignore
 	import FaSave from 'svelte-icons/fa/FaSave.svelte';
 	import { goto } from '$app/navigation';
+	import { staalCodeStore } from '$lib/store';
+	import { getCookie } from '$lib/globalFunctions';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
+
+	const token = getCookie('authToken') || '';
+
+	async function setStatusStaal() {
+		let sampleCode: string | undefined;
+		staalCodeStore.subscribe((value) => {
+			sampleCode = value;
+		});
+
+		await fetch(`${backend_path}/api/updatestaalstatus/GEREGISTREERD/${sampleCode}`, {
+			method: 'PATCH',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+	}
 </script>
 
 <Nav />
@@ -24,15 +41,17 @@
 	<div class="flex justify-center space-x-4 items-center my-6">
 		<button
 			on:click={() => {
+				setStatusStaal();
 				goto('/stalen/registreren');
 			}}
 			class="bg-gray-400 text-lg rounded-lg p-3 w-56 text-white h-14 flex flex-row items-center justify-center"
 		>
 			Waarden Registreren
 		</button>
-		<!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
+		<!-- async functie omdat de status van de staal moet worden aangepast voordat de gebruiker naar de homepagina wordt geleid -->
 		<button
-			on:click={() => {
+			on:click={async () => {
+				await setStatusStaal();
 				goto('/stalen');
 			}}
 			class="bg-blue-600 text-lg rounded-lg w-56 p-3 text-white h-14 flex flex-row items-center justify-center"

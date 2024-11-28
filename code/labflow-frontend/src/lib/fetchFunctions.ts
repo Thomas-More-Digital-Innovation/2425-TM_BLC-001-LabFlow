@@ -1,12 +1,11 @@
 import { getCookie, fetchAll } from '$lib/globalFunctions';
 import { goto } from '$app/navigation';
 import { fetchAllWithoutPrefix } from '$lib/globalFunctions';
+import type { Eenheid, TestCategorie } from './types/dbTypes';
 
 const token = getCookie('authToken') ?? '';
-let testcategorieën: any[] = [];
-let eenheden: any[] = [];
-let stalen: any[] = [];
-let filteredStalen: any[] = [];
+let testcategorieën: TestCategorie[] = [];
+let eenheden: Eenheid[] = [];
 
 // laden categorieën
 export async function loadTestCategorieën() {
@@ -47,6 +46,21 @@ export async function fetchStalen() {
             return { stalen, filteredStalen };
         } catch (error) {
             console.error("Stalen konden niet gefetched worden:", error);
+        }
+    } else {
+        console.error("JWT error: token missing of invalid");
+        goto('/');
+    }
+}
+
+// fetchen van stalen
+export async function fetchStaal_StaalCode(staalCode: string) {
+    if (token) {
+        try {
+            const staal = await fetchAll(token, `staal/${staalCode}`);
+            return staal;
+        } catch (error) {
+            console.error("Staal kon niet gefetched worden:", error);
         }
     } else {
         console.error("JWT error: token missing of invalid");
@@ -141,5 +155,17 @@ export async function fetchReferentiewaarden() {
     } else {
         console.error("JWT error: token missing of invalid");
         goto('/');
+    }
+}
+
+// fetchen van statussen
+export async function fetchStatussen() {
+    if (token) {
+        try {
+            const statussen = await fetchAll(token, 'getstatus');
+            return statussen;
+        } catch (error) {
+            console.error("Statussen konden niet gefetched worden:", error);
+        }
     }
 }

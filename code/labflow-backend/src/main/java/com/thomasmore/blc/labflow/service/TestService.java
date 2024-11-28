@@ -1,5 +1,6 @@
 package com.thomasmore.blc.labflow.service;
 
+import com.thomasmore.blc.labflow.config.UniqueConstraintViolationException;
 import com.thomasmore.blc.labflow.entity.Referentiewaarde;
 import com.thomasmore.blc.labflow.entity.Test;
 import com.thomasmore.blc.labflow.repository.ReferentiewaardeRepository;
@@ -22,7 +23,11 @@ public class TestService {
 
     // create
     public void create(Test test) {
-        testRepository.save(test);
+        if (testRepository.findByTestCode(test.getTestCode()) == null) {
+            testRepository.save(test);
+        } else {
+            throw new UniqueConstraintViolationException("Test code already exists");
+        }
     }
 
     // read

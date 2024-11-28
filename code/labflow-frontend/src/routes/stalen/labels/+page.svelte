@@ -3,7 +3,6 @@
 	import LabelCart from './../../../components/LabelCart.svelte';
 	import { goto } from '$app/navigation';
 	import { getCookie, fetchAll, formatDate, formatSex } from '$lib/globalFunctions';
-	import { getRol } from '$lib/globalFunctions';
 	// @ts-ignore
 	import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte';
 	// @ts-ignore
@@ -12,22 +11,30 @@
 	import FaCloudDownloadAlt from 'svelte-icons/fa/FaCloudDownloadAlt.svelte';
 	import { staalCodeStore } from '$lib/store';
 	import { onDestroy, onMount } from 'svelte';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
+
+	// types & factories
+	import type { Test, TestCategorie, Staal } from '$lib/types/dbTypes';
+	import { createDefaultStaal } from '$lib/factories/staalfactory';
+
+	import * as JSPM from 'jsprintmanager'
+	import { backIn } from 'svelte/easing';
+
+	const { ClientPrintJob, DefaultPrinter, InstalledPrinter, JSPrintManager, WSStatus } = JSPM;
+	
 
 	// neem de id
 	let sampleCode: string | undefined;
 	staalCodeStore.subscribe((value) => {
 		sampleCode = value;
-		console.log('Dit is staalcode:' + sampleCode);
 	});
 
-	let tests: any[] = [];
-	let staal: any = {};
-	let staalId: string = '';
-	let testCategories: any[] = [];
-	let token: string = getCookie('authToken') || '';
+	// instantiëren van een leeg staalobject
+	let staal: Staal = createDefaultStaal();
 
-	// printen
-	let hoeveelheid: number = 1;
+	let staalId: number;
+	let testCategories: TestCategorie[] = [];
+	let token: string = getCookie('authToken') || '';
 
 	// alle tests categorieën ophalen die bij de testen horen
 	async function loadData() {
@@ -36,7 +43,6 @@
 				staal = await fetchAll(token, `staal/${sampleCode}`);
 				// assign id to staalId
 				staalId = staal.id;
-				console.log(staalId);
 				// Extract unique test categories
 				extractUniqueTestCategories(staal.registeredTests);
 			} catch (error) {
@@ -49,11 +55,11 @@
 	}
 
 	// Get unique test categories based on their id
-	function extractUniqueTestCategories(registeredTests: any[]) {
+	function extractUniqueTestCategories(registeredTests: Test[]) {
 		const categoryMap = new Map();
 
-		registeredTests.forEach((testItem) => {
-			const category = testItem.test.testcategorie;
+		registeredTests.forEach((testItem: Test) => {
+			const category = testItem.testcategorie;
 			if (category.id !== 7 && !categoryMap.has(category.id)) {
 				categoryMap.set(category.id, category);
 			}
@@ -61,7 +67,6 @@
 
 		// Convert Map to an array of unique categories
 		testCategories = Array.from(categoryMap.values());
-		console.log('Unique Test Categories:', testCategories);
 	}
 
 	// fetch labels pdf
@@ -73,7 +78,7 @@
 			goto('/login');
 		}
 
-		const response = await fetch(`http://localhost:8080/api/pdf/generatelabel/${staalId}`, {
+		const response = await fetch(`${backend_path}/api/pdf/generatelabel/${staalId}`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`
@@ -89,9 +94,9 @@
 	}
 
 	// pdf labels downloaden
-	async function getPdf(staalId: string) {
+	async function getPdf(staalId: number) {
 		try {
-			const response = await fetch(`http://localhost:8080/api/pdf/generatelabel/${staalId}`, {
+			const response = await fetch(`${backend_path}/api/pdf/generatelabel/${staalId}`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`
@@ -133,10 +138,82 @@
 		}
 	}
 
+	// get the zpl code for the labels
+	let zplCode: String = "";
+	let amount: number = 1;
+
+	async function printLabels(staalId: string, amount: number) {
+		try {
+			const response = await fetch(`${backend_path}/api/printer/labels/${staalId}/${amount}`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			});
+
+			if (!response.ok) {
+				console.error('Failed to fetch ZPL:', response.statusText);
+				return;
+			}
+			
+			zplCode = await response.text();
+			
+			if (!jspmWSStatus()) return;
+
+			const cpj = new ClientPrintJob();
+
+			if (useDefaultPrinter) {
+				cpj.clientPrinter = new DefaultPrinter();
+			} else {
+				cpj.clientPrinter = new InstalledPrinter(selectedPrinter);
+			}
+
+			cpj.printerCommands = zplCode.trim();
+			cpj.sendToClient()
+
+		} catch (error) {
+			console.error('Error while downloading ZPL:', error);
+		}
+	}
+
+	// connection with printer
+	let printers:any = [];
+    let selectedPrinter = '';
+    let useDefaultPrinter = false;
+
+	function jspmWSStatus() {
+		const status = JSPrintManager.websocket_status;
+		if (status == WSStatus.Open) {
+			return true;
+		} else if (status == WSStatus.Closed) {
+			return false;
+		} else if (status == WSStatus.Blocked) {
+			return false;
+		}
+	}
+
+	function fetchPrinters() {
+		JSPrintManager.getPrinters().then((printerList) => {
+			printers = printerList;
+			if (printers.length > 0) selectedPrinter = printers[0];
+		});
+	}
+    
+
 	onMount(async () => {
 		token = getCookie('authToken') || '';
 		await loadData();
 		await fetchPdf();
+
+		JSPrintManager.auto_reconnect = true;
+		JSPrintManager.start();
+		if (JSPrintManager.WS) {
+			JSPrintManager.WS.onStatusChanged = () => {
+				if (jspmWSStatus()) {
+					fetchPrinters();
+				}
+			}
+		}
 	});
 
 	onDestroy(() => {
@@ -230,7 +307,7 @@
 				<div class="w-full h-1/5 bg-slate-200 flex justify-between items-baseline">
 					<!-- left button-->
 					<div class="w-1/4 mt-auto">
-						<button
+						<button on:click={() => printLabels(staalId, amount)}
 							class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-full flex flex-row items-center justify-center"
 						>
 							afdrukken
@@ -252,16 +329,16 @@
 							<p>hoeveelheid</p>
 							<input
 								type="number"
-								bind:value={hoeveelheid}
+								bind:value={amount}
 								class="rounded-lg text-xl p-3 h-20 w-11/12 bg-white border border-gray-400"
 							/>
 						</div>
 						<div class="w-1/2">
 							<p>printer</p>
-							<select class="rounded-lg text-xl p-3 h-20 bg-white w-full border border-gray-400">
-								<option value="standaard">- selecteer -</option>
-								<option value="heparine">printer lokaal A</option>
-								<option value="heparine">printer lokaal B</option>
+							<select bind:value={selectedPrinter} class="rounded-lg text-xl p-3 h-20 bg-white w-full border border-gray-400">
+								{#each printers as printer}
+									<option value={printer}>{printer}</option>
+								{/each}
 							</select>
 						</div>
 					</div>

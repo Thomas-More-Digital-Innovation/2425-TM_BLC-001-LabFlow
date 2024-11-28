@@ -11,27 +11,45 @@
 	// @ts-ignore
 	import FaPlus from 'svelte-icons/fa/FaPlus.svelte';
 	import { getCookie } from '$lib/globalFunctions';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
+	// types
+	import type { Eenheid } from '$lib/types/dbTypes';
+
 
 	let token: string = '';
 
 	let errorMessageEenheid = '';
-	let eenheden: any[] = [];
+	let searchCode = '';
+	let eenheden: Eenheid[] = [];
+	let eenhedenSorted: Eenheid[] = [];
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
 		const fetchedEenheden = await fetchEenheden();
 		if (fetchedEenheden) {
-			eenheden = fetchedEenheden;
+			[eenheden, eenhedenSorted] = [fetchedEenheden, fetchedEenheden];
 		}
-		console.log(eenheden);
 	});
+
+	function filterEenheden() {
+		eenhedenSorted = eenheden.filter((eenheid) => {
+			const codeMatch =
+				eenheid.naam.toString().toLowerCase().includes(searchCode.toLowerCase()) ||
+				eenheid.afkorting.toString().toLowerCase().includes(searchCode.toLowerCase());
+			return codeMatch;
+		});
+	}
+
+	function verwijderZoek() {
+		searchCode = '';
+		eenhedenSorted = eenheden;
+	}
 
 	///// DELETE eenheid /////
 	let deleteError = '';
-	async function deleteEenheid(id: string) {
-		console.log(id);
+	async function deleteEenheid(id: number) {
 		try {
-			const response = await fetch(`http://localhost:8080/api/deleteeenheid/${id}`, {
+			const response = await fetch(`${backend_path}/api/deleteeenheid/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: 'Bearer ' + token
@@ -42,10 +60,9 @@
 				deleteError = '';
 				const result = await fetchEenheden();
 				if (result) {
-					eenheden = result;
+					[eenheden, eenhedenSorted] = [result, result];
 				}
 			} else {
-				const errorMessage = await response.text();
 				deleteError =
 					'Eenheid kon niet worden verwijderd omdat deze gelinked is aan één of meerdere tests.';
 			}
@@ -84,7 +101,7 @@
 			return;
 		}
 		try {
-			await fetch('http://localhost:8080/api/createeenheid', {
+			await fetch(`${backend_path}/api/createeenheid`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -100,7 +117,7 @@
 			errorMessageTestPOST = '';
 			const result = await fetchEenheden();
 			if (result) {
-				eenheden = result;
+				[eenheden, eenhedenSorted] = [result, result];
 			}
 		} catch (error) {
 			console.error('Eenheid kon niet worden aangemaakt: ', error);
@@ -116,7 +133,7 @@
 
 	let errorMessageEenheidPUT = '';
 
-	async function updateEenheid(id: string) {
+	async function updateEenheid(id: number) {
 		const eenheid = eenheden.find((e) => e.id === id);
 		if (!eenheid) return;
 
@@ -138,9 +155,8 @@
 			errorMessageEenheidPUT = 'Vul alle verplichte velden in.';
 			return;
 		}
-		console.log(eenheid);
 		try {
-			await fetch(`http://localhost:8080/api/updateeenheid/${id}`, {
+			await fetch(`${backend_path}/api/updateeenheid/${id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
@@ -175,6 +191,23 @@
 	</div>
 
 	<div class="bg-slate-200 w-full h-full rounded-2xl p-5">
+		<div class="flex mb-5 w-full">
+			<input
+				type="text"
+				id="searchCode"
+				name="searchCode"
+				placeholder="zoeken"
+				bind:value={searchCode}
+				on:input={filterEenheden}
+				class="w-2/5 h-12 rounded-l-lg text-black pl-3"
+			/>
+			<button
+				on:click={verwijderZoek}
+				class="w-12 h-12 p-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-r-lg"
+			>
+				<GoX />
+			</button>
+		</div>
 		<div class="space-y-3">
 			{#if deleteError}
 				<div class="text-red-500 mb-2">{deleteError}</div>
@@ -238,7 +271,7 @@
 			</div>
 		</div>
 		<div class="space-y-3">
-			{#each eenheden as eenheid, index}
+			{#each eenhedenSorted as eenheid, index}
 				<div
 					class="grid grid-cols-7 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
 				>

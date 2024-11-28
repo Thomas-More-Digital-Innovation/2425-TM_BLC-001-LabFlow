@@ -5,12 +5,13 @@
 	import { writable } from 'svelte/store';
 	import MultiSelect from 'svelte-multiselect';
 	import { getCookie } from '$lib/globalFunctions';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
 	let dialog: HTMLDialogElement;
 
 	$: if (showModal && dialog) dialog.showModal();
 
-	// Close the dialog when it loses the `showModal` state
+	// Sluit de dialog en set showmodal op false
 	function closeDialog() {
 		dialog.close();
 		showModal = false;
@@ -19,7 +20,6 @@
 	const token = getCookie('authToken') || '';
 	export let waarden: any[] = [];
 	export let selectedValues = writable([]);
-	console.log(waarden);
 
 	let waarde = '';
 	let errorWaarde = false;
@@ -31,7 +31,7 @@
 		}
 		errorWaarde = false;
 		try {
-			const response = await fetch('http://localhost:8080/api/createreferentiewaarde', {
+			await fetch(`${backend_path}/api/createreferentiewaarde`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -41,68 +41,66 @@
 					waarde: waarde
 				})
 			});
-
-			console.log(waarde);
 			waarden = waarden.concat({
 				id: waarden.length + 1,
 				waarde: waarde,
 				label: waarde
 			});
-			waarde = ''; // Reset waarde after successful submission
+
+			waarde = ''; // Reset waarde na toevoegen
 		} catch (error) {
 			console.error('Test kon niet worden aangemaakt: ', error);
 		}
 	}
 </script>
 
-<dialog
-	bind:this={dialog}
-	on:close={closeDialog}
-	on:click={(e) => {
-		if (e.target === dialog) closeDialog();
-	}}
->
-	<div class="modal-content">
-		<div class="flex flex-row justify-between items-center">
-			<p class="font-bold text-xl">Referentiewaardes linken</p>
-			<button
-				autofocus
-				on:click={closeDialog}
-				class="w-10 h-10 p-2 mb-3 flex items-center justify-center bg-red-400 rounded-lg"
-				><GoX /></button
-			>
-		</div>
-		<label for="fruits">
-			<strong>Kies je referentiewaarden:</strong>
-		</label>
-		<MultiSelect
-			id="fruits"
-			options={waarden}
-			bind:value={$selectedValues}
-			placeholder="Referentiewaarden"
-		/>
-		<p class="font-bold text-xl mt-16">Aanmaken referentiewaarde</p>
-		<div class="flex flex-row justify-between">
-			<input
-				type="text"
-				name="referentiewaarde"
-				id="referentiewaarde"
-				bind:value={waarde}
-				class="rounded-lg text-black bg-gray-200 h-12 w-80 mt-4 {errorWaarde
-					? 'border-red-500 border-2'
-					: ''}"
+<dialog bind:this={dialog} on:close={closeDialog} tabindex="-1">
+	<div class="modal-content flex flex-col justify-between w-full h-full">
+		<div>
+			<div class="flex flex-row justify-between items-center">
+				<p class="font-bold text-xl">Referentiewaardes linken</p>
+				<button
+					type="button"
+					on:click={closeDialog}
+					class="w-10 h-10 p-2 mb-3 flex items-center justify-center bg-red-400 rounded-lg"
+					><GoX /></button
+				>
+			</div>
+			<label for="referentiewaarden">
+				<strong>Kies je referentiewaardes:</strong>
+			</label>
+			<MultiSelect
+				style="height: 60px;"
+				id="referentiewaarden"
+				options={waarden}
+				bind:value={$selectedValues}
+				placeholder="Referentiewaarden"
 			/>
-			<button
-				on:click={nieuweReferentiewaarde}
-				type="button"
-				class="bg-green-500 rounded-lg text-black h-12 w-56 font-bold text-lg"
-			>
-				Opslaan
-			</button>
 		</div>
-		{#if errorWaarde}
-			<p class="text-red-500 mt-2">Vul een waarde in.</p>
-		{/if}
+		<div>
+			<p class="font-bold text-xl mb-5">Aanmaken referentiewaarde</p>
+			<div class="flex flex-row justify-between">
+				<input
+					type="text"
+					name="referentiewaarde"
+					id="referentiewaarde"
+					bind:value={waarde}
+					class="rounded-lg text-black bg-gray-200 h-12 w-80 mt-4 px-3 {errorWaarde
+						? 'border-red-500 border-2'
+						: ''}"
+				/>
+				<button
+					on:click={nieuweReferentiewaarde}
+					type="button"
+					class="bg-green-500 rounded-lg text-black h-12 w-56 font-bold text-lg"
+				>
+					Opslaan
+				</button>
+			</div>
+			{#if errorWaarde}
+				<p class="text-red-500 mt-2">Vul een waarde in.</p>
+			{/if}
+		</div>
 	</div>
 </dialog>
 

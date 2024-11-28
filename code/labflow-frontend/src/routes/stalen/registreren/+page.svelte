@@ -1,9 +1,7 @@
 <script lang="ts">
 	import Nav from '../../../components/nav.svelte';
-	import LabelCart from './../../../components/LabelCart.svelte';
 	import { goto } from '$app/navigation';
 	import { getCookie, fetchAll, formatDate, formatSex } from '$lib/globalFunctions';
-	import { getRol } from '$lib/globalFunctions';
 	// @ts-ignore
 	import FaArrowLeft from 'svelte-icons/fa/FaArrowLeft.svelte';
 	// @ts-ignore
@@ -20,12 +18,10 @@
 	import { staalCodeStore } from '$lib/store';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
 	// neem de id
 	let sampleCode: string | undefined;
-	staalCodeStore.subscribe((value) => {
-		sampleCode = value;
-	});
 
 	let tests: any[] = [];
 	let openNoteId: string | null = null;
@@ -45,7 +41,6 @@
 
 	// alle tests categorieën ophalen die bij de testen horen
 	async function loadData() {
-		console.log('reloading data...');
 		if (token != null) {
 			try {
 				staal = await fetchAll(token, `staal/${sampleCode}`);
@@ -84,7 +79,6 @@
 		if (selectedCategory.id == undefined) {
 			selectedCategory = testCategories[0];
 		}
-		console.log('Unique Test Categories:', testCategories);
 	}
 
 	function toggleNoteInput(testId: string) {
@@ -120,14 +114,11 @@
 				Authorization: 'Bearer ' + token
 			};
 
-			const response = await fetch(
-				`http://localhost:8080/api/updatestaaltest/${staalId}/${testId}`,
-				{
-					method: 'PUT',
-					headers: headers,
-					body: JSON.stringify(body)
-				}
-			);
+			const response = await fetch(`${backend_path}/api/updatestaaltest/${staalId}/${testId}`, {
+				method: 'PUT',
+				headers: headers,
+				body: JSON.stringify(body)
+			});
 
 			if (!response.ok) {
 				throw new Error(`Error: ${response.statusText}`);
@@ -158,14 +149,11 @@
 				Authorization: 'Bearer ' + token
 			};
 
-			const response = await fetch(
-				`http://localhost:8080/api/updatestaaltest/${staalId}/${testId}`,
-				{
-					method: 'PUT',
-					headers: headers,
-					body: JSON.stringify(body)
-				}
-			);
+			const response = await fetch(`${backend_path}/api/updatestaaltest/${staalId}/${testId}`, {
+				method: 'PUT',
+				headers: headers,
+				body: JSON.stringify(body)
+			});
 
 			if (!response.ok) {
 				throw new Error(`Error: ${response.statusText}`);
@@ -173,7 +161,6 @@
 
 			const data = await response.json();
 
-			console.log('update succesvol: ', data);
 			return data;
 		} catch (error) {
 			console.error('update error: ', error);
@@ -207,7 +194,7 @@
 			};
 
 			const response = await fetch(
-				`http://localhost:8080/api/updatestaaltest/${staalId}/${test.test.id}`,
+				`${backend_path}/api/updatestaaltest/${staalId}/${test.test.id}`,
 				{
 					method: 'PUT',
 					headers: headers,
@@ -221,7 +208,6 @@
 
 			const data = await response.json();
 			loadData();
-			console.log('Checkbox change update successful:', data);
 		} catch (error) {
 			loadData();
 			console.error('Failed to update test status:', error);
@@ -240,13 +226,32 @@
 
 	onMount(() => {
 		token = getCookie('authToken') || '';
+		staalCodeStore.subscribe((value) => {
+			sampleCode = value;
+		});
+
 		loadData().then(() => checkAllTestsDone());
 	});
+
+	// aanpassen status van staal naar KLAAR
+	async function setStatusStaal() {
+		let sampleCode: string | undefined;
+		staalCodeStore.subscribe((value) => {
+			sampleCode = value;
+		});
+
+		await fetch(`${backend_path}/api/updatestaalstatus/KLAAR/${sampleCode}`, {
+			method: 'PATCH',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+	}
 
 	// pdf downloaden
 	async function getPdf(staalId: string) {
 		try {
-			const response = await fetch(`http://localhost:8080/api/pdf/generateresults/${staalId}`, {
+			const response = await fetch(`${backend_path}/api/pdf/generateresults/${staalId}`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`
@@ -334,7 +339,7 @@
 					class="bg-gray-400 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center"
 				>
 					<div class="w-5 h-5 mr-2"><FaArrowLeft /></div>
-					Annuleren
+					Home
 				</button>
 				<!-- staat tijdelijk naar volgende pagina omdat ik nog niet weet hoe César zijn pagina heet -->
 				<button

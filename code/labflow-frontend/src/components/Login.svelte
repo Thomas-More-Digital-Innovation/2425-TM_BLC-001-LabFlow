@@ -2,9 +2,7 @@
 	import Button from './Button.svelte';
 	import Input from './Input.svelte';
 	import { goto } from '$app/navigation'; // https://www.okupter.com/blog/sveltekit-goto
-
-	// https://svelte.dev/examples/if-blocks
-	let user = { loggedIn: false };
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
 	let email = '';
 	let wachtwoord = '';
@@ -12,7 +10,7 @@
 	const handleSubmit = async (event: SubmitEvent) => {
 		// SubmitEvent is type of event
 		event.preventDefault();
-		const response = await fetch('http://localhost:8080/login', {
+		const response = await fetch(`${backend_path}/login`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -27,16 +25,15 @@
 			const authToken = result.token;
 			// zonder httpOnly & sameSite is het onveilig
 			document.cookie = `authToken=${authToken};path=/;SameSite=Strict`;
-			goTo();
+			if (document.cookie && authToken) {
+				goto('stalen');
+			}
 		} catch (error) {
 			console.error(error);
 			displayError = true;
 		}
 	};
 
-	function goTo() {
-		goto('stalen');
-	}
 	let displayError = false;
 </script>
 
