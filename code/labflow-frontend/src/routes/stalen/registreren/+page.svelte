@@ -18,6 +18,7 @@
 	import { staalCodeStore } from '$lib/store';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
 	// neem de id
 	let sampleCode: string | undefined;
@@ -113,14 +114,11 @@
 				Authorization: 'Bearer ' + token
 			};
 
-			const response = await fetch(
-				`http://localhost:8080/api/updatestaaltest/${staalId}/${testId}`,
-				{
-					method: 'PUT',
-					headers: headers,
-					body: JSON.stringify(body)
-				}
-			);
+			const response = await fetch(`${backend_path}/api/updatestaaltest/${staalId}/${testId}`, {
+				method: 'PUT',
+				headers: headers,
+				body: JSON.stringify(body)
+			});
 
 			if (!response.ok) {
 				throw new Error(`Error: ${response.statusText}`);
@@ -151,14 +149,11 @@
 				Authorization: 'Bearer ' + token
 			};
 
-			const response = await fetch(
-				`http://localhost:8080/api/updatestaaltest/${staalId}/${testId}`,
-				{
-					method: 'PUT',
-					headers: headers,
-					body: JSON.stringify(body)
-				}
-			);
+			const response = await fetch(`${backend_path}/api/updatestaaltest/${staalId}/${testId}`, {
+				method: 'PUT',
+				headers: headers,
+				body: JSON.stringify(body)
+			});
 
 			if (!response.ok) {
 				throw new Error(`Error: ${response.statusText}`);
@@ -199,7 +194,7 @@
 			};
 
 			const response = await fetch(
-				`http://localhost:8080/api/updatestaaltest/${staalId}/${test.test.id}`,
+				`${backend_path}/api/updatestaaltest/${staalId}/${test.test.id}`,
 				{
 					method: 'PUT',
 					headers: headers,
@@ -245,7 +240,7 @@
 			sampleCode = value;
 		});
 
-		await fetch(`http://localhost:8080/api/updatestaalstatus/KLAAR/${sampleCode}`, {
+		await fetch(`${backend_path}/api/updatestaalstatus/KLAAR/${sampleCode}`, {
 			method: 'PATCH',
 			headers: {
 				Authorization: `Bearer ${token}`
@@ -256,7 +251,7 @@
 	// pdf downloaden
 	async function getPdf(staalId: string) {
 		try {
-			const response = await fetch(`http://localhost:8080/api/pdf/generateresults/${staalId}`, {
+			const response = await fetch(`${backend_path}/api/pdf/generateresults/${staalId}`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`

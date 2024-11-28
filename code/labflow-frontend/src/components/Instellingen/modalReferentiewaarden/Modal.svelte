@@ -5,6 +5,7 @@
 	import { writable } from 'svelte/store';
 	import MultiSelect from 'svelte-multiselect';
 	import { getCookie } from '$lib/globalFunctions';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
 	let dialog: HTMLDialogElement;
 
@@ -30,7 +31,7 @@
 		}
 		errorWaarde = false;
 		try {
-			await fetch('http://localhost:8080/api/createreferentiewaarde', {
+			await fetch(`${backend_path}/api/createreferentiewaarde`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

@@ -11,11 +11,14 @@
 	import FaCloudDownloadAlt from 'svelte-icons/fa/FaCloudDownloadAlt.svelte';
 	import { staalCodeStore } from '$lib/store';
 	import { onDestroy, onMount } from 'svelte';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
+
 	// types & factories
 	import type { Test, TestCategorie, Staal } from '$lib/types/dbTypes';
 	import { createDefaultStaal } from '$lib/factories/staalfactory';
 
 	import * as JSPM from 'jsprintmanager'
+	import { backIn } from 'svelte/easing';
 
 	const { ClientPrintJob, DefaultPrinter, InstalledPrinter, JSPrintManager, WSStatus } = JSPM;
 	
@@ -75,7 +78,7 @@
 			goto('/login');
 		}
 
-		const response = await fetch(`http://localhost:8080/api/pdf/generatelabel/${staalId}`, {
+		const response = await fetch(`${backend_path}/api/pdf/generatelabel/${staalId}`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`
@@ -93,7 +96,7 @@
 	// pdf labels downloaden
 	async function getPdf(staalId: number) {
 		try {
-			const response = await fetch(`http://localhost:8080/api/pdf/generatelabel/${staalId}`, {
+			const response = await fetch(`${backend_path}/api/pdf/generatelabel/${staalId}`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`
@@ -141,7 +144,7 @@
 
 	async function printLabels(staalId: string, amount: number) {
 		try {
-			const response = await fetch(`http://localhost:8080/api/printer/labels/${staalId}/${amount}`, {
+			const response = await fetch(`${backend_path}/api/printer/labels/${staalId}/${amount}`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`

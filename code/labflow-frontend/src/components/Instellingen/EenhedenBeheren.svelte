@@ -11,8 +11,10 @@
 	// @ts-ignore
 	import FaPlus from 'svelte-icons/fa/FaPlus.svelte';
 	import { getCookie } from '$lib/globalFunctions';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 	// types
 	import type { Eenheid } from '$lib/types/dbTypes';
+
 
 	let token: string = '';
 
@@ -47,7 +49,7 @@
 	let deleteError = '';
 	async function deleteEenheid(id: number) {
 		try {
-			const response = await fetch(`http://localhost:8080/api/deleteeenheid/${id}`, {
+			const response = await fetch(`${backend_path}/api/deleteeenheid/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: 'Bearer ' + token
@@ -99,7 +101,7 @@
 			return;
 		}
 		try {
-			await fetch('http://localhost:8080/api/createeenheid', {
+			await fetch(`${backend_path}/api/createeenheid`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -154,7 +156,7 @@
 			return;
 		}
 		try {
-			await fetch(`http://localhost:8080/api/updateeenheid/${id}`, {
+			await fetch(`${backend_path}/api/updateeenheid/${id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',

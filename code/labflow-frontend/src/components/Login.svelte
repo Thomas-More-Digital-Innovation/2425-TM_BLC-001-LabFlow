@@ -2,6 +2,7 @@
 	import Button from './Button.svelte';
 	import Input from './Input.svelte';
 	import { goto } from '$app/navigation'; // https://www.okupter.com/blog/sveltekit-goto
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 
 	let email = '';
 	let wachtwoord = '';
@@ -9,7 +10,7 @@
 	const handleSubmit = async (event: SubmitEvent) => {
 		// SubmitEvent is type of event
 		event.preventDefault();
-		const response = await fetch('http://localhost:8080/login', {
+		const response = await fetch(`${backend_path}/login`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

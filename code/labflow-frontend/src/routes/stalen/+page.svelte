@@ -24,6 +24,7 @@
 	import Content from '../../components/Modal/Content.svelte';
 	import { staalCodeStore } from '$lib/store';
 	import { goto } from '$app/navigation';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 	// types
 	import type { Staal } from '$lib/types/dbTypes';
 
@@ -159,7 +160,7 @@
 	// delete staal
 	async function deleteStaal(id: number) {
 		try {
-			await fetch(`http://localhost:8080/api/deletestaal/${id}`, {
+			await fetch(`${backend_path}/api/deletestaal/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: 'Bearer ' + token
@@ -233,7 +234,7 @@
 			return;
 		}
 		try {
-			const response = await fetch(`http://localhost:8080/api/updatestaal/${staal.id}`, {
+			const response = await fetch(`${backend_path}/api/updatestaal/${staal.id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',

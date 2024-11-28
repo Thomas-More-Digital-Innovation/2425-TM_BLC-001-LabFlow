@@ -13,8 +13,10 @@
 	import { getCookie } from '$lib/globalFunctions';
 	import { fetchRollen } from '$lib/fetchFunctions';
 	import { getUserId } from '$lib/globalFunctions';
+	const backend_path = import.meta.env.VITE_BACKEND_PATH;
 	// types
 	import type { Rol, User } from '$lib/types/dbTypes';
+
 	let token: string = '';
 
 	let users: User[] = [];
@@ -63,7 +65,7 @@
 			return;
 		} else {
 			try {
-				const response = await fetch(`http://localhost:8080/deleteuser/${id}`, {
+				const response = await fetch(`${backend_path}/deleteuser/${id}`, {
 					method: 'DELETE',
 					headers: {
 						'Content-Type': 'application/json',
@@ -132,7 +134,7 @@
 		}
 
 		try {
-			await fetch(`http://localhost:8080/register`, {
+			await fetch(`${backend_path}/register`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -211,7 +213,7 @@
 		try {
 			// If newWachtwoord is provided and not empty, update with new password
 			if (newWachtwoord && newWachtwoord.trim() !== '') {
-				await fetch(`http://localhost:8080/updateuser/${id}`, {
+				await fetch(`${backend_path}/updateuser/${id}`, {
 					method: 'PUT',
 					headers: {
 						'Content-Type': 'application/json',
@@ -229,7 +231,7 @@
 				});
 			} else {
 				// If no new password, update other fields without changing the password
-				await fetch(`http://localhost:8080/updateuserwithoutpassword/${id}`, {
+				await fetch(`${backend_path}/updateuserwithoutpassword/${id}`, {
 					method: 'PUT',
 					headers: {
 						'Content-Type': 'application/json',
