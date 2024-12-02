@@ -1,9 +1,11 @@
-name: labflow-back-end
 
 on:
   push:
     branches:
       - main
+      
+name: labflow-back-end
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -50,8 +52,8 @@ jobs:
             username: ${{ secrets.REGISTRY_USERNAME }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
         - run: |
-            docker build ./code/labflow-backend -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:${{ github.sha }}
-            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:${{ github.sha }}
+            docker build ./code/labflow-backend -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
 
         - name: 'Deploy to Azure Container Instances'
           uses: 'azure/aci-deploy@v1'
@@ -59,10 +61,12 @@ jobs:
             resource-group: ${{ secrets.RESOURCE_GROUP }}
            # dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
             dns-name-label: tmlabflow-backend-prod
-            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:${{ github.sha }}
+            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
             registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
             registry-username: ${{ secrets.REGISTRY_USERNAME }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-            name: aci-labflow-back-end
+            name: labflow-back-end
+            cpu: 2
+            memory: 8
             ports: 8080
             location: 'west europe'
