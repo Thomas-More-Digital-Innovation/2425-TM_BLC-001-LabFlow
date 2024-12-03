@@ -55,18 +55,34 @@ jobs:
             docker build ./code/labflow-backend -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
 
-        - name: 'Deploy to Azure Container Instances'
-          uses: 'azure/aci-deploy@v1'
+        # Build and deploy the container app
+        - name: Build and deploy Container App
+          uses: azure/container-apps-deploy-action@v0
           with:
-            resource-group: ${{ secrets.RESOURCE_GROUP }}
-           # dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
-            dns-name-label: tmlabflow-backend-prod
-            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
-            registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-            registry-username: ${{ secrets.REGISTRY_USERNAME }}
-            registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-            name: labflow-back-end
-            cpu: 2
-            memory: 8
-            ports: 8080
+            acrName: tmlabflow
+            acrUsername: ${{ secrets.REGISTRY_USERNAME }}
+            acrPassword: ${{ secrets.REGISTRY_PASSWORD }}
+            containerAppName: 'labflow-back-end-app'
+            containerAppEnvironment: 'labflow-back-end-app-env'
+            resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+            imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}//app:latest
+            targetPort: 8080
+            ingress: external
             location: 'west europe'
+
+
+        #- name: 'Deploy to Azure Container Instances'
+        #  uses: 'azure/aci-deploy@v1'
+         # with:
+         #   resource-group: ${{ secrets.RESOURCE_GROUP }}
+           # dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
+        #    dns-name-label: tmlabflow-backend-prod
+        #    image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
+         #   registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        #    registry-username: ${{ secrets.REGISTRY_USERNAME }}
+        #   registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+        #  name: labflow-back-end
+         #   cpu: 2
+        #    memory: 8
+        #    ports: 8080
+       #     location: 'west europe'
