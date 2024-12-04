@@ -1,9 +1,8 @@
-
 on:
   push:
     branches:
       - main
-      
+
 name: labflow-back-end
 
 jobs:
@@ -33,56 +32,55 @@ jobs:
       #   working-directory: ./code/labflow-backend
 
   build-and-deploy:
-        needs: test
-        runs-on: ubuntu-latest
-        steps:
-        # checkout the repo
-        - name: 'Checkout GitHub Action'
-          uses: actions/checkout@main
-          
-        - name: 'Login via Azure CLI'
-          uses: azure/login@v1
-          with:
-            creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
-        - name: 'Build and push image'
-          uses: azure/docker-login@v1
-          with:
-            login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-            username: ${{ secrets.REGISTRY_USERNAME }}
-            password: ${{ secrets.REGISTRY_PASSWORD }}
-        - run: |
-            docker build ./code/labflow-backend -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
-            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repo
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@main
 
-        # Build and deploy the container app
-        - name: Build and deploy Container App
-          uses: azure/container-apps-deploy-action@v0
-          with:
-            acrName: tmlabflow
-            acrUsername: ${{ secrets.REGISTRY_USERNAME }}
-            acrPassword: ${{ secrets.REGISTRY_PASSWORD }}
-            containerAppName: 'labflow-back-end-app'
-            containerAppEnvironment: 'labflow-back-end-app-env'
-            resourceGroup: ${{ secrets.RESOURCE_GROUP }}
-            imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}//labflow-back-end:latest
-            targetPort: 8080
-            ingress: external
-            location: 'west europe'
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: "Build and push image"
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: |
+          docker build ./code/labflow-backend -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
 
-        #- name: 'Deploy to Azure Container Instances'
-        #  uses: 'azure/aci-deploy@v1'
-         # with:
-         #   resource-group: ${{ secrets.RESOURCE_GROUP }}
-           # dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
-        #    dns-name-label: tmlabflow-backend-prod
-        #    image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
-         #   registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-        #    registry-username: ${{ secrets.REGISTRY_USERNAME }}
-        #   registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-        #  name: labflow-back-end
-         #   cpu: 2
-        #    memory: 8
-        #    ports: 8080
-       #     location: 'west europe'
+      # Build and deploy the container app
+      - name: Build and deploy Container App
+        uses: azure/container-apps-deploy-action@v0
+        with:
+          acrName: tmlabflow
+          acrUsername: ${{ secrets.REGISTRY_USERNAME }}
+          acrPassword: ${{ secrets.REGISTRY_PASSWORD }}
+          containerAppName: "labflow-back-end-app"
+          containerAppEnvironment: "labflow-back-end-app-env"
+          resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+          imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}//labflow-back-end:latest
+          targetPort: 8080
+          ingress: external
+          location: "west europe"
+
+    #- name: 'Deploy to Azure Container Instances'
+    #  uses: 'azure/aci-deploy@v1'
+    # with:
+    #   resource-group: ${{ secrets.RESOURCE_GROUP }}
+    # dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
+    #    dns-name-label: tmlabflow-backend-prod
+    #    image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/labflow-back-end:latest
+    #   registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+    #    registry-username: ${{ secrets.REGISTRY_USERNAME }}
+    #   registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+    #  name: labflow-back-end
+    #   cpu: 2
+    #    memory: 8
+    #    ports: 8080
+    #     location: 'west europe'
