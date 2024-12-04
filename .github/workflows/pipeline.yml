@@ -65,7 +65,7 @@ jobs:
             containerAppName: 'labflow-back-end-app'
             containerAppEnvironment: 'labflow-back-end-app-env'
             resourceGroup: ${{ secrets.RESOURCE_GROUP }}
-            imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}//app:latest
+            imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}//labflow-back-end:latest
             targetPort: 8080
             ingress: external
             location: 'west europe'
