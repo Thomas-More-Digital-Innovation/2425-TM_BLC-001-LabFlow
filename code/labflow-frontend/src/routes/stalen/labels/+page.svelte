@@ -44,7 +44,7 @@
 				// assign id to staalId
 				staalId = staal.id;
 				// Extract unique test categories
-				extractUniqueTestCategories(staal.registeredTests);
+				await extractUniqueTestCategories(staal.registeredTests);
 			} catch (error) {
 				console.error('data kon niet gefetched worden:', error);
 			}
@@ -55,7 +55,7 @@
 	}
 
 	// Get unique test categories based on their id
-	function extractUniqueTestCategories(registeredTests: Test[]) {
+	async function extractUniqueTestCategories(registeredTests: Test[]) {
 		const categoryMap = new Map();
 
 		registeredTests.forEach((testItem: Test) => {
@@ -142,7 +142,7 @@
 	let zplCode: String = "";
 	let amount: number = 1;
 
-	async function printLabels(staalId: string, amount: number) {
+	async function printLabels(staalId: number, amount: number) {
 		try {
 			const response = await fetch(`${backend_path}/api/printer/labels/${staalId}/${amount}`, {
 				method: 'GET',
