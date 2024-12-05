@@ -351,7 +351,7 @@
 					class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-1/2 flex flex-row items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed"
 					disabled={!allDone}
 				>
-					Volgende
+					Registreren
 					<div class="w-5 h-5 ml-2"><FaArrowRight /></div>
 				</button>
 			</div>
