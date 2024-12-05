@@ -119,7 +119,6 @@
 				headers: headers,
 				body: JSON.stringify(body)
 			});
-			console.log(response);
 			if (!response.ok) {
 				throw new Error(`Error: ${response.statusText}`);
 			}
