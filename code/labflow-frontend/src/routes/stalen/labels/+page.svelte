@@ -17,11 +17,9 @@
 	import type { Test, TestCategorie, Staal } from '$lib/types/dbTypes';
 	import { createDefaultStaal } from '$lib/factories/staalfactory';
 
-	import * as JSPM from 'jsprintmanager'
-	import { backIn } from 'svelte/easing';
+	import * as JSPM from 'jsprintmanager';
 
 	const { ClientPrintJob, DefaultPrinter, InstalledPrinter, JSPrintManager, WSStatus } = JSPM;
-	
 
 	// neem de id
 	let sampleCode: string | undefined;
@@ -59,7 +57,7 @@
 		const categoryMap = new Map();
 
 		registeredTests.forEach((testItem: Test) => {
-			const category = testItem.testcategorie;
+			const category = testItem.test.testcategorie;
 			if (category.id !== 7 && !categoryMap.has(category.id)) {
 				categoryMap.set(category.id, category);
 			}
@@ -139,7 +137,7 @@
 	}
 
 	// get the zpl code for the labels
-	let zplCode: String = "";
+	let zplCode: String = '';
 	let amount: number = 1;
 
 	async function printLabels(staalId: number, amount: number) {
@@ -155,9 +153,9 @@
 				console.error('Failed to fetch ZPL:', response.statusText);
 				return;
 			}
-			
+
 			zplCode = await response.text();
-			
+
 			if (!jspmWSStatus()) return;
 
 			const cpj = new ClientPrintJob();
@@ -169,17 +167,16 @@
 			}
 
 			cpj.printerCommands = zplCode.trim();
-			cpj.sendToClient()
-
+			cpj.sendToClient();
 		} catch (error) {
 			console.error('Error while downloading ZPL:', error);
 		}
 	}
 
 	// connection with printer
-	let printers:any = [];
-    let selectedPrinter = '';
-    let useDefaultPrinter = false;
+	let printers: any = [];
+	let selectedPrinter = '';
+	let useDefaultPrinter = false;
 
 	function jspmWSStatus() {
 		const status = JSPrintManager.websocket_status;
@@ -198,7 +195,6 @@
 			if (printers.length > 0) selectedPrinter = printers[0];
 		});
 	}
-    
 
 	onMount(async () => {
 		token = getCookie('authToken') || '';
@@ -212,7 +208,7 @@
 				if (jspmWSStatus()) {
 					fetchPrinters();
 				}
-			}
+			};
 		}
 	});
 
@@ -307,7 +303,8 @@
 				<div class="w-full h-1/5 bg-slate-200 flex justify-between items-baseline">
 					<!-- left button-->
 					<div class="w-1/4 mt-auto">
-						<button on:click={() => printLabels(staalId, amount)}
+						<button
+							on:click={() => printLabels(staalId, amount)}
 							class="bg-blue-600 text-xl rounded-lg p-3 text-white h-20 w-full flex flex-row items-center justify-center"
 						>
 							afdrukken
@@ -335,7 +332,10 @@
 						</div>
 						<div class="w-1/2">
 							<p>printer</p>
-							<select bind:value={selectedPrinter} class="rounded-lg text-xl p-3 h-20 bg-white w-full border border-gray-400">
+							<select
+								bind:value={selectedPrinter}
+								class="rounded-lg text-xl p-3 h-20 bg-white w-full border border-gray-400"
+							>
 								{#each printers as printer}
 									<option value={printer}>{printer}</option>
 								{/each}

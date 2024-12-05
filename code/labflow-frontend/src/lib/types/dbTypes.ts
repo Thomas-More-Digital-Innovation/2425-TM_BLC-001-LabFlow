@@ -39,6 +39,7 @@ export interface Test {
     testcategorie: TestCategorie;
     referentiewaardes: Referentiewaarde[];
     confirmDelete: boolean; // voor het verwijderen van een test
+    test: Test; // wrapper
 }
 
 export interface Eenheid {
