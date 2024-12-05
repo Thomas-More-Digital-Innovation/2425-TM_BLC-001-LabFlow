@@ -146,7 +146,6 @@
 				// setten van de id die we aan het aanpassen zijn
 				staalId = test.id;
 				loading = false;
-				console.log(geselecteerdeTests);
 			} catch (error) {
 				console.error('testen kon niet gefetched worden:', error);
 			}
@@ -268,7 +267,6 @@
 	let isWarningAcknowledged = false; // Tracken of warning getoond is of niet
 
 	function checkWarning(geselecteerdeTestsArray: TestCodeWrapper[]) {
-		console.log(geselecteerdeTestsArray);
 		if (
 			geselecteerdeTestsArray.some((test) => test.test.testCode !== 'X') ||
 			geselecteerdeTestsArray.length === 0

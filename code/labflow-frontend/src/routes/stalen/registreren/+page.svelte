@@ -119,12 +119,10 @@
 				headers: headers,
 				body: JSON.stringify(body)
 			});
-
 			if (!response.ok) {
 				throw new Error(`Error: ${response.statusText}`);
 			}
-
-			const data = await response.json();
+			const data = await response;
 			loadData();
 			return data;
 		} catch (error) {
