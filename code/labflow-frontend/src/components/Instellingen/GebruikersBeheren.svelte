@@ -324,11 +324,13 @@
 			{#if errorMessageGebruikerDELETE}
 				<div class="text-red-500 mb-2">{errorMessageGebruikerDELETE}</div>
 			{/if}
-			<div class="grid grid-cols-12 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3">
+			<form
+				class="grid grid-cols-12 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
+			>
 				<div class="col-span-2">
 					<input
 						type="text"
-						id="nieuwegebruiker"
+						id="voornaam"
 						bind:value={voornaam}
 						placeholder="Voornaam gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
@@ -338,7 +340,7 @@
 				<div class="col-span-2">
 					<input
 						type="text"
-						id="nieuwegebruiker"
+						id="achternaam"
 						bind:value={achternaam}
 						placeholder="Achternaam gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
@@ -348,21 +350,23 @@
 				<div class="col-span-3">
 					<input
 						type="text"
-						id="nieuwegebruiker"
+						id="email"
 						bind:value={email}
 						placeholder="Email gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenGebruikerPOST.email ? 'border-2 border-red-500' : ''}"
+						autocomplete="username"
 					/>
 				</div>
 				<div class="col-span-2">
 					<input
 						type="password"
-						id="nieuwegebruiker"
+						id="paswoord"
 						bind:value={wachtwoord}
 						placeholder="Wachtwoord gebruiker"
 						class="bg-gray-100 rounded-lg h-14 text-lg pl-3 w-full
                     {errorVeldenGebruikerPOST.wachtwoord ? 'border-2 border-red-500' : ''}"
+						autocomplete="current-password"
 					/>
 				</div>
 				<div class="flex flex-col justify-center col-span-2">
@@ -390,13 +394,13 @@
 						<FaPlus />
 					</button>
 				</div>
-			</div>
+			</form>
 			{#if errorMessageGebruikerPUT}
 				<div class="text-red-500 mb-2">{errorMessageGebruikerPUT}</div>
 			{/if}
 			<div class="space-y-3">
 				{#each usersSorted as user, index}
-					<div
+					<form
 						class="grid grid-cols-12 bg-white rounded-lg h-20 items-center px-3 shadow-md space-x-3"
 					>
 						<div class="col-span-2">
@@ -430,6 +434,7 @@
 								class="{user?.id === 1
 									? 'bg-white'
 									: 'bg-gray-100'} rounded-lg h-14 text-lg pl-3 w-full"
+								autocomplete="username"
 							/>
 						</div>
 						<div class="col-span-2">
@@ -442,6 +447,7 @@
 									class="{user?.id === 1
 										? 'bg-gray-50'
 										: 'bg-gray-100'} rounded-lg h-14 text-lg pl-3 w-full"
+									autocomplete="current-password"
 								/>
 							{/if}
 							{#if userId !== '1'}
@@ -453,6 +459,7 @@
 									class="{user?.id === 1 || user?.id === 2 || user?.id === 3
 										? 'bg-gray-50'
 										: 'bg-gray-100'} rounded-lg h-14 text-lg pl-3 w-full"
+									autocomplete="current-password"
 								/>
 							{/if}
 						</div>
@@ -507,7 +514,7 @@
 								</button>
 							{/if}
 						</div>
-					</div>
+					</form>
 				{/each}
 			</div>
 		</div>
