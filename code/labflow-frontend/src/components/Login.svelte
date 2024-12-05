@@ -45,7 +45,13 @@
 		<p class="text-red-500">Deze combinatie van email en wachtwoord bestaat niet.</p>
 	{/if}
 
-	<Input label="Email" type="text" required bind:value={email} />
-	<Input label="Wachtwoord" type="password" required bind:value={wachtwoord} />
+	<Input label="Email" type="text" required bind:value={email} autocomplete="username" />
+	<Input
+		label="Wachtwoord"
+		type="password"
+		required
+		bind:value={wachtwoord}
+		autocomplete="current-password"
+	/>
 	<Button type="submit">Aanmelden</Button>
 </form>
