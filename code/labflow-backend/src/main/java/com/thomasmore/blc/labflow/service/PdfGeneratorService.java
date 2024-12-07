@@ -121,19 +121,20 @@ public class PdfGeneratorService {
 
 
     public byte[] generateResultsPdf(Staal staal) throws DocumentException {
+        // start een nieuw document
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         PdfWriter.getInstance(document, out);
         document.open();
 
-        // Font settings
+        // declareren van verschillende fonts
         Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
         Font bodyFont = new Font(Font.FontFamily.HELVETICA, 10);
         Font noteFont = new Font(Font.FontFamily.HELVETICA, 8, Font.BOLD);
         Font headerDataFont = new Font(Font.FontFamily.HELVETICA, 8, Font.BOLD);
 
-        // Patient info
+        // alle patient en staal info ophalen
         List<StaalTest> registeredTests = staal.getRegisteredTests();
         Long staalCode = staal.getStaalCode();
         String voornaam = staal.getPatientVoornaam();
@@ -143,18 +144,19 @@ public class PdfGeneratorService {
         String laborant = staal.getLaborantNaam();
         String rNummer = staal.getLaborantRnummer();
 
+        // geboortedatum formatteren
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String formattedDate = geboortedatum.format(formatter);
-        // huidige datum
+        // huidige datum formatteren
         String formattedCurrentDate = LocalDate.now().format(formatter);
 
 
-        // Create table for header section
+        // hoofding tabel voor patient info
         PdfPTable headerTable = new PdfPTable(2);
         headerTable.setWidthPercentage(100);
         headerTable.setWidths(new int[]{3, 1});  // Adjust the column widths as needed
 
-        // Left section (Patient details)
+        // Linkse kant (Patient details)
         PdfPCell leftCell = new PdfPCell();
         leftCell.setBorder(Rectangle.NO_BORDER);
 
@@ -164,7 +166,7 @@ public class PdfGeneratorService {
         leftCell.addElement(new Paragraph("Geslacht: " + geslacht, bodyFont));
         headerTable.addCell(leftCell);
 
-        // Right section (Test code and date)
+        // Rechtse kant (Test code, datum, laborant, r-nummer)
         PdfPCell rightCell = new PdfPCell();
         rightCell.setBorder(Rectangle.NO_BORDER);
         rightCell.addElement(new Paragraph("Testcode: " + staalCode, bodyFont));
@@ -173,18 +175,19 @@ public class PdfGeneratorService {
         rightCell.addElement(new Paragraph("R-nummer: " + rNummer, bodyFont));// Current date
         headerTable.addCell(rightCell);
 
+        // spacing toevoegen
         document.add(headerTable);
-        document.add(new Paragraph("\n"));  // Adding space after the header
+        document.add(new Paragraph("\n"));
 
-        // Add a separator line
+        // divider toevoegen
         document.add(new LineSeparator());
 
-        // setup data layout
+        // nieuwe tabel met layout voor hoofding collom
         PdfPTable headerDataTable = new PdfPTable(6);
         headerDataTable.setWidthPercentage(100);
         headerDataTable.setWidths(new int[]{1, 3, 1, 1, 3, 2}); // Adjust column widths
 
-        // header columns
+        // standaard hoofding collom
         headerDataTable.addCell(new PdfPCell(new Phrase("Code", headerDataFont)));
         headerDataTable.addCell(new PdfPCell(new Phrase("Naam", headerDataFont)));
         headerDataTable.addCell(new PdfPCell(new Phrase("Resultaat", headerDataFont)));
@@ -193,38 +196,42 @@ public class PdfGeneratorService {
         headerDataTable.addCell(new PdfPCell(new Phrase("Categorie", headerDataFont)));
 
         document.add(headerDataTable);
+
+        // spacing toevoegen
         document.add(new Paragraph("\n"));// Adding space after the header
 
-        // Get all tests and order by test categories
+        // alle testen ophalen en sorteren op categorie
         List<Test> testList = registeredTests.stream()
                 .map(StaalTest::getTest)
                 .sorted(Comparator.comparing(test -> test.getTestcategorie().getNaam()))
-                .filter(test -> test.getTestcategorie().getId() != 7)
+                .filter(test -> test.getTestcategorie().getId() != 7) // notitie test uit gefilterd
                 .toList();
 
-        // Get 'notitie' test
+        // enkel notitie test ophalen
         Test notitie = registeredTests.stream()
                 .map(StaalTest::getTest)
                 .filter(test -> test.getTestcategorie().getId() == 7)
                 .findFirst()
                 .orElse(null);
 
-        // Loop through test categories and add information
+        // tabel aanmaken en layout voor data tabel
         PdfPTable dataTable = new PdfPTable(6);
         dataTable.setWidthPercentage(100);
         dataTable.setWidths(new int[]{1, 3, 1, 1, 3, 2}); // Adjust column widths
 
-        // Add 'notitie' test
+        // eerst een notitie toevoegen (enkel wanneer deze bestaat)
         if (notitie != null) {
-            // header columns - removing borders
+            // cell met testcode van de test
             PdfPCell testCodeHeader = new PdfPCell(new Phrase(notitie.getTestCode(), bodyFont));
             testCodeHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(testCodeHeader);
 
+            // cell met naam van de test
             PdfPCell nameHeader = new PdfPCell(new Phrase(notitie.getNaam(), bodyFont));
             nameHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(nameHeader);
 
+            // ophalen van het resultaat van de test
             String result = notitie.getStalen().stream()
                     .filter(staalTest -> staalTest.getStaal().getStaalCode() == staalCode)
                     .map(StaalTest::getResult)
@@ -232,6 +239,8 @@ public class PdfGeneratorService {
                     .findFirst()
                     .orElse("Geen notitie");
 
+
+            // afhankelijk van het resultaat een cell toevoegen
             if (result.equals("Geen notitie")) {
                 PdfPCell resultHeader = new PdfPCell(new Phrase("Geen notitie", bodyFont));
                 resultHeader.setBorder(Rectangle.NO_BORDER);
@@ -242,6 +251,7 @@ public class PdfGeneratorService {
                 dataTable.addCell(resultHeader);
             }
 
+            // 3 volgende blokken zijn lege cellen aangezien deze niet in aanmerking komen voor een notitie
             PdfPCell unitHeader = new PdfPCell(new Phrase(""));
             unitHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(unitHeader);
@@ -254,6 +264,7 @@ public class PdfGeneratorService {
             categoryHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(categoryHeader);
 
+            // ophalen van de nota van de notitie test
             String note = notitie.getStalen().stream()
                     .filter(staalTest -> staalTest.getStaal().getStaalCode() == staalCode)
                     .map(StaalTest::getNote)
@@ -261,6 +272,7 @@ public class PdfGeneratorService {
                     .findFirst()
                     .orElse(null);
 
+            // als de test een notitie heeft, deze toevoegen aan de tabel
             if (note != null) {
                 PdfPCell noteCell = new PdfPCell(new Phrase("Nota: " + note, noteFont));
                 noteCell.setPaddingLeft(20);
@@ -272,16 +284,19 @@ public class PdfGeneratorService {
             }
         }
 
+        // voor elke test in de lijst, een rij toevoegen aan de tabel
         for (Test test : testList) {
-            // header columns - removing borders
+            // cell toevoegen met testcode
             PdfPCell testCodeHeader = new PdfPCell(new Phrase(test.getTestCode(), bodyFont));
             testCodeHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(testCodeHeader);
 
+            // cell toevoegen met naam van de test
             PdfPCell nameHeader = new PdfPCell(new Phrase(test.getNaam(), bodyFont));
             nameHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(nameHeader);
 
+            // ophalen van het resultaat van de test
             String result = test.getStalen().stream()
                     .filter(staalTest -> staalTest.getStaal().getStaalCode() == staalCode)
                     .map(StaalTest::getResult)
@@ -289,7 +304,7 @@ public class PdfGeneratorService {
                     .findFirst()
                     .orElse("No result");
 
-            // get the note for the test
+            // ophalen van de nota van de test
             String note = test.getStalen().stream()
                     .filter(staalTest -> staalTest.getStaal().getStaalCode() == staalCode)
                     .map(StaalTest::getNote)
@@ -297,8 +312,7 @@ public class PdfGeneratorService {
                     .findFirst()
                     .orElse("No note");
 
-            System.out.println("Note: " + note);
-
+            // afhankelijk van het resultaat een cell toevoegen
             if (result.equals("No result")) {
                 PdfPCell resultHeader = new PdfPCell(new Phrase("no result", bodyFont));
                 resultHeader.setBorder(Rectangle.NO_BORDER);
@@ -309,12 +323,17 @@ public class PdfGeneratorService {
                 dataTable.addCell(resultHeader);
             }
 
+            // cell toevoegen met eenheid van de test
             PdfPCell unitHeader = new PdfPCell(new Phrase(test.getEenheid().getAfkorting(), bodyFont));
             unitHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(unitHeader);
 
+            // alle referentiewaardes ophalen die bij test horen
             Set<Referentiewaarde> referentiewaardes = test.getReferentiewaardes();
+
+            // afhankelijk van het aantal referentiewaardes, deze samenvoegen en toevoegen aan de tabel
             if (referentiewaardes.size() > 0) {
+                // stream voor tussen elke referentiewaarde een '/' te plaatsen
                 String referentieWaarden = referentiewaardes.stream()
                         .map(Referentiewaarde::getWaarde)
                         .collect(Collectors.joining(" / "));
@@ -327,10 +346,12 @@ public class PdfGeneratorService {
                 dataTable.addCell(referenceHeader);
             }
 
+            // cell toevoegen met de naam van de categorie van de test
             PdfPCell categoryHeader = new PdfPCell(new Phrase(test.getTestcategorie().getNaam(), bodyFont));
             categoryHeader.setBorder(Rectangle.NO_BORDER);
             dataTable.addCell(categoryHeader);
 
+            // cell toevoegen wanneer er een nota is
             if (!note.equals("No note")) {
                 PdfPCell noteCell = new PdfPCell(new Phrase("Nota: " + note, noteFont));
                 noteCell.setPaddingLeft(20);
