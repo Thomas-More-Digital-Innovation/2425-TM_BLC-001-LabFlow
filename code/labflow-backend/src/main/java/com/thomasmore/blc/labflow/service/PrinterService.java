@@ -75,6 +75,7 @@ public class PrinterService {
                             "^FO20,105^A0N,25,25^FD" + "Geslacht: " + formattedGeslacht + "^FS\n" +
                             "^FO170,205^A0N,25,25^FD" + staal.getStaalCode() + "^FS\n" +
                             "^FO390,65^A0N,30,30^FR^FWR^FD" + testcategorie.getNaam() + "^FS\n" +
+                            "^FO355,65^A0N,30,30^FR^FWR^FD" + testcategorie.getKleurnaam() + "^FS\n" +
                             "^XZ\n";
                 }
             }
