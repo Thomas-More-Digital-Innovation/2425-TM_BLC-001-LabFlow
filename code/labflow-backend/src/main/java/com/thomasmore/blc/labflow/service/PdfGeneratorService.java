@@ -105,6 +105,10 @@ public class PdfGeneratorService {
             // Add vertical EDTA text on the right side
             ColumnText.showTextAligned(canvas, Element.ALIGN_RIGHT,
                     new Phrase(testcategorie.getNaam(), boldFont), 185, 60, 270); // Rotated 90 degrees
+
+            // Add vertical EDTA text on the right side
+            ColumnText.showTextAligned(canvas, Element.ALIGN_RIGHT,
+                    new Phrase(testcategorie.getKleurnaam(), boldFont), 170, 60, 270);
         }
 
         document.close();
