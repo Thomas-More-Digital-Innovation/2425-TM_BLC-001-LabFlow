@@ -32,12 +32,14 @@ public class PdfGeneratorController {
         Staal staal = staalService.readById(id);
         byte[] pdfBytes;
 
+        // probeer genereren van pdf
         try {
             pdfBytes = pdfGeneratorService.generateLabelPdf(staal);
         } catch (DocumentException e) {
             return ResponseEntity.internalServerError().build();
         }
 
+        // maak header voor http voor api
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("inline", "label.pdf");
@@ -52,14 +54,17 @@ public class PdfGeneratorController {
         Staal staal = staalService.readById(id);
         byte[] pdfBytes;
 
+        // probeer genereren van pdf
         try {
             pdfBytes = pdfGeneratorService.generateResultsPdf(staal);
         } catch (DocumentException e) {
             return ResponseEntity.internalServerError().build();
         }
 
+        // stel documentnaam samen
         String filename = "resultaten_" + staal.getPatientAchternaam() + "_" + staal.getPatientVoornaam() + ".pdf";
 
+        // maak header voor http voor api
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.add("X-Filename", filename);  // Custom header
