@@ -70,6 +70,7 @@ public class PrinterService {
                         "^PW450\n" +
                         "^LL250\n" +
                         "^FO10,15^GB430,230,3^FS\n" +
+                        "^FO60,20^BY3^BCN,60,,,,A^FD" + staal.getStaalCode() + "^FS\n" + // positioneren nodig https://labelary.com/zpl.html
                         "^FO20,25^A0N,30,30^FD" + staal.getPatientVoornaam() + "^FS\n" +
                         "^FO200,25^A0N,30,30^FD" + staal.getPatientAchternaam() + "^FS\n" +
                         "^FO20,65^A0N,25,25^FD" + "Geboorte: " + formattedGeboorte + "^FS\n" +
@@ -83,6 +84,7 @@ public class PrinterService {
                             "^PW450\n" +
                             "^LL250\n" +
                             "^FO10,15^GB430,230,3^FS\n" +
+                            "^FO60,20^BY3^BCN,60,,,,A^FD" + staal.getStaalCode() + "^FS\n" + // positioneren nodig https://labelary.com/zpl.html
                             "^FO20,25^A0N,30,30^FD" + staal.getPatientVoornaam() + "^FS\n" +
                             "^FO200,25^A0N,30,30^FD" + staal.getPatientAchternaam() + "^FS\n" +
                             "^FO20,65^A0N,25,25^FD" + "Geboorte: " + formattedGeboorte + "^FS\n" +

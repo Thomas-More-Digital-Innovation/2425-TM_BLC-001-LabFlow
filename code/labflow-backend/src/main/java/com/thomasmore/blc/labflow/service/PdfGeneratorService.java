@@ -57,6 +57,15 @@ public class PdfGeneratorService {
         canvas.rectangle(border);
         canvas.stroke();
 
+        // Voeg de barcode toe
+        Barcode128 barcode = new Barcode128();
+        barcode.setCode(String.valueOf(staalCode)); // barcode representeert de staalCode
+        barcode.setFont(null); // geen tekst onder de barcode
+        Image barcodeImage = barcode.createImageWithBarcode(canvas, BaseColor.BLACK, BaseColor.BLACK);
+        barcodeImage.setAbsolutePosition(70, 100); // absolute positie van de barcode
+        barcodeImage.scalePercent(100); // grootte van de barcode
+        document.add(barcodeImage);
+
         // Eerste standaard label
         // naam en voornaam toevoegen
         Paragraph nameParagraph = new Paragraph(voornaam + " " + achternaam, boldFont);
@@ -86,6 +95,11 @@ public class PdfGeneratorService {
             newBorder.setBorderWidth(1);
             canvas.rectangle(newBorder);
             canvas.stroke();
+
+            // Voeg de barcode toe (defined bij het standaardlabel)
+            barcodeImage.setAbsolutePosition(70, 100); // absolute positie van de barcode
+            barcodeImage.scalePercent(100); // grootte van de barcode
+            document.add(barcodeImage);
 
             // patiënt naam
             nameParagraph.setAlignment(Element.ALIGN_LEFT);
